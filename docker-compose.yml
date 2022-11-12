@@ -20,7 +20,7 @@ services:
         ports:
             - 8080:80
         volumes:
-            - ${PWD}/prestashop:/var/www/html:rw
+            - myapp:/var/www/html
         networks:
             - prestashop
     phpmyadmin:
@@ -36,3 +36,6 @@ services:
             - mysql
 networks:
     prestashop:
+
+volumes:
+    myapp:
