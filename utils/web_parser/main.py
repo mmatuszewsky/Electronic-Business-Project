@@ -1,25 +1,25 @@
+import os
+from random import randint, random
+from time import sleep
+
+import undetected_chromedriver
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.remote.webelement import WebElement
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.chrome.options import Options
-from time import sleep
 import json
-import os
 from course import Course
-from random import randint
 
-options = Options()
-options.add_argument('--disable-blink-features=AutomationControlled')
+
+COURSE_SUBPAGES = 20  # max number of subpages scraped from each category
 
 # Web Driver configuration
-PATH = "C:\Program Files (x86)\chromedriver.exe"
-driver = webdriver.Chrome(PATH)
+PATH = "C:\Program Files (x86)\chromedriver\chromedriver.exe"
+options = webdriver.ChromeOptions()
+driver = undetected_chromedriver.Chrome(options)
 coursesList = []
 
 # getting pages URLs
@@ -37,20 +37,18 @@ f.close()
 
 # searching through each page from file and through each subpage (< 1 2 3 ... 7 >)
 for URL in URLs:
-    emptyPage = False # means that the page number is out of range and there is no more content on this page
+    emptyPage = False  # means that the page number is out of range and there is no more content on this page
     subpageCounter = 1
-    
     while not emptyPage:
         print(URL+'&p='+str(subpageCounter))
         driver.get(URL+'&p='+str(subpageCounter))
         subpageCounter += 1
-        try: # element with this class name is a big container for all smaller divs. If it is not present then there is no content on the page
+        if subpageCounter > COURSE_SUBPAGES:
+            break
+        try:  # element with this class name is a big container for all smaller divs. If it is not present then there is no content on the page
             WebDriverWait(driver, 50).until(EC.presence_of_element_located((By.CLASS_NAME, 'course-list--container--3zXPS')))
             container = driver.find_element(By.CLASS_NAME, 'course-list--container--3zXPS')
-            
             coursesBiggerDivs = container.find_elements(By.CLASS_NAME, 'course-card--course-title--vVEjC')
-            print(len(coursesBiggerDivs))
-            
             courses = container.find_elements(By.CLASS_NAME, 'course-card--container--1QM2W')
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             counter = 0
@@ -95,10 +93,10 @@ for URL in URLs:
                     price = 'Brak ceny'
 
                 try:
-                    courseLink = coursesBiggerDivs[counter].get_attribute('href')
+                    a = coursesBiggerDivs[counter].find_element(By.TAG_NAME, "a")
+                    courseLink = a.get_attribute('href')
                 except NoSuchElementException:
                     courseLink = None
-
                 counter += 1
                 c = Course(title, desc, author, ratings, price, imageSourceURL, courseLength, courseLevel, courseLink)
                 coursesList.append(c)
@@ -107,22 +105,24 @@ for URL in URLs:
             print('[INFO] Ostatnia podstrona adresu URL')
             emptyPage = True
 
+os.remove('objectsInJSON.txt')
 
 for course in coursesList: # search through each course page and get some more specific information
+    sleep(random())  # this sleep is needed to avoid error 403
     driver.get(course.URL)
-    WebDriverWait(driver, 50).until(EC.presence_of_element_located((By.CLASS_NAME, 'topic-menu')))
-    topicDiv = driver.find_element(By.CLASS_NAME, 'topic-menu')
-    elements = topicDiv.find_elements(By.CLASS_NAME, 'ud-heading-sm')
-    course.setCategory(elements[0].text)
-    course.setSubcategory(elements[1].text)
-    courseDescription = driver.find_element(By.CLASS_NAME, 'styles--description--3y4KY')
-    course.setExtendedDescription(courseDescription.get_attribute('innerHTML'))
-    print(courseDescription)
-    print(course)
-    # write converted course object in to output file
-    string = course.makeJSON()
-    with open('objectsInJSON.txt', 'a', encoding='utf-8') as file:
-        json.dump(string, file, ensure_ascii=False)
-        file.write("\n")
-
+    try:
+        WebDriverWait(driver, 7).until(EC.presence_of_element_located((By.CLASS_NAME, 'topic-menu')))
+        topicDiv = driver.find_element(By.CLASS_NAME, 'topic-menu')
+        elements = topicDiv.find_elements(By.CLASS_NAME, 'ud-heading-sm')
+        course.setCategory(elements[0].text)
+        course.setSubcategory(elements[1].text)
+        courseDescription = driver.find_element(By.CLASS_NAME, 'styles--description--33-vq')
+        course.setExtendedDescription(courseDescription.get_attribute('innerHTML'))
+        # write converted course object in to output file
+        string = course.makeJSON()
+        with open('objectsInJSON.txt', 'a', encoding='utf-8') as file:
+            json.dump(string, file, ensure_ascii=False)
+            file.write("\n")
+    except TimeoutException:
+        continue
 driver.quit()
