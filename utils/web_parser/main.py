@@ -79,7 +79,7 @@ for URL in URLs:
                     courseLevel = 'Brak informacji'
 
                 try:
-                    image = course.find_element(By.CLASS_NAME, 'course-card--course-image--2sjYP')
+                    image = course.find_element(By.CLASS_NAME, 'course-card--course-image--3QvbQ')
                     ActionChains(driver).move_to_element(image).perform()
                     imageSourceURL = image.get_attribute('src')
                 except NoSuchElementException:
