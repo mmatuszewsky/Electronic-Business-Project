@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter;
@@ -44,7 +44,7 @@ class StockManager implements StockInterface
      *
      * @param object $product
      * @param null $id_product_attribute
-     * @param int|null $id_shop
+     * @param null $id_shop
      *
      * @return StockAvailable
      */
@@ -91,9 +91,9 @@ class StockManager implements StockInterface
     }
 
     /**
-     * @param int $shopId
-     * @param int $errorState
-     * @param int $cancellationState
+     * @param $shopId
+     * @param $errorState
+     * @param $cancellationState
      * @param int|null $idProduct
      * @param int|null $idOrder
      *
@@ -113,19 +113,15 @@ class StockManager implements StockInterface
             $updatePhysicalQuantityQuery .= ' AND sa.id_product = ' . (int) $idProduct;
         }
 
-        if ($idOrder) {
-            $updatePhysicalQuantityQuery .= ' AND sa.id_product IN (SELECT product_id FROM {table_prefix}order_detail WHERE id_order = ' . (int) $idOrder . ')';
-        }
-
         $updatePhysicalQuantityQuery = str_replace('{table_prefix}', _DB_PREFIX_, $updatePhysicalQuantityQuery);
 
         return Db::getInstance()->execute($updatePhysicalQuantityQuery);
     }
 
     /**
-     * @param int $shopId
-     * @param int $errorState
-     * @param int $cancellationState
+     * @param $shopId
+     * @param $errorState
+     * @param $cancellationState
      * @param int|null $idProduct
      * @param int|null $idOrder
      *
@@ -153,12 +149,12 @@ class StockManager implements StockInterface
             WHERE sa.id_shop = :shop_id
         ';
 
-        $strParams = [
+        $strParams = array(
             '{table_prefix}' => _DB_PREFIX_,
             ':shop_id' => (int) $shopId,
             ':error_state' => (int) $errorState,
             ':cancellation_state' => (int) $cancellationState,
-        ];
+        );
 
         if ($idProduct) {
             $updateReservedQuantityQuery .= ' AND sa.id_product = :product_id';
@@ -178,7 +174,7 @@ class StockManager implements StockInterface
     /**
      * Instance a new StockAvailable.
      *
-     * @param bool|int|null $stockAvailableId
+     * @param null $stockAvailableId
      *
      * @return StockAvailable
      */
@@ -194,9 +190,9 @@ class StockManager implements StockInterface
     /**
      * Use legacy getStockAvailableIdByProductId.
      *
-     * @param int $productId
-     * @param int|null $productAttributeId
-     * @param int|null $shopId
+     * @param $productId
+     * @param null $productAttributeId
+     * @param null $shopId
      *
      * @return bool|int
      */

@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter;
@@ -47,11 +47,11 @@ class HookManager
      *
      * @throws \PrestaShopException
      *
-     * @return string|array|void modules output
+     * @return string/array modules output
      */
     public function exec(
         $hook_name,
-        $hook_args = [],
+        $hook_args = array(),
         $id_module = null,
         $array_return = false,
         $check_exceptions = true,
@@ -66,7 +66,7 @@ class HookManager
         }
 
         if (null !== $request) {
-            $hook_args = array_merge(['request' => $request], $hook_args);
+            $hook_args = array_merge(array('request' => $request), $hook_args);
 
             // If Symfony application is booted, we use it to dispatch Hooks
             $hookDispatcher = $sfContainer->get('prestashop.core.hook.dispatcher');
@@ -79,7 +79,7 @@ class HookManager
                 return Hook::exec($hook_name, $hook_args, $id_module, $array_return, $check_exceptions, $use_push, $id_shop);
             } catch (\Exception $e) {
                 $logger = ServiceLocator::get('\\PrestaShop\\PrestaShop\\Adapter\\LegacyLogger');
-                $logger->error(sprintf('Exception on hook %s for module %s. %s', $hook_name, $id_module, $e->getMessage()), ['object_type' => 'Module', 'object_id' => $id_module, 'allow_duplicate' => true]);
+                $logger->error(sprintf('Exception on hook %s for module %s. %s', $hook_name, $id_module, $e->getMessage()));
             }
         }
     }

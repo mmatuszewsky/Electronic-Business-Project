@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Customer\CommandHandler;
@@ -219,7 +219,10 @@ final class EditCustomerHandler extends AbstractCustomerHandler implements EditC
         $customerByEmail->getByEmail($command->getEmail()->getValue());
 
         if ($customerByEmail->id) {
-            throw new DuplicateCustomerEmailException($command->getEmail(), sprintf('Customer with email "%s" already exists', $command->getEmail()->getValue()));
+            throw new DuplicateCustomerEmailException(
+                $command->getEmail(),
+                sprintf('Customer with email "%s" already exists', $command->getEmail()->getValue())
+            );
         }
     }
 
@@ -238,8 +241,19 @@ final class EditCustomerHandler extends AbstractCustomerHandler implements EditC
             return;
         }
 
-        if (!in_array($command->getDefaultGroupId(), $command->getGroupIds())) {
-            throw new CustomerDefaultGroupAccessException(sprintf('Customer default group with id "%s" must be in access groups', $command->getDefaultGroupId()));
+        $defaultGroupId = null !== $command->getDefaultGroupId() ?
+            $command->getDefaultGroupId() :
+            $customer->id_default_group
+        ;
+        $groupIds = null !== $command->getGroupIds() ?
+            $command->getGroupIds() :
+            $customer->getGroups()
+         ;
+
+        if (!in_array($defaultGroupId, $groupIds)) {
+            throw new CustomerDefaultGroupAccessException(
+                sprintf('Customer default group with id "%s" must be in access groups', $command->getDefaultGroupId())
+            );
         }
     }
 }

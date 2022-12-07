@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Module;
@@ -77,7 +77,7 @@ class ModuleDataProvider
     }
 
     /**
-     * @param int $employeeID
+     * @param $employeeID
      */
     public function setEmployeeId($employeeID)
     {
@@ -101,7 +101,7 @@ class ModuleDataProvider
             $lastAccessDate = '0000-00-00 00:00:00';
 
             if (!Tools::isPHPCLI() && null !== $this->entityManager && $this->employeeID) {
-                $moduleID = isset($result['id']) ? (int) $result['id'] : 0;
+                $moduleID = (int) $result['id'];
 
                 $qb = $this->entityManager->createQueryBuilder();
                 $qb->select('mh')
@@ -218,11 +218,7 @@ class ModuleDataProvider
             return false;
         }
 
-        $parser = (new PhpParser\ParserFactory())->create(PhpParser\ParserFactory::ONLY_PHP7);
-        $log_context_data = [
-            'object_type' => 'Module',
-            'object_id' => LegacyModule::getModuleIdByName($name),
-        ];
+        $parser = (new PhpParser\ParserFactory())->create(PhpParser\ParserFactory::PREFER_PHP7);
 
         try {
             $parser->parse(file_get_contents($file_path));
@@ -230,13 +226,12 @@ class ModuleDataProvider
             $this->logger->critical(
                 $this->translator->trans(
                     'Parse error detected in main class of module %module%: %parse_error%',
-                    [
+                    array(
                         '%module%' => $name,
                         '%parse_error%' => $exception->getMessage(),
-                    ],
+                    ),
                     'Admin.Modules.Notification'
-                ),
-                $log_context_data
+                )
             );
 
             return false;
@@ -248,19 +243,18 @@ class ModuleDataProvider
         // -> We use an anonymous function here because if a test is made twice
         // on the same module, the test on require_once would immediately return true
         // (as the file would have already been evaluated).
-        $require_correct = function ($name) use ($file_path, $logger, $log_context_data) {
+        $require_correct = function ($name) use ($file_path, $logger) {
             try {
                 require_once $file_path;
             } catch (\Exception $e) {
                 $logger->error(
                     $this->translator->trans(
                         'Error while loading file of module %module%. %error_message%',
-                        [
+                        array(
                             '%module%' => $name,
-                            '%error_message%' => $e->getMessage(), ],
+                            '%error_message%' => $e->getMessage(), ),
                         'Admin.Modules.Notification'
-                    ),
-                    $log_context_data
+                    )
                 );
 
                 return false;
@@ -291,7 +285,7 @@ class ModuleDataProvider
      *
      * @param string $name The technical module name to check
      *
-     * @return int|false The devices enabled for this module
+     * @return int The devices enabled for this module
      */
     private function getDeviceStatus($name)
     {

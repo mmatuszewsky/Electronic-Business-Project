@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 /**
@@ -29,32 +29,32 @@
  */
 class FeatureCore extends ObjectModel
 {
-    /** @var array<string> Name */
+    /** @var string Name */
     public $name;
 
-    /** @var int */
+    /** @var int $position */
     public $position;
 
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = [
+    public static $definition = array(
         'table' => 'feature',
         'primary' => 'id_feature',
         'multilang' => true,
-        'fields' => [
-            'position' => ['type' => self::TYPE_INT, 'validate' => 'isInt'],
+        'fields' => array(
+            'position' => array('type' => self::TYPE_INT, 'validate' => 'isInt'),
 
             /* Lang fields */
-            'name' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
-        ],
-    ];
+            'name' => array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128),
+        ),
+    );
 
-    protected $webserviceParameters = [
+    protected $webserviceParameters = array(
         'objectsNodeName' => 'product_features',
         'objectNodeName' => 'product_feature',
-        'fields' => [],
-    ];
+        'fields' => array(),
+    );
 
     /**
      * Get a feature data for a given id_feature and id_lang.
@@ -131,7 +131,7 @@ class FeatureCore extends ObjectModel
         }
 
         $return = parent::add($autoDate, true);
-        Hook::exec('actionFeatureSave', ['id_feature' => $this->id]);
+        Hook::exec('actionFeatureSave', array('id_feature' => $this->id));
 
         return $return;
     }
@@ -173,7 +173,7 @@ class FeatureCore extends ObjectModel
         if ($result) {
             $result &= parent::update($nullValues);
             if ($result) {
-                Hook::exec('actionFeatureSave', ['id_feature' => $this->id]);
+                Hook::exec('actionFeatureSave', array('id_feature' => $this->id));
             }
         }
 
@@ -214,7 +214,7 @@ class FeatureCore extends ObjectModel
 
         $return = parent::delete();
         if ($return) {
-            Hook::exec('actionFeatureDelete', ['id_feature' => $this->id]);
+            Hook::exec('actionFeatureDelete', array('id_feature' => $this->id));
         }
 
         /* Reinitializing position */

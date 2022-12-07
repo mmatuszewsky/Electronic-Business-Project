@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -41,21 +41,18 @@ class CheckoutPaymentStepCore extends AbstractCheckoutStep
         $this->conditionsToApproveFinder = $conditionsToApproveFinder;
     }
 
-    public function handleRequest(array $requestParams = [])
+    public function handleRequest(array $requestParams = array())
     {
-        $cart = $this->getCheckoutSession()->getCart();
-        $allProductsInStock = $cart->isAllProductsInStock();
-        $allProductsExist = $cart->checkAllProductsAreStillAvailableInThisState();
-        $allProductsHaveMinimalQuantity = $cart->checkAllProductsHaveMinimalQuantities();
+        $allProductsInStock = $this->getCheckoutSession()->getCart()->isAllProductsInStock();
 
-        if ($allProductsInStock !== true || $allProductsExist !== true || $allProductsHaveMinimalQuantity !== true) {
+        if ($allProductsInStock !== true) {
             $cartShowUrl = $this->context->link->getPageLink(
                 'cart',
                 null,
                 $this->context->language->id,
-                [
+                array(
                     'action' => 'show',
-                ],
+                ),
                 false,
                 null,
                 false
@@ -70,7 +67,7 @@ class CheckoutPaymentStepCore extends AbstractCheckoutStep
         $this->setTitle(
             $this->getTranslator()->trans(
                 'Payment',
-                [],
+                array(),
                 'Shop.Theme.Checkout'
             )
         );
@@ -81,7 +78,7 @@ class CheckoutPaymentStepCore extends AbstractCheckoutStep
      *
      * @return string
      */
-    public function render(array $extraParams = [])
+    public function render(array $extraParams = array())
     {
         $isFree = 0 == (float) $this->getCheckoutSession()->getCart()->getOrderTotal(true, Cart::BOTH);
         $paymentOptions = $this->paymentOptionsFinder->present($isFree);
@@ -96,14 +93,14 @@ class CheckoutPaymentStepCore extends AbstractCheckoutStep
         }
         unset($selectedDeliveryOption['product_list']);
 
-        $assignedVars = [
+        $assignedVars = array(
             'is_free' => $isFree,
             'payment_options' => $paymentOptions,
             'conditions_to_approve' => $conditionsToApprove,
             'selected_payment_option' => $this->selected_payment_option,
             'selected_delivery_option' => $selectedDeliveryOption,
             'show_final_summary' => Configuration::get('PS_FINAL_SUMMARY_ENABLED'),
-        ];
+        );
 
         return $this->renderTemplate($this->getTemplate(), $extraParams, $assignedVars);
     }

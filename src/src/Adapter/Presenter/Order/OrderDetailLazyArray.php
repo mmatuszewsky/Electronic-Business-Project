@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Presenter\Order;
@@ -29,48 +29,32 @@ namespace PrestaShop\PrestaShop\Adapter\Presenter\Order;
 use Cart;
 use Configuration;
 use Context;
-use Currency;
 use HistoryController;
 use Order;
 use PrestaShop\PrestaShop\Adapter\Presenter\AbstractLazyArray;
-use PrestaShop\PrestaShop\Core\Localization\Locale;
 use PrestaShopBundle\Translation\TranslatorComponent;
 use PrestaShopException;
 use Tools;
 
 class OrderDetailLazyArray extends AbstractLazyArray
 {
-    /**
-     * @var Locale
-     */
-    private $locale;
-
-    /**
-     * @var Order
-     */
+    /** @var Order */
     private $order;
 
-    /**
-     * @var Context
-     */
+    /** @var Context */
     private $context;
 
-    /**
-     * @var TranslatorComponent
-     */
+    /** @var TranslatorComponent */
     private $translator;
 
     /**
      * OrderDetailLazyArray constructor.
-     *
-     * @param Order $order
      */
     public function __construct(Order $order)
     {
         $this->order = $order;
         $this->context = Context::getContext();
         $this->translator = Context::getContext()->getTranslator();
-        $this->locale = $this->context->getCurrentLocale();
         parent::__construct();
     }
 
@@ -218,7 +202,7 @@ class OrderDetailLazyArray extends AbstractLazyArray
         $order = $this->order;
 
         $shippingList = $order->getShipping();
-        $orderShipping = [];
+        $orderShipping = array();
 
         foreach ($shippingList as $shippingId => $shipping) {
             if (isset($shipping['carrier_name']) && $shipping['carrier_name']) {
@@ -232,12 +216,12 @@ class OrderDetailLazyArray extends AbstractLazyArray
                     (!$order->getTaxCalculationMethod()) ? $shipping['shipping_cost_tax_excl']
                         : $shipping['shipping_cost_tax_incl'];
                 $orderShipping[$shippingId]['shipping_cost'] =
-                    ($shippingCost > 0) ? $this->locale->formatPrice($shippingCost, (Currency::getIsoCodeById((int) $order->id_currency)))
-                        : $this->translator->trans('Free', [], 'Shop.Theme.Checkout');
+                    ($shippingCost > 0) ? Tools::displayPrice($shippingCost, (int) $order->id_currency)
+                        : $this->translator->trans('Free', array(), 'Shop.Theme.Checkout');
 
                 $tracking_line = '-';
                 if ($shipping['tracking_number']) {
-                    if ($shipping['url']) {
+                    if ($shipping['url'] && $shipping['tracking_number']) {
                         $tracking_line = '<a href="' . str_replace(
                             '@',
                             $shipping['tracking_number'],

@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Controller\Admin\Configure\AdvancedParameters;
@@ -32,7 +32,6 @@ use PrestaShop\PrestaShop\Core\Domain\SqlManagement\Command\DeleteSqlRequestComm
 use PrestaShop\PrestaShop\Core\Domain\SqlManagement\DatabaseTableFields;
 use PrestaShop\PrestaShop\Core\Domain\SqlManagement\DatabaseTablesList;
 use PrestaShop\PrestaShop\Core\Domain\SqlManagement\Exception\CannotDeleteSqlRequestException;
-use PrestaShop\PrestaShop\Core\Domain\SqlManagement\Exception\SqlRequestConstraintException;
 use PrestaShop\PrestaShop\Core\Domain\SqlManagement\Exception\SqlRequestException;
 use PrestaShop\PrestaShop\Core\Domain\SqlManagement\Exception\SqlRequestNotFoundException;
 use PrestaShop\PrestaShop\Core\Domain\SqlManagement\Query\GetDatabaseTableFieldsList;
@@ -50,7 +49,6 @@ use PrestaShopBundle\Controller\Admin\FrameworkBundleAdminController;
 use PrestaShopBundle\Security\Annotation\AdminSecurity;
 use PrestaShopBundle\Security\Annotation\DemoRestricted;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\Stream;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -82,6 +80,9 @@ class SqlManagerController extends FrameworkBundleAdminController
         $gridLogFactory = $this->get('prestashop.core.grid.factory.request_sql');
         $grid = $gridLogFactory->getGrid($filters);
 
+        $gridPresenter = $this->get('prestashop.core.grid.presenter.grid_presenter');
+        $presentedGrid = $gridPresenter->present($grid);
+
         $settingsForm = $this->getSettingsFormHandler()->getForm();
 
         return $this->render('@PrestaShop/Admin/Configure/AdvancedParameters/RequestSql/index.html.twig', [
@@ -97,13 +98,11 @@ class SqlManagerController extends FrameworkBundleAdminController
             'enableSidebar' => true,
             'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
             'requestSqlSettingsForm' => $settingsForm->createView(),
-            'requestSqlGrid' => $this->presentGrid($grid),
+            'requestSqlGrid' => $presentedGrid,
         ]);
     }
 
     /**
-     * @deprecated since 1.7.8 and will be removed in next major. Use CommonController:searchGridAction instead
-     *
      * @AdminSecurity("is_granted(['read'], request.get('_legacy_controller'))", redirectRoute="admin_sql_requests_index")
      * @DemoRestricted(redirectRoute="admin_sql_requests_index")
      *
@@ -179,16 +178,12 @@ class SqlManagerController extends FrameworkBundleAdminController
         $sqlRequestForm = $this->getSqlRequestFormBuilder()->getForm($data);
         $sqlRequestForm->handleRequest($request);
 
-        try {
-            $result = $this->getSqlRequestFormHandler()->handle($sqlRequestForm);
+        $result = $this->getSqlRequestFormHandler()->handle($sqlRequestForm);
 
-            if (null !== $result->getIdentifiableObjectId()) {
-                $this->addFlash('success', $this->trans('Successful creation.', 'Admin.Notifications.Success'));
+        if (null !== $result->getIdentifiableObjectId()) {
+            $this->addFlash('success', $this->trans('Successful creation.', 'Admin.Notifications.Success'));
 
-                return $this->redirectToRoute('admin_sql_requests_index');
-            }
-        } catch (SqlRequestException $e) {
-            $this->addFlash('error', $this->handleException($e));
+            return $this->redirectToRoute('admin_sql_requests_index');
         }
 
         return $this->render('@PrestaShop/Admin/Configure/AdvancedParameters/RequestSql/create.html.twig', [
@@ -198,11 +193,6 @@ class SqlManagerController extends FrameworkBundleAdminController
             'help_link' => $this->generateSidebarLink($request->attributes->get('_legacy_controller')),
             'requestSqlForm' => $sqlRequestForm->createView(),
             'dbTableNames' => $this->getDatabaseTables(),
-            'multistoreInfoTip' => $this->trans(
-                'Note that this feature is available in all shops context only. It will be added to all your stores.',
-                'Admin.Notifications.Info'
-            ),
-            'multistoreIsUsed' => $this->get('prestashop.adapter.multistore_feature')->isUsed(),
         ]);
     }
 
@@ -223,10 +213,10 @@ class SqlManagerController extends FrameworkBundleAdminController
      */
     public function editAction($sqlRequestId, Request $request)
     {
-        $sqlRequestForm = $this->getSqlRequestFormBuilder()->getFormFor($sqlRequestId);
-        $sqlRequestForm->handleRequest($request);
-
         try {
+            $sqlRequestForm = $this->getSqlRequestFormBuilder()->getFormFor($sqlRequestId);
+            $sqlRequestForm->handleRequest($request);
+
             $result = $this->getSqlRequestFormHandler()->handleFor($sqlRequestId, $sqlRequestForm);
 
             if ($result->isSubmitted() && $result->isValid()) {
@@ -241,8 +231,6 @@ class SqlManagerController extends FrameworkBundleAdminController
             );
 
             return $this->redirectToRoute('admin_sql_requests_index');
-        } catch (SqlRequestException $e) {
-            $this->addFlash('error', $this->handleException($e));
         }
 
         return $this->render('@PrestaShop/Admin/Configure/AdvancedParameters/RequestSql/edit.html.twig', [
@@ -280,7 +268,7 @@ class SqlManagerController extends FrameworkBundleAdminController
 
             $this->addFlash('success', $this->trans('Successful deletion', 'Admin.Notifications.Success'));
         } catch (SqlRequestException $e) {
-            $this->addFlash('error', $this->handleException($e));
+            $this->addFlash('error', $this->handleDeleteException($e));
         }
 
         return $this->redirectToRoute('admin_sql_requests_index');
@@ -313,7 +301,7 @@ class SqlManagerController extends FrameworkBundleAdminController
                 $this->trans('The selection has been successfully deleted.', 'Admin.Notifications.Success')
             );
         } catch (SqlRequestException $e) {
-            $this->addFlash('error', $this->handleException($e));
+            $this->addFlash('error', $this->handleDeleteException($e));
         }
 
         return $this->redirectToRoute('admin_sql_requests_index');
@@ -390,8 +378,7 @@ class SqlManagerController extends FrameworkBundleAdminController
             return $this->redirectToRoute('admin_sql_requests_index');
         }
 
-        $stream = new Stream($exportedFile->getPathname());
-        $response = new BinaryFileResponse($stream);
+        $response = new BinaryFileResponse($exportedFile->getPathname());
         $response->setCharset($sqlRequestSettings->getFileEncoding());
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $exportedFile->getFilename());
 
@@ -420,7 +407,7 @@ class SqlManagerController extends FrameworkBundleAdminController
     }
 
     /**
-     * Get request SQL repository.
+     * Get request sql repository.
      *
      * @return \PrestaShopBundle\Entity\Repository\RequestSqlRepository
      */
@@ -434,7 +421,7 @@ class SqlManagerController extends FrameworkBundleAdminController
      *
      * @return FormHandlerInterface
      */
-    protected function getSettingsFormHandler(): FormHandlerInterface
+    protected function getSettingsFormHandler()
     {
         return $this->get('prestashop.admin.request_sql_settings.form_handler');
     }
@@ -484,14 +471,13 @@ class SqlManagerController extends FrameworkBundleAdminController
      *
      * @return string Error message
      */
-    protected function handleException(SqlRequestException $e)
+    protected function handleDeleteException(SqlRequestException $e)
     {
         $code = $e->getCode();
         $type = get_class($e);
 
         $exceptionMessages = [
             SqlRequestNotFoundException::class => $this->trans('The object cannot be loaded (or found)', 'Admin.Notifications.Error'),
-            SqlRequestConstraintException::class => $e->getMessage(),
             SqlRequestException::class => $this->trans('An error occurred while deleting the object.', 'Admin.Notifications.Error'),
         ];
 

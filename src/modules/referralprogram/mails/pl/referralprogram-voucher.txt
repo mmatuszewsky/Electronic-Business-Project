@@ -1,5 +1,3 @@
- 
-
 {shop_url}
 
 Witaj {firstname} {lastname},
@@ -13,4 +11,4 @@ Po prostu skopiuj/wklej ten kod podczas procesu płatności dla następnego zam�
 
 [{shop_name}]({shop_url})
 
-Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail=utm_campaign=footer_1-7)

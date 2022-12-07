@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,14 +16,14 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 use PrestaShop\PrestaShop\Adapter\Presenter\Object\ObjectPresenter;
-use Symfony\Component\HttpFoundation\IpUtils;
 
 /**
  * Class MetaCore.
@@ -41,22 +40,22 @@ class MetaCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = [
+    public static $definition = array(
         'table' => 'meta',
         'primary' => 'id_meta',
         'multilang' => true,
         'multilang_shop' => true,
-        'fields' => [
-            'page' => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'required' => true, 'size' => 64],
-            'configurable' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
+        'fields' => array(
+            'page' => array('type' => self::TYPE_STRING, 'validate' => 'isFileName', 'required' => true, 'size' => 64),
+            'configurable' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'),
 
             /* Lang fields */
-            'title' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128],
-            'description' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
-            'keywords' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
-            'url_rewrite' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isLinkRewrite', 'size' => 255],
-        ],
-    ];
+            'title' => array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128),
+            'description' => array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255),
+            'keywords' => array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255),
+            'url_rewrite' => array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isLinkRewrite', 'size' => 255),
+        ),
+    );
 
     /**
      * Get pages.
@@ -68,19 +67,19 @@ class MetaCore extends ObjectModel
      */
     public static function getPages($excludeFilled = false, $addPage = false)
     {
-        $selectedPages = [];
+        $selectedPages = array();
         if (!$files = Tools::scandir(_PS_CORE_DIR_ . DIRECTORY_SEPARATOR . 'controllers' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR, 'php', '', true)) {
-            die(Tools::displayError(Context::getContext()->getTranslator()->trans('Cannot scan root directory', [], 'Admin.Notifications.Error')));
+            die(Tools::displayError(Context::getContext()->getTranslator()->trans('Cannot scan root directory', array(), 'Admin.Notifications.Error')));
         }
 
         if (!$overrideFiles = Tools::scandir(_PS_CORE_DIR_ . DIRECTORY_SEPARATOR . 'override' . DIRECTORY_SEPARATOR . 'controllers' . DIRECTORY_SEPARATOR . 'front' . DIRECTORY_SEPARATOR, 'php', '', true)) {
-            die(Tools::displayError(Context::getContext()->getTranslator()->trans('Cannot scan "override" directory', [], 'Admin.Notifications.Error')));
+            die(Tools::displayError(Context::getContext()->getTranslator()->trans('Cannot scan "override" directory', array(), 'Admin.Notifications.Error')));
         }
 
         $files = array_values(array_unique(array_merge($files, $overrideFiles)));
 
         // Exclude pages forbidden
-        $exludePages = [
+        $exludePages = array(
             'category',
             'changecurrency',
             'cms',
@@ -90,19 +89,19 @@ class MetaCore extends ObjectModel
             'product',
             'product-sort',
             'statistics',
-        ];
+        );
 
         foreach ($files as $file) {
             if ($file != 'index.php' && !in_array(strtolower(str_replace('Controller.php', '', $file)), $exludePages)) {
                 $className = str_replace('.php', '', $file);
                 $reflection = class_exists($className) ? new ReflectionClass(str_replace('.php', '', $file)) : false;
-                $properties = $reflection ? $reflection->getDefaultProperties() : [];
+                $properties = $reflection ? $reflection->getDefaultProperties() : array();
                 if (isset($properties['php_self'])) {
                     $selectedPages[$properties['php_self']] = $properties['php_self'];
                 } elseif (preg_match('/^[a-z0-9_.-]*\.php$/i', $file)) {
                     $selectedPages[strtolower(str_replace('Controller.php', '', $file))] = strtolower(str_replace('Controller.php', '', $file));
                 } elseif (preg_match('/^([a-z0-9_.-]*\/)?[a-z0-9_.-]*\.php$/i', $file)) {
-                    $selectedPages[strtolower(Context::getContext()->getTranslator()->trans('File %2$s (in directory %1$s)', [dirname($file), str_replace('Controller.php', '', basename($file))], 'Admin.Notifications.Error'))] = strtolower(str_replace('Controller.php', '', basename($file)));
+                    $selectedPages[strtolower(Context::getContext()->getTranslator()->trans('File %2$s (in directory %1$s)', array(dirname($file), str_replace('Controller.php', '', basename($file))), 'Admin.Notifications.Error'))] = strtolower(str_replace('Controller.php', '', basename($file)));
                 }
             }
         }
@@ -295,7 +294,7 @@ class MetaCore extends ObjectModel
     public static function getMetaTags($idLang, $pageName, $title = '')
     {
         if (Configuration::get('PS_SHOP_ENABLE')
-            || IpUtils::checkIp(Tools::getRemoteAddr(), explode(',', Configuration::get('PS_MAINTENANCE_IP')))) {
+            || in_array(Tools::getRemoteAddr(), explode(',', Configuration::get('PS_MAINTENANCE_IP')))) {
             if ($pageName == 'product' && ($idProduct = Tools::getValue('id_product'))) {
                 return Meta::getProductMetas($idProduct, $idLang, $pageName);
             } elseif ($pageName == 'category' && ($idCategory = Tools::getValue('id_category'))) {
@@ -413,6 +412,7 @@ class MetaCore extends ObjectModel
     /**
      * Get manufacturer meta tags.
      *
+     *
      * @param int $idManufacturer
      * @param int $idLang
      * @param string $pageName
@@ -441,6 +441,7 @@ class MetaCore extends ObjectModel
 
     /**
      * Get supplier meta tags.
+     *
      *
      * @param int $idSupplier
      * @param int $idLang

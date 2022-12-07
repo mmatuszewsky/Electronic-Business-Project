@@ -1,30 +1,36 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop.
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
  *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @copyright 2007-2019 PrestaShop SA
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\Module\FacetedSearch\Hook;
 
 use Configuration;
 use Language;
+use PrestaShopDatabaseException;
 use PrestaShop\Module\FacetedSearch\Form\Feature\FormDataProvider;
 use PrestaShop\Module\FacetedSearch\Form\Feature\FormModifier;
-use PrestaShopDatabaseException;
 use Ps_Facetedsearch;
 use Tools;
 
@@ -39,11 +45,6 @@ class Feature extends AbstractHook
      * @var FormDataProvider
      */
     private $dataProvider;
-
-    /**
-     * @var bool
-     */
-    private $isMigratedPage = false;
 
     public function __construct(Ps_Facetedsearch $module)
     {
@@ -72,14 +73,13 @@ class Feature extends AbstractHook
      */
     public function actionFeatureFormBuilderModifier(array $params)
     {
-        $this->isMigratedPage = true;
         $this->formModifier->modify($params['form_builder'], $this->dataProvider->getData($params));
     }
 
     /**
      * Hook after create feature.
      *
-     * @since PrestaShop 1.7.8.0
+     * @since PrestaShop 1.7.7.0
      *
      * @param array $params
      */
@@ -91,7 +91,7 @@ class Feature extends AbstractHook
     /**
      * Hook after update feature.
      *
-     * @since PrestaShop 1.7.8.0
+     * @since PrestaShop 1.7.7.0
      *
      * @param array $params
      */
@@ -135,7 +135,7 @@ class Feature extends AbstractHook
      */
     public function displayFeatureForm(array $params)
     {
-        if ($this->isMigratedPage === true) {
+        if (version_compare(_PS_VERSION_, '1.7.7.0') >= 0) {
             return;
         }
 
@@ -146,6 +146,10 @@ class Feature extends AbstractHook
             'WHERE `id_feature` = ' . (int) $params['id_feature']
         );
 
+        // Request failed, force $isIndexable
+        if ($isIndexable === false) {
+            $isIndexable = true;
+        }
         $result = $this->database->executeS(
             'SELECT `url_name`, `meta_title`, `id_lang` ' .
             'FROM ' . _DB_PREFIX_ . 'layered_indexable_feature_lang_value ' .
@@ -208,7 +212,7 @@ class Feature extends AbstractHook
      * @param int $featureId
      * @param array $formData
      *
-     * @since PrestaShop 1.7.8.0
+     * @since PrestaShop 1.7.7
      */
     private function save($featureId, array $formData)
     {

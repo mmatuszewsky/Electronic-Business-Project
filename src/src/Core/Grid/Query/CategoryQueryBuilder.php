@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Core\Grid\Query;
@@ -48,13 +48,6 @@ final class CategoryQueryBuilder extends AbstractDoctrineQueryBuilder
     private $contextShopId;
 
     /**
-     * @var int|null
-     *
-     * Can be null for backward-compatibility
-     */
-    private $rootCategoryId;
-
-    /**
      * @var DoctrineSearchCriteriaApplicator
      */
     private $searchCriteriaApplicator;
@@ -77,7 +70,6 @@ final class CategoryQueryBuilder extends AbstractDoctrineQueryBuilder
      * @param int $contextShopId
      * @param MultistoreContextCheckerInterface $multistoreContextChecker
      * @param FeatureInterface $multistoreFeature
-     * @param int|null $rootCategoryId
      */
     public function __construct(
         Connection $connection,
@@ -86,14 +78,12 @@ final class CategoryQueryBuilder extends AbstractDoctrineQueryBuilder
         $contextLangId,
         $contextShopId,
         MultistoreContextCheckerInterface $multistoreContextChecker,
-        FeatureInterface $multistoreFeature,
-        $rootCategoryId = null
+        FeatureInterface $multistoreFeature
     ) {
         parent::__construct($connection, $dbPrefix);
 
         $this->contextLangId = $contextLangId;
         $this->contextShopId = $contextShopId;
-        $this->rootCategoryId = $rootCategoryId;
         $this->searchCriteriaApplicator = $searchCriteriaApplicator;
         $this->multistoreContextChecker = $multistoreContextChecker;
         $this->multistoreFeature = $multistoreFeature;
@@ -166,12 +156,6 @@ final class CategoryQueryBuilder extends AbstractDoctrineQueryBuilder
                 continue;
             }
 
-            // exclude root category from search results
-            if ($this->rootCategoryId !== null) {
-                $qb->andWhere('c.id_category != :root_category_id');
-                $qb->setParameter('root_category_id', $this->rootCategoryId);
-            }
-
             if ('name' === $filterName) {
                 $qb->andWhere("cl.name LIKE :$filterName");
                 $qb->setParameter($filterName, '%' . $filterValue . '%');
@@ -211,10 +195,6 @@ final class CategoryQueryBuilder extends AbstractDoctrineQueryBuilder
             }
 
             if ('id_category_parent' === $filterName) {
-                if ($this->isSearchRequestOnHomeCategory($filters)) {
-                    continue;
-                }
-
                 $qb->andWhere("c.id_parent = :$filterName");
                 $qb->setParameter($filterName, $filterValue);
 
@@ -227,16 +207,5 @@ final class CategoryQueryBuilder extends AbstractDoctrineQueryBuilder
         }
 
         return $qb;
-    }
-
-    /**
-     * @param array $filters
-     *
-     * @return bool
-     */
-    private function isSearchRequestOnHomeCategory(array $filters)
-    {
-        return isset($filters['is_home_category'], $filters['is_search_request'])
-            && $filters['is_home_category'] === true && $filters['is_search_request'] === true;
     }
 }

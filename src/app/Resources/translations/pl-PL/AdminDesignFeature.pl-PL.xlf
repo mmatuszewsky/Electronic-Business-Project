@@ -10,22 +10,22 @@
       <trans-unit id="258606ef5a3ed5cd7e39da08435adec0" approved="yes">
         <source>Regenerate thumbnails</source>
         <target state="final">Wygeneruj ponownie miniatury</target>
-        <note>Line: 127</note>
+        <note>Line: 128</note>
       </trans-unit>
       <trans-unit id="79750ba11832a44ccf92e15eb0e84ae4" approved="yes">
         <source>Select an image</source>
         <target state="final">Wybierz obraz</target>
-        <note>Line: 72</note>
+        <note>Line: 73</note>
       </trans-unit>
       <trans-unit id="26e687808eb656fb38bd6e98f592e4f7" approved="yes">
         <source>Select a format</source>
         <target state="final">Wybierz format</target>
-        <note>Line: 85</note>
+        <note>Line: 86</note>
       </trans-unit>
       <trans-unit id="d379cadd41b68efe7c945b4d85c72085" approved="yes">
         <source>Erase previous images</source>
         <target state="final">Usuń poprzednie obrazki</target>
-        <note>Line: 106</note>
+        <note>Line: 107</note>
       </trans-unit>
     </body>
   </file>
@@ -279,7 +279,7 @@
       <trans-unit id="d1e9d1892046943ae96e613646fc0381" approved="yes">
         <source>Add new image type</source>
         <target state="final">Dodaj nowy typ zdjęcia</target>
-        <note>Line: 703</note>
+        <note>Line: 702</note>
       </trans-unit>
     </body>
   </file>
@@ -293,17 +293,17 @@
       <trans-unit id="6957667301f05bce7e2c0b5cd8567df5" approved="yes">
         <source>____________ CORE ____________</source>
         <target state="final">____________ GŁÓWNY ____________</target>
-        <note>Line: 458</note>
+        <note>Line: 459</note>
       </trans-unit>
       <trans-unit id="1cc06efffbc5252916c871f45098a50f" approved="yes">
         <source>Admin modules controller</source>
         <target state="final">Sterownik modułu Admin</target>
-        <note>Line: 464</note>
+        <note>Line: 465</note>
       </trans-unit>
       <trans-unit id="2f75fd5bb638eb1353d6941aac58700e" approved="yes">
         <source>Front modules controller</source>
         <target state="final">Ustawianie modułów na stronie frotowej</target>
-        <note>Line: 464</note>
+        <note>Line: 465</note>
       </trans-unit>
     </body>
   </file>
@@ -312,7 +312,7 @@
       <trans-unit id="453aceb005ceaf54a47da15fee8b2a26" approved="yes">
         <source>Pages</source>
         <target state="final">Strony</target>
-        <note>Line: 532</note>
+        <note>Line: 540</note>
       </trans-unit>
     </body>
   </file>
@@ -355,7 +355,7 @@
       <trans-unit id="1f6162e1430a8d5020bf4c20dc02499f" approved="yes">
         <source>Pages in category "%name%"</source>
         <target state="final">Strony w kategorii "%name%"</target>
-        <note>Line: 121</note>
+        <note>Line: 118</note>
       </trans-unit>
     </body>
   </file>
@@ -369,59 +369,7 @@
       <trans-unit id="7accead9f41b1968f1957961177b1ed7" approved="yes">
         <source>Test email %template%</source>
         <target state="final">Testowy e-mail %template%</target>
-        <note>Line: 319</note>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/PrestaShopBundle/Form/Admin/Improve/Design/Pages/CmsPageCategoryType.php" source-language="en" target-language="pl" datatype="plaintext">
-    <body>
-      <trans-unit id="52b68aaa602d202c340d9e4e9157f276" approved="yes">
-        <source>Parent category</source>
-        <target state="final">Kategoria nadrzędna</target>
-        <note>Line: 113</note>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/PrestaShopBundle/Form/Admin/Improve/Design/Pages/CmsPageType.php" source-language="en" target-language="pl" datatype="plaintext">
-    <body>
-      <trans-unit id="21f93401134586a6c481422bf01fccfd" approved="yes">
-        <source>Only letters and the hyphen (-) character are allowed.</source>
-        <target state="final">Tylko litery i znak myślnika (-) są znakami dozwolonymi.</target>
-        <note>Line: 221</note>
-      </trans-unit>
-      <trans-unit id="45b1bce0ceb1e155fc99d59a21761b9e" approved="yes">
-        <source>Page content</source>
-        <target state="final">Zawartość strony</target>
-        <note>Line: 254</note>
-      </trans-unit>
-      <trans-unit id="ce1e51212c9df52777620dc9de246da0" approved="yes">
-        <source>Indexation by search engines</source>
-        <target state="final">Indeksacja w wyszukiwarkach</target>
-        <note>Line: 269</note>
-      </trans-unit>
-      <trans-unit id="79e48ca19eefe7806fbaf27df903e8d5" approved="yes">
-        <source>Page category</source>
-        <target state="final">Kategoria strony</target>
-        <note>Line: 94</note>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/PrestaShopBundle/Form/Admin/Improve/Design/Theme/ImportThemeType.php" source-language="en" target-language="pl" datatype="plaintext">
-    <body>
-      <trans-unit id="6966bbbcdeb44c019201ede70e7b74b8" approved="yes">
-        <source>Zip file</source>
-        <target state="final">Plik ZIP</target>
-        <note>Line: 69</note>
-      </trans-unit>
-      <trans-unit id="a33388a338ee2b199d66112369279558" approved="yes">
-        <source>Archive URL</source>
-        <target state="final">Adres URL archiwum</target>
-        <note>Line: 81</note>
-      </trans-unit>
-      <trans-unit id="a5a23094873852f0c0a9e55be4f1cf1d" approved="yes">
-        <source>Select the archive</source>
-        <target state="final">Wybierz archiwum</target>
-        <note>Line: 89</note>
+        <note>Line: 320</note>
       </trans-unit>
     </body>
   </file>
@@ -431,6 +379,35 @@
         <source>CMS Category</source>
         <target state="final">Kategoria CMS</target>
         <note>Line: 33</note>
+      </trans-unit>
+      <trans-unit id="52b68aaa602d202c340d9e4e9157f276" approved="yes">
+        <source>Parent category</source>
+        <target state="final">Kategoria nadrzędna</target>
+        <note>Line: 51</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/PrestaShopBundle/Resources/views/Admin/Improve/Design/Cms/Blocks/form.html.twig" source-language="en" target-language="pl" datatype="plaintext">
+    <body>
+      <trans-unit id="21f93401134586a6c481422bf01fccfd" approved="yes">
+        <source>Only letters and the hyphen (-) character are allowed.</source>
+        <target state="final">Tylko litery i znak myślnika (-) są znakami dozwolonymi.</target>
+        <note>Line: 82</note>
+      </trans-unit>
+      <trans-unit id="45b1bce0ceb1e155fc99d59a21761b9e" approved="yes">
+        <source>Page content</source>
+        <target state="final">Zawartość strony</target>
+        <note>Line: 86</note>
+      </trans-unit>
+      <trans-unit id="ce1e51212c9df52777620dc9de246da0" approved="yes">
+        <source>Indexation by search engines</source>
+        <target state="final">Indeksacja w wyszukiwarkach</target>
+        <note>Line: 90</note>
+      </trans-unit>
+      <trans-unit id="79e48ca19eefe7806fbaf27df903e8d5" approved="yes">
+        <source>Page category</source>
+        <target state="final">Kategoria strony</target>
+        <note>Line: 40</note>
       </trans-unit>
     </body>
   </file>
@@ -448,12 +425,12 @@
       <trans-unit id="a0a17caf8de192bd85662445714f0adc" approved="yes">
         <source>Generate emails</source>
         <target state="final">Generuj e-maile</target>
-        <note>Line: 33</note>
+        <note>Line: 32</note>
       </trans-unit>
       <trans-unit id="98d77d08b65418c4375c4947921ce44c" approved="yes">
         <source>Select your email theme</source>
         <target state="final">Wybierz szablon maila</target>
-        <note>Line: 41</note>
+        <note>Line: 40</note>
       </trans-unit>
       <trans-unit id="d8605aca26dca73f3e67726f7301a165" approved="yes">
         <source>Select the theme you want to overwrite</source>
@@ -463,7 +440,7 @@
       <trans-unit id="b445b07a4ce0e996acaf7ceb6a2547c3" approved="yes">
         <source>Overwrite templates</source>
         <target state="final">Zastąp szablony</target>
-        <note>Line: 75</note>
+        <note>Line: 76</note>
       </trans-unit>
     </body>
   </file>
@@ -542,7 +519,7 @@
       <trans-unit id="49824ed511fd64f33f2f8a1818ee8fe1" approved="yes">
         <source>Header logo</source>
         <target state="final">Logo nagłówka</target>
-        <note>Line: 42</note>
+        <note>Line: 43</note>
       </trans-unit>
       <trans-unit id="358b0205fd07c94c16a82d8278bc5b76" approved="yes">
         <source>Mail logo</source>
@@ -552,17 +529,12 @@
       <trans-unit id="d84613cd39906ab9161e1ad513f8947b" approved="yes">
         <source>Invoice logo</source>
         <target state="final">Logo na fakturze</target>
-        <note>Line: 113</note>
+        <note>Line: 138</note>
       </trans-unit>
       <trans-unit id="49e95301d8fcdbc23f623e0f2d1ed1e6" approved="yes">
         <source>Favicon</source>
         <target state="final">Favicon</target>
-        <note>Line: 127</note>
-      </trans-unit>
-      <trans-unit id="7a14350e716ea89067904804ee3e1f0c" approved="yes">
-        <source>Favicon image</source>
-        <target state="final">Obrazek favicon</target>
-        <note>Line: 139</note>
+        <note>Line: 126</note>
       </trans-unit>
     </body>
   </file>
@@ -601,15 +573,30 @@
         <target state="final">Importuj ze swojego komputera</target>
         <note>Line: 53</note>
       </trans-unit>
+      <trans-unit id="6966bbbcdeb44c019201ede70e7b74b8" approved="yes">
+        <source>Zip file</source>
+        <target state="final">Plik ZIP</target>
+        <note>Line: 58</note>
+      </trans-unit>
       <trans-unit id="dec0faa6eb19bd9120d12c5a876bd1cf" approved="yes">
         <source>Import from the web</source>
         <target state="final">Importuj z sieci Web</target>
-        <note>Line: 75</note>
+        <note>Line: 78</note>
+      </trans-unit>
+      <trans-unit id="a33388a338ee2b199d66112369279558" approved="yes">
+        <source>Archive URL</source>
+        <target state="final">Adres URL archiwum</target>
+        <note>Line: 83</note>
       </trans-unit>
       <trans-unit id="cd8d9cc19984ccf9d314eee5eebfc2cc" approved="yes">
         <source>Import from FTP</source>
         <target state="final">Importuj z FTP</target>
-        <note>Line: 97</note>
+        <note>Line: 103</note>
+      </trans-unit>
+      <trans-unit id="a5a23094873852f0c0a9e55be4f1cf1d" approved="yes">
+        <source>Select the archive</source>
+        <target state="final">Wybierz archiwum</target>
+        <note>Line: 108</note>
       </trans-unit>
     </body>
   </file>
@@ -628,7 +615,7 @@
       <trans-unit id="859a82ffb385f9227c656960996025eb" approved="yes">
         <source>Visit the theme catalog</source>
         <target state="final">Odwiedź katalog szablonów</target>
-        <note>Line: 153</note>
+        <note>Line: 151</note>
       </trans-unit>
       <trans-unit id="d721757161f7f70c5b0949fdb6ec2c30" approved="yes">
         <source>Theme</source>
@@ -638,17 +625,17 @@
       <trans-unit id="6b8e9498b52135e7f6cee757294a6079" approved="yes">
         <source>My current theme</source>
         <target state="final">Mój obecny szablon</target>
-        <note>Line: 99</note>
+        <note>Line: 98</note>
       </trans-unit>
       <trans-unit id="b6ba229b668e5a7b6700e4d275683084" approved="yes">
         <source>Use this theme</source>
         <target state="final">Użyj tego szablonu</target>
-        <note>Line: 123</note>
+        <note>Line: 121</note>
       </trans-unit>
       <trans-unit id="6fe78057f585de51da0f61d514143fe1" approved="yes">
         <source>Explore more than a thousand themes</source>
         <target state="final">Poznaj ponad tysiąc szablonów</target>
-        <note>Line: 148</note>
+        <note>Line: 146</note>
       </trans-unit>
       <trans-unit id="10d79e2800631feee6411615a72eb79e" approved="yes">
         <source>My theme for %name% shop</source>

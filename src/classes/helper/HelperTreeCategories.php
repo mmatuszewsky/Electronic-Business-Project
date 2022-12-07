@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 class HelperTreeCategoriesCore extends TreeCore
 {
@@ -64,7 +64,7 @@ class HelperTreeCategoriesCore extends TreeCore
 
     private function fillTree(&$categories, $rootCategoryId)
     {
-        $tree = [];
+        $tree = array();
         $rootCategoryId = (int) $rootCategoryId;
 
         foreach ($categories[$rootCategoryId] as $category) {
@@ -83,12 +83,12 @@ class HelperTreeCategoriesCore extends TreeCore
                     $childId = (int) $child['id_category'];
 
                     if (!array_key_exists('children', $tree[$categoryId])) {
-                        $tree[$categoryId]['children'] = [$childId => $child];
+                        $tree[$categoryId]['children'] = array($childId => $child);
                     } else {
                         $tree[$categoryId]['children'][$childId] = $child;
                     }
 
-                    $categories[$childId] = [$child];
+                    $categories[$childId] = array($child);
                 }
 
                 foreach ($tree[$categoryId]['children'] as $childId => $child) {
@@ -124,7 +124,7 @@ class HelperTreeCategoriesCore extends TreeCore
                 if (empty($root_category)) {
                     $root_category = Category::getRootCategory()->id;
                 }
-                $new_selected_categories = [];
+                $new_selected_categories = array();
                 $selected_categories = $this->getSelectedCategories();
                 $categories[$root_category] = Category::getChildren($root_category, $lang, false, $shop->id);
                 foreach ($selected_categories as $selected_category) {
@@ -143,7 +143,7 @@ class HelperTreeCategoriesCore extends TreeCore
                     }
                 }
 
-                $tree = Category::getCategoryInformations([$root_category], $lang);
+                $tree = Category::getCategoryInformations(array($root_category), $lang);
 
                 $children = $this->fillTree($categories, $root_category);
 
@@ -256,13 +256,6 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this->_root_category;
     }
 
-    /**
-     * @param array<int> $value
-     *
-     * @return self
-     *
-     * @throws PrestaShopException
-     */
     public function setSelectedCategories($value)
     {
         if (!is_array($value)) {
@@ -277,7 +270,7 @@ class HelperTreeCategoriesCore extends TreeCore
     public function getSelectedCategories()
     {
         if (!isset($this->_selected_categories)) {
-            $this->_selected_categories = [];
+            $this->_selected_categories = array();
         }
 
         return $this->_selected_categories;
@@ -378,14 +371,14 @@ class HelperTreeCategoriesCore extends TreeCore
         }
 
         $collapse_all = new TreeToolbarLink(
-            $this->translator->trans('Collapse all', [], 'Admin.Actions'),
+            'Collapse All',
             '#',
             '$(\'#' . $this->getId() . '\').tree(\'collapseAll\');$(\'#collapse-all-' . $this->getId() . '\').hide();$(\'#expand-all-' . $this->getId() . '\').show(); return false;',
             'icon-collapse-alt'
         );
         $collapse_all->setAttribute('id', 'collapse-all-' . $this->getId());
         $expand_all = new TreeToolbarLink(
-            $this->translator->trans('Expand all', [], 'Admin.Actions'),
+            'Expand All',
             '#',
             '$(\'#' . $this->getId() . '\').tree(\'expandAll\');$(\'#collapse-all-' . $this->getId() . '\').show();$(\'#expand-all-' . $this->getId() . '\').hide(); return false;',
             'icon-expand-alt'
@@ -396,14 +389,14 @@ class HelperTreeCategoriesCore extends TreeCore
 
         if ($this->useCheckBox()) {
             $check_all = new TreeToolbarLink(
-                $this->translator->trans('Check all', [], 'Admin.Actions'),
+                'Check All',
                 '#',
                 'checkAllAssociatedCategories($(\'#' . $this->getId() . '\')); return false;',
                 'icon-check-sign'
             );
             $check_all->setAttribute('id', 'check-all-' . $this->getId());
             $uncheck_all = new TreeToolbarLink(
-                $this->translator->trans('Uncheck all', [], 'Admin.Actions'),
+                'Uncheck All',
                 '#',
                 'uncheckAllAssociatedCategories($(\'#' . $this->getId() . '\')); return false;',
                 'icon-check-empty'
@@ -441,19 +434,19 @@ class HelperTreeCategoriesCore extends TreeCore
                 $html .= $this->getContext()->smarty->createTemplate(
                     $this->getTemplateFile($this->getNodeFolderTemplate()),
                     $this->getContext()->smarty
-                )->assign([
+                )->assign(array(
                     'input_name' => $this->getInputName(),
                     'children' => $this->renderNodes($item['children']),
                     'node' => $item,
-                ])->fetch();
+                ))->fetch();
             } else {
                 $html .= $this->getContext()->smarty->createTemplate(
                     $this->getTemplateFile($this->getNodeItemTemplate()),
                     $this->getContext()->smarty
-                )->assign([
+                )->assign(array(
                     'input_name' => $this->getInputName(),
                     'node' => $item,
-                ])->fetch();
+                ))->fetch();
             }
         }
 

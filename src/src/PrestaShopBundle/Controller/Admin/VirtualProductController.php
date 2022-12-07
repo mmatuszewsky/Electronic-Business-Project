@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Controller\Admin;
@@ -40,7 +40,7 @@ class VirtualProductController extends FrameworkBundleAdminController
     /**
      * Process Ajax Form to create/update virtual product.
      *
-     * @param string|int $idProduct
+     * @param $idProduct
      * @param Request $request
      *
      * @return JsonResponse
@@ -54,7 +54,7 @@ class VirtualProductController extends FrameworkBundleAdminController
         $router = $this->get('router');
 
         //get product
-        $product = $productAdapter->getProduct((int) $idProduct);
+        $product = $productAdapter->getProduct((int) $idProduct, true);
 
         if (!$product || !$request->isXmlHttpRequest()) {
             return $response;
@@ -63,7 +63,7 @@ class VirtualProductController extends FrameworkBundleAdminController
         $form = $this->createForm(
             ProductVirtual::class,
             null,
-            ['csrf_protection' => false]
+            array('csrf_protection' => false)
         );
 
         $form->handleRequest($request);
@@ -102,9 +102,9 @@ class VirtualProductController extends FrameworkBundleAdminController
         $configuration = $this->get('prestashop.adapter.legacy.configuration');
         $download = $this->getDoctrine()
             ->getRepository('PrestaShopBundle:ProductDownload')
-            ->findOneBy([
+            ->findOneBy(array(
                 'idProduct' => $idProduct,
-            ]);
+            ));
 
         $response = new BinaryFileResponse(
             $configuration->get('_PS_DOWNLOAD_DIR_') . $download->getFilename()
@@ -121,7 +121,7 @@ class VirtualProductController extends FrameworkBundleAdminController
     /**
      * Process Ajax Form to remove attached file.
      *
-     * @param string|int $idProduct
+     * @param $idProduct
      * @param Request $request
      *
      * @return JsonResponse
@@ -147,7 +147,7 @@ class VirtualProductController extends FrameworkBundleAdminController
     /**
      * Process Ajax remove action.
      *
-     * @param string|int $idProduct
+     * @param $idProduct
      * @param Request $request
      *
      * @return JsonResponse

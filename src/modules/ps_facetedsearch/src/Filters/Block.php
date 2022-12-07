@@ -1,38 +1,47 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop.
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
  *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @copyright 2007-2019 PrestaShop SA
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\Module\FacetedSearch\Filters;
 
 use Category;
+use Combination;
 use Configuration;
 use Context;
 use Db;
 use Feature;
+use FeatureValue;
 use Group;
 use Manufacturer;
+use PrestaShopDatabaseException;
 use PrestaShop\Module\FacetedSearch\Adapter\InterfaceAdapter;
-use PrestaShop\Module\FacetedSearch\Product\Search;
 use PrestaShop\PrestaShop\Core\Localization\Locale;
 use PrestaShop\PrestaShop\Core\Localization\Specification\NumberSymbolList;
-use PrestaShopDatabaseException;
+use Shop;
 use Tools;
+use PrestaShop\Module\FacetedSearch\Product\Search;
 
 /**
  * Display filters block on navigation
@@ -70,16 +79,15 @@ class Block
     private $attributesGroup;
 
     /**
-     * @var DataAccessor
+     * @var array
      */
-    private $dataAccessor;
+    private $attributes;
 
-    public function __construct(InterfaceAdapter $searchAdapter, Context $context, Db $database, DataAccessor $dataAccessor)
+    public function __construct(InterfaceAdapter $searchAdapter, Context $context, Db $database)
     {
         $this->searchAdapter = $searchAdapter;
         $this->context = $context;
         $this->database = $database;
-        $this->dataAccessor = $dataAccessor;
     }
 
     /**
@@ -160,10 +168,6 @@ class Block
      */
     public function getFromCache($filterHash)
     {
-        if (!Configuration::get('PS_LAYERED_CACHE_ENABLED')) {
-            return null;
-        }
-
         $row = $this->database->getRow(
             'SELECT data FROM ' . _DB_PREFIX_ . 'layered_filter_block WHERE hash="' . pSQL($filterHash) . '"'
         );
@@ -183,10 +187,6 @@ class Block
      */
     public function insertIntoCache($filterHash, $data)
     {
-        if (!Configuration::get('PS_LAYERED_CACHE_ENABLED')) {
-            return;
-        }
-
         try {
             $this->database->execute(
                 'REPLACE INTO ' . _DB_PREFIX_ . 'layered_filter_block (hash, data) ' .
@@ -195,6 +195,45 @@ class Block
         } catch (PrestaShopDatabaseException $e) {
             // Don't worry if the cache have invalid or duplicate hash
         }
+    }
+
+    /**
+     * @param int $idLang
+     * @param bool $notNull
+     *
+     * @return array|false|\PDOStatement|resource|null
+     */
+    public function getAttributes($idLang, $notNull = true)
+    {
+        if (!Combination::isFeatureActive()) {
+            return [];
+        }
+
+        if (!isset($this->attributes[$idLang])) {
+            $this->attributes[$idLang] = [];
+            $tempAttributes = $this->database->executeS(
+                'SELECT DISTINCT a.`id_attribute`, a.`color`, al.`name`, agl.`id_attribute_group` ' .
+                'FROM `' . _DB_PREFIX_ . 'attribute_group` ag ' .
+                'LEFT JOIN `' . _DB_PREFIX_ . 'attribute_group_lang` agl ' .
+                'ON (ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = ' . (int) $idLang . ') ' .
+                'LEFT JOIN `' . _DB_PREFIX_ . 'attribute` a ' .
+                'ON a.`id_attribute_group` = ag.`id_attribute_group` ' .
+                'LEFT JOIN `' . _DB_PREFIX_ . 'attribute_lang` al ' .
+                'ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = ' . (int) $idLang . ')' .
+                Shop::addSqlAssociation('attribute_group', 'ag') . ' ' .
+                Shop::addSqlAssociation('attribute', 'a') . ' ' .
+                (
+                    $notNull ?
+                    'WHERE a.`id_attribute` IS NOT NULL AND al.`name` IS NOT NULL AND agl.`id_attribute_group` IS NOT NULL ' :
+                    ''
+                ) . 'ORDER BY agl.`name` ASC, a.`position` ASC'
+            );
+            foreach ($tempAttributes as $key => $attribute) {
+                $this->attributes[$idLang][$attribute['id_attribute']] = $attribute;
+            }
+        }
+
+        return $this->attributes[$idLang];
     }
 
     /**
@@ -275,6 +314,8 @@ class Block
      * @param int $priceMinFilter
      * @param int $priceMaxFilter
      * @param int $weightFilter
+     *
+     * @return array
      */
     private function restorePriceAndWeightFilters(
         $filteredSearchAdapter,
@@ -409,6 +450,26 @@ class Block
      */
     private function getQuantitiesBlock($filter, $selectedFilters)
     {
+        $filteredSearchAdapter = $this->searchAdapter->getFilteredSearchAdapter(Search::STOCK_MANAGEMENT_FILTER);
+        $quantityArray = [
+            0 => [
+                'name' => $this->context->getTranslator()->trans(
+                    'Not available',
+                    [],
+                    'Modules.Facetedsearch.Shop'
+                ),
+                'nbr' => 0,
+            ],
+            1 => [
+                'name' => $this->context->getTranslator()->trans(
+                    'In stock',
+                    [],
+                    'Modules.Facetedsearch.Shop'
+                ),
+                'nbr' => 0,
+            ],
+        ];
+
         if ($this->psStockManagement === null) {
             $this->psStockManagement = (bool) Configuration::get('PS_STOCK_MANAGEMENT');
         }
@@ -417,39 +478,8 @@ class Block
             $this->psOrderOutOfStock = (bool) Configuration::get('PS_ORDER_OUT_OF_STOCK');
         }
 
-        // We only initialize the options if stock management is activated
-        $availabilityOptions = [];
         if ($this->psStockManagement) {
-            $availabilityOptions = [
-                0 => [
-                    'name' => $this->context->getTranslator()->trans(
-                        'Not available',
-                        [],
-                        'Modules.Facetedsearch.Shop'
-                    ),
-                    'nbr' => 0,
-                ],
-                1 => [
-                    'name' => $this->context->getTranslator()->trans(
-                        'Available',
-                        [],
-                        'Modules.Facetedsearch.Shop'
-                    ),
-                    'nbr' => 0,
-                ],
-                2 => [
-                    'name' => $this->context->getTranslator()->trans(
-                        'In stock',
-                        [],
-                        'Modules.Facetedsearch.Shop'
-                    ),
-                    'nbr' => 0,
-                ],
-            ];
-
-            $filteredSearchAdapter = $this->searchAdapter->getFilteredSearchAdapter(Search::STOCK_MANAGEMENT_FILTER);
-
-            // Products without quantity in stock, with out-of-stock ordering disabled
+            $results = [];
             $filteredSearchAdapter->addOperationsFilter(
                 Search::STOCK_MANAGEMENT_FILTER,
                 [
@@ -459,40 +489,32 @@ class Block
                     ],
                 ]
             );
-            $availabilityOptions[0]['nbr'] = $filteredSearchAdapter->count();
+            $results[0] = [
+                'c' => $filteredSearchAdapter->count(),
+            ];
 
-            // Products in stock, or with out-of-stock ordering enabled
             $filteredSearchAdapter->addOperationsFilter(
                 Search::STOCK_MANAGEMENT_FILTER,
                 [
                     [
-                        ['out_of_stock', $this->psOrderOutOfStock ? [1, 2] : [1], '='],
+                        ['quantity', [0], '>='],
+                        ['out_of_stock', [1], $this->psOrderOutOfStock ? '>=' : '='],
                     ],
                     [
                         ['quantity', [0], '>'],
                     ],
                 ]
             );
-            $availabilityOptions[1]['nbr'] = $filteredSearchAdapter->count();
+            $results[1] = [
+                'c' => $filteredSearchAdapter->count(),
+            ];
 
-            // Products in stock
-            $filteredSearchAdapter->addOperationsFilter(
-                Search::STOCK_MANAGEMENT_FILTER,
-                [
-                    [
-                        ['quantity', [0], '>'],
-                    ],
-                ]
-            );
-            $availabilityOptions[2]['nbr'] = $filteredSearchAdapter->count();
+            foreach ($results as $key => $values) {
+                $count = $values['c'];
 
-            // If some filter was selected, we want to show only this single filter, it does not make sense to show others
-            if (isset($selectedFilters['quantity'])) {
-                // We loop through selected filters and assign it to our options and remove the rest
-                foreach ($availabilityOptions as $key => $values) {
-                    if (in_array($key, $selectedFilters['quantity'], true)) {
-                        $availabilityOptions[$key]['checked'] = true;
-                    }
+                $quantityArray[$key]['nbr'] = $count;
+                if (isset($selectedFilters['quantity']) && in_array($key, $selectedFilters['quantity'], true)) {
+                    $quantityArray[$key]['checked'] = true;
                 }
             }
         }
@@ -502,7 +524,7 @@ class Block
             'type' => 'quantity',
             'id_key' => 0,
             'name' => $this->context->getTranslator()->trans('Availability', [], 'Modules.Facetedsearch.Shop'),
-            'values' => $availabilityOptions,
+            'values' => $quantityArray,
             'filter_show_limit' => (int) $filter['filter_show_limit'],
             'filter_type' => $filter['filter_type'],
         ];
@@ -557,6 +579,8 @@ class Block
             }
         }
 
+        $this->sortByKey($manufacturers, $manufacturersArray);
+
         $manufacturerBlock = [
             'type_lite' => 'manufacturer',
             'type' => 'manufacturer',
@@ -568,6 +592,106 @@ class Block
         ];
 
         return $manufacturerBlock;
+    }
+
+    /**
+     * Get url & meta from layered_indexable_attribute_group_lang_value table
+     *
+     * @param int $idAttributeGroup
+     * @param int $idLang
+     *
+     * @return array
+     */
+    private function getAttributeGroupLayeredInfos($idAttributeGroup, $idLang)
+    {
+        return $this->database->getRow(
+            'SELECT url_name, meta_title FROM ' .
+            _DB_PREFIX_ . 'layered_indexable_attribute_group_lang_value WHERE id_attribute_group=' .
+            (int) $idAttributeGroup . ' AND id_lang=' . (int) $idLang
+        );
+    }
+
+    /**
+     * Get url & meta from layered_indexable_attribute_lang_value table
+     *
+     * @param int $idAttribute
+     * @param int $idLang
+     *
+     * @return array
+     */
+    private function getAttributeLayeredInfos($idAttribute, $idLang)
+    {
+        return $this->database->getRow(
+            'SELECT url_name, meta_title FROM ' .
+            _DB_PREFIX_ . 'layered_indexable_attribute_lang_value WHERE id_attribute=' .
+            (int) $idAttribute . ' AND id_lang=' . (int) $idLang
+        );
+    }
+
+    /**
+     * Get url & meta from layered_indexable_feature_value_lang_value table
+     *
+     * @param int $idFeatureValue
+     * @param int $idLang
+     *
+     * @return array
+     */
+    private function getFeatureLayeredInfos($idFeatureValue, $idLang)
+    {
+        return $this->database->getRow(
+            'SELECT url_name, meta_title FROM ' .
+            _DB_PREFIX_ . 'layered_indexable_feature_value_lang_value WHERE id_feature_value=' .
+            (int) $idFeatureValue . ' AND id_lang=' . (int) $idLang
+        );
+    }
+
+    /**
+     * Get url & meta from layered_indexable_feature_lang_value table
+     *
+     * @param int $idFeature
+     * @param int $idLang
+     *
+     * @return array
+     */
+    private function getFeatureValueLayeredInfos($idFeature, $idLang)
+    {
+        return $this->database->getRow(
+            'SELECT url_name, meta_title FROM ' .
+            _DB_PREFIX_ . 'layered_indexable_feature_lang_value WHERE id_feature=' .
+            (int) $idFeature . ' AND id_lang=' . (int) $idLang
+        );
+    }
+
+    /**
+     * Get all attributes groups for a given language
+     *
+     * @param int $idLang Language id
+     *
+     * @return array Attributes groups
+     */
+    private function getAttributesGroups($idLang)
+    {
+        if (!Combination::isFeatureActive()) {
+            return [];
+        }
+
+        if (!isset($this->attributesGroup[$idLang])) {
+            $this->attributesGroup[$idLang] = [];
+            $tempAttributesGroup = $this->database->executeS(
+                'SELECT ag.id_attribute_group, agl.public_name as attribute_group_name, is_color_group ' .
+                'FROM `' . _DB_PREFIX_ . 'attribute_group` ag ' .
+                Shop::addSqlAssociation('attribute_group', 'ag') . ' ' .
+                'LEFT JOIN `' . _DB_PREFIX_ . 'attribute_group_lang` agl ' .
+                'ON (ag.`id_attribute_group` = agl.`id_attribute_group` AND `id_lang` = ' . (int) $idLang . ') ' .
+                'GROUP BY ag.id_attribute_group ORDER BY ag.`position` ASC'
+            );
+
+            foreach ($tempAttributesGroup as $key => $attributeGroup) {
+                $this->attributesGroup[$idLang][$attributeGroup['id_attribute_group']] = $attributeGroup;
+            }
+        }
+
+        return $this->attributesGroup[$idLang];
     }
 
     /**
@@ -598,12 +722,12 @@ class Block
             $filteredSearchAdapter = $this->searchAdapter->getFilteredSearchAdapter();
         }
 
-        $attributesGroup = $this->dataAccessor->getAttributesGroups($idLang);
+        $attributesGroup = $this->getAttributesGroups($idLang);
         if ($attributesGroup === []) {
             return $attributesBlock;
         }
 
-        $attributes = $this->dataAccessor->getAttributes($idLang, $idAttributeGroup);
+        $attributes = $this->getAttributes($idLang, true);
 
         $filteredSearchAdapter->addOperationsFilter(
             'id_attribute_group_' . $idAttributeGroup,
@@ -622,6 +746,13 @@ class Block
             if (!isset($attributesBlock[$idAttributeGroup])) {
                 $attributeGroup = $attributesGroup[$idAttributeGroup];
 
+                $attributeGroupLayeredInfos = $this->getAttributeGroupLayeredInfos($idAttributeGroup, $idLang);
+                if (!empty($attributeGroupLayeredInfos)) {
+                    list($urlName, $metaTitle) = array_values($attributeGroupLayeredInfos);
+                } else {
+                    $urlName = $metaTitle = null;
+                }
+
                 $attributesBlock[$idAttributeGroup] = [
                     'type_lite' => 'id_attribute_group',
                     'type' => 'id_attribute_group',
@@ -629,18 +760,25 @@ class Block
                     'name' => $attributeGroup['attribute_group_name'],
                     'is_color_group' => (bool) $attributeGroup['is_color_group'],
                     'values' => [],
-                    'url_name' => $attributeGroup['url_name'],
-                    'meta_title' => $attributeGroup['meta_title'],
+                    'url_name' => $urlName,
+                    'meta_title' => $metaTitle,
                     'filter_show_limit' => (int) $filter['filter_show_limit'],
                     'filter_type' => $filter['filter_type'],
                 ];
             }
 
+            $attributeLayeredInfos = $this->getAttributeLayeredInfos($idAttribute, $idLang);
+            if (!empty($attributeLayeredInfos)) {
+                list($urlName, $metaTitle) = array_values($attributeLayeredInfos);
+            } else {
+                $urlName = $metaTitle = null;
+            }
+
             $attributesBlock[$idAttributeGroup]['values'][$idAttribute] = [
                 'name' => $attribute['name'],
                 'nbr' => $count,
-                'url_name' => $attribute['url_name'],
-                'meta_title' => $attribute['meta_title'],
+                'url_name' => $urlName,
+                'meta_title' => $metaTitle,
             ];
 
             if ($attributesBlock[$idAttributeGroup]['is_color_group'] !== false) {
@@ -716,7 +854,7 @@ class Block
             $filteredSearchAdapter = $this->searchAdapter->getFilteredSearchAdapter();
         }
 
-        $tempFeatures = $this->dataAccessor->getFeatures($idLang);
+        $tempFeatures = Feature::getFeatures($idLang);
         if (empty($tempFeatures)) {
             return [];
         }
@@ -740,9 +878,16 @@ class Block
             $feature = $features[$idFeature];
 
             if (!isset($featureBlock[$idFeature])) {
-                $tempFeatureValues = $this->dataAccessor->getFeatureValues($idFeature, $idLang);
+                $tempFeatureValues = FeatureValue::getFeatureValuesWithLang($idLang, $idFeature);
                 foreach ($tempFeatureValues as $featureValueKey => $featureValue) {
                     $features[$idFeature]['featureValues'][$featureValue['id_feature_value']] = $featureValue;
+                }
+
+                $featureLayeredInfos = $this->getFeatureLayeredInfos($idFeature, $idLang);
+                if (!empty($featureLayeredInfos)) {
+                    list($urlName, $metaTitle) = array_values($featureLayeredInfos);
+                } else {
+                    $urlName = $metaTitle = null;
                 }
 
                 $featureBlock[$idFeature] = [
@@ -751,8 +896,8 @@ class Block
                     'id_key' => $idFeature,
                     'values' => [],
                     'name' => $feature['name'],
-                    'url_name' => $feature['url_name'],
-                    'meta_title' => $feature['meta_title'],
+                    'url_name' => $urlName,
+                    'meta_title' => $metaTitle,
                     'filter_show_limit' => (int) $filter['filter_show_limit'],
                     'filter_type' => $filter['filter_type'],
                 ];
@@ -763,11 +908,18 @@ class Block
                 continue;
             }
 
+            $featureValueLayeredInfos = $this->getFeatureValueLayeredInfos($idFeatureValue, $idLang);
+            if (!empty($featureValueLayeredInfos)) {
+                list($urlName, $metaTitle) = array_values($featureValueLayeredInfos);
+            } else {
+                $urlName = $metaTitle = null;
+            }
+
             $featureBlock[$idFeature]['values'][$idFeatureValue] = [
                 'nbr' => $count,
                 'name' => $featureValues[$idFeatureValue]['value'],
-                'url_name' => $featureValues[$idFeatureValue]['url_name'],
-                'meta_title' => $featureValues[$idFeatureValue]['meta_title'],
+                'url_name' => $urlName,
+                'meta_title' => $metaTitle,
             ];
 
             if (array_key_exists('id_feature', $selectedFilters)) {
@@ -891,6 +1043,8 @@ class Block
                 $categoryArray[$idCategory]['checked'] = true;
             }
         }
+
+        $categoryArray = $this->sortByKey($categories, $categoryArray);
 
         $categoryBlock = [
             'type_lite' => 'category',

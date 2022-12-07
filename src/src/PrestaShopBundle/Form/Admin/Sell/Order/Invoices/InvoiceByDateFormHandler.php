@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,28 +16,29 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Form\Admin\Sell\Order\Invoices;
 
 use DateTime;
 use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
-use PrestaShop\PrestaShop\Core\Form\Handler;
+use PrestaShop\PrestaShop\Core\Form\FormHandler;
 use PrestaShop\PrestaShop\Core\Hook\HookDispatcherInterface;
 use PrestaShop\PrestaShop\Core\Order\OrderInvoiceDataProviderInterface;
 use PrestaShop\PrestaShop\Core\PDF\PDFGeneratorInterface;
-use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormBuilderInterface;
 
 /**
  * Class InvoiceByDateFormHandler manages the data manipulated using "By date" form
  * in "Sell > Orders > Invoices" page.
  */
-final class InvoiceByDateFormHandler extends Handler
+final class InvoiceByDateFormHandler extends FormHandler
 {
     /**
      * @var OrderInvoiceDataProviderInterface
@@ -51,24 +51,24 @@ final class InvoiceByDateFormHandler extends Handler
     private $pdfGenerator;
 
     /**
-     * @param FormFactoryInterface $formFactory
+     * @param FormBuilderInterface $formBuilder
      * @param HookDispatcherInterface $hookDispatcher
      * @param FormDataProviderInterface $formDataProvider
-     * @param string $form
+     * @param array $formTypes
      * @param string $hookName
      * @param OrderInvoiceDataProviderInterface $orderInvoiceDataProvider
      * @param PDFGeneratorInterface $pdfGenerator
      */
     public function __construct(
-        FormFactoryInterface $formFactory,
+        FormBuilderInterface $formBuilder,
         HookDispatcherInterface $hookDispatcher,
         FormDataProviderInterface $formDataProvider,
-        string $form,
+        array $formTypes,
         $hookName,
         OrderInvoiceDataProviderInterface $orderInvoiceDataProvider,
         PDFGeneratorInterface $pdfGenerator
     ) {
-        parent::__construct($formFactory, $hookDispatcher, $formDataProvider, $form, $hookName);
+        parent::__construct($formBuilder, $hookDispatcher, $formDataProvider, $formTypes, $hookName);
         $this->orderInvoiceDataProvider = $orderInvoiceDataProvider;
         $this->pdfGenerator = $pdfGenerator;
     }
@@ -84,8 +84,8 @@ final class InvoiceByDateFormHandler extends Handler
 
         // Get invoices by submitted date interval
         $invoiceCollection = $this->orderInvoiceDataProvider->getByDateInterval(
-            new DateTime($data['date_from']),
-            new DateTime($data['date_to'])
+            new DateTime($data['generate_by_date']['date_from']),
+            new DateTime($data['generate_by_date']['date_to'])
         );
 
         // Generate PDF out of found invoices

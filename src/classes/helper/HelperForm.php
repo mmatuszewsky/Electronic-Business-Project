@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,15 +16,16 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
  use PrestaShop\PrestaShop\Core\Addon\Module\ModuleManagerBuilder;
 
-/**
+ /**
  * @since 1.5.0
  */
 class HelperFormCore extends Helper
@@ -34,10 +34,10 @@ class HelperFormCore extends Helper
     public $first_call = true;
 
     /** @var array of forms fields */
-    protected $fields_form = [];
+    protected $fields_form = array();
 
     /** @var array values of form fields */
-    public $fields_value = [];
+    public $fields_value = array();
     public $name_controller = '';
 
     /** @var string if not null, a title will be added on that list */
@@ -80,26 +80,6 @@ class HelperFormCore extends Helper
         $tinymce = true;
         $textarea_autosize = true;
         $file = true;
-        $translator = Context::getContext()->getTranslator();
-
-        $default_switch_labels = [
-            'active_on' => $translator->trans('Yes', [], 'Admin.Global'),
-            'active_off' => $translator->trans('No', [], 'Admin.Global'),
-        ];
-
-        $default_switch_values = [
-            [
-                'id' => 'active_off',
-                'value' => 0,
-                'label' => $default_switch_labels['active_off'],
-            ],
-            [
-                'id' => 'active_on',
-                'value' => 1,
-                'label' => $default_switch_labels['active_on'],
-            ],
-        ];
-
         foreach ($this->fields_form as $fieldset_key => &$fieldset) {
             if (isset($fieldset['form']['tabs'])) {
                 $tabs[] = $fieldset['form']['tabs'];
@@ -112,21 +92,6 @@ class HelperFormCore extends Helper
                         unset($this->fields_form[$fieldset_key]['form']['input'][$key]);
                     }
                     switch ($params['type']) {
-                        case 'switch':
-                            $switch_values = $params['values'];
-                            if (!empty($params['values'])) {
-                                foreach ($switch_values as $k => $value) {
-                                    if (!isset($value['label'])) {
-                                        $default_key = (int) $value['value'] ? 1 : 0;
-                                        $defautl_label = $default_switch_labels[$value['id']] ?? $default_switch_values[$default_key]['label'];
-                                        $this->fields_form[$fieldset_key]['form']['input'][$key]['values'][$k]['label'] = $defautl_label;
-                                    }
-                                }
-                            } else {
-                                $this->fields_form[$fieldset_key]['form']['input'][$key]['values'] = $default_switch_values;
-                            }
-                            break;
-
                         case 'select':
                             $field_name = (string) $params['name'];
                             // If multiple select check that 'name' field is suffixed with '[]'
@@ -190,34 +155,34 @@ class HelperFormCore extends Helper
                             if (isset($params['files']) && $params['files']) {
                                 $uploader->setFiles($params['files']);
                             } elseif (isset($params['image']) && $params['image']) { // Use for retrocompatibility
-                                $uploader->setFiles([
-                                    0 => [
+                                $uploader->setFiles(array(
+                                    0 => array(
                                         'type' => HelperUploader::TYPE_IMAGE,
                                         'image' => isset($params['image']) ? $params['image'] : null,
                                         'size' => isset($params['size']) ? $params['size'] : null,
                                         'delete_url' => isset($params['delete_url']) ? $params['delete_url'] : null,
-                                    ],
-                                ]);
+                                    ),
+                                ));
                             }
 
                             if (isset($params['file']) && $params['file']) { // Use for retrocompatibility
-                                $uploader->setFiles([
-                                    0 => [
+                                $uploader->setFiles(array(
+                                    0 => array(
                                         'type' => HelperUploader::TYPE_FILE,
                                         'size' => isset($params['size']) ? $params['size'] : null,
                                         'delete_url' => isset($params['delete_url']) ? $params['delete_url'] : null,
                                         'download_url' => isset($params['file']) ? $params['file'] : null,
-                                    ],
-                                ]);
+                                    ),
+                                ));
                             }
 
                             if (isset($params['thumb']) && $params['thumb']) { // Use for retrocompatibility
-                                $uploader->setFiles([
-                                    0 => [
+                                $uploader->setFiles(array(
+                                    0 => array(
                                         'type' => HelperUploader::TYPE_IMAGE,
                                         'image' => isset($params['thumb']) ? '<img src="' . $params['thumb'] . '" alt="' . (isset($params['title']) ? $params['title'] : '') . '" title="' . (isset($params['title']) ? $params['title'] : '') . '" />' : null,
-                                    ],
-                                ]);
+                                    ),
+                                ));
                             }
 
                             $uploader->setTitle(isset($params['title']) ? $params['title'] : null);
@@ -281,7 +246,7 @@ class HelperFormCore extends Helper
         $moduleManagerBuilder = ModuleManagerBuilder::getInstance();
         $moduleManager = $moduleManagerBuilder->build();
 
-        $this->tpl->assign([
+        $this->tpl->assign(array(
             'title' => $this->title,
             'toolbar_btn' => $this->toolbar_btn,
             'show_toolbar' => $this->show_toolbar,
@@ -309,7 +274,7 @@ class HelperFormCore extends Helper
             'dni_required' => (isset($this->fields_value['id_country'], $this->fields_value['dni'])) ? Address::dniRequired($this->fields_value['id_country']) : null,
             'show_cancel_button' => $this->show_cancel_button,
             'back_url' => $this->back_url,
-        ]);
+        ));
 
         return parent::generate();
     }
@@ -343,7 +308,7 @@ class HelperFormCore extends Helper
             return;
         }
 
-        $assos = [];
+        $assos = array();
         if ((int) $this->id) {
             $sql = 'SELECT `id_shop`, `' . bqSQL($this->identifier) . '`
 					FROM `' . _DB_PREFIX_ . bqSQL($this->table) . '_shop`
@@ -374,6 +339,13 @@ class HelperFormCore extends Helper
                     break;
             }
         }
+
+        /*$nb_shop = 0;
+        foreach ($tree as &$value)
+        {
+            $value['disable_shops'] = (isset($value[$disable_shared]) && $value[$disable_shared]);
+            $nb_shop += count($value['shops']);
+        }*/
 
         $tree = new HelperTreeShops('shop-tree', 'Shops');
         if (isset($template_directory)) {

@@ -5,12 +5,7 @@
       <trans-unit id="b8760dae14ad4963c909f83424de3e7f">
         <source>(E.g.: %date_format%)</source>
         <target>(E.g.: %date_format%)</target>
-        <note>Line: 215</note>
-      </trans-unit>
-      <trans-unit id="ae12c6cc3c51c7dfc05571539d8980d9">
-        <source>Only letters and the dot (.) character, followed by a space, are allowed.</source>
-        <target>Only letters and the dot (.) character, followed by a space, are allowed.</target>
-        <note>Line: 139</note>
+        <note>Line: 211</note>
       </trans-unit>
     </body>
   </file>
@@ -19,7 +14,7 @@
       <trans-unit id="bd9737bd1a3057cd059167a4a19fe6ca">
         <source>Your password must be at least %min% characters long.</source>
         <target>Your password must be at least %min% characters long.</target>
-        <note>Line: 86</note>
+        <note>Line: 96</note>
       </trans-unit>
     </body>
   </file>
@@ -43,7 +38,7 @@
       <trans-unit id="8307fac59310d028334df0306c7b29ad">
         <source>How can we help?</source>
         <target>How can we help?</target>
-        <note>Line: 107</note>
+        <note>Line: 106</note>
       </trans-unit>
     </body>
   </file>
@@ -52,12 +47,7 @@
       <trans-unit id="2ba94226eab6f98a094a2accf82746c0">
         <source>At least 5 characters long</source>
         <target>At least 5 characters long</target>
-        <note>Line: 142</note>
-      </trans-unit>
-      <trans-unit id="cdb946103e5593103aeb691562969409">
-        <source>Password input of at least 5 characters</source>
-        <target>Password input of at least 5 characters</target>
-        <note>Line: 143</note>
+        <note>Line: 139</note>
       </trans-unit>
     </body>
   </file>

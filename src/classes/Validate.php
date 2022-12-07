@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,26 +16,15 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
-use Egulias\EmailValidator\EmailValidator;
-use Egulias\EmailValidator\Validation\MultipleValidationWithAnd;
-use Egulias\EmailValidator\Validation\RFCValidation;
-use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\CustomerName;
-use PrestaShop\PrestaShop\Core\ConstraintValidator\Factory\CustomerNameValidatorFactory;
-use PrestaShop\PrestaShop\Core\Domain\Currency\ValueObject\NumericIsoCode;
-use PrestaShop\PrestaShop\Core\Email\SwiftMailerValidation;
-use PrestaShop\PrestaShop\Core\String\CharacterCleaner;
-use Symfony\Component\Validator\Validation;
-
 class ValidateCore
 {
-    public const ORDER_BY_REGEXP = '/^(?:(`?)[\w!_-]+\1\.)?(?:(`?)[\w!_-]+\2)$/';
-
     const ADMIN_PASSWORD_LENGTH = 8;
     const PASSWORD_LENGTH = 5;
 
@@ -59,10 +47,7 @@ class ValidateCore
      */
     public static function isEmail($email)
     {
-        return !empty($email) && (new EmailValidator())->isValid($email, new MultipleValidationWithAnd([
-            new RFCValidation(),
-            new SwiftMailerValidation(), // special validation to be compatible with Swift Mailer
-        ]));
+        return !empty($email) && preg_match(Tools::cleanNonUnicodeSupport('/^[a-z\p{L}0-9!#$%&\'*+\/=?^`{}|~_-]+[.a-z\p{L}0-9!#$%&\'*+\/=?^`{}|~_-]*@[a-z\p{L}0-9]+(?:[.]?[_a-z\p{L}0-9-])*\.[a-z\p{L}0-9]+$/ui'), $email);
     }
 
     /**
@@ -76,15 +61,15 @@ class ValidateCore
     public static function isModuleUrl($url, &$errors)
     {
         if (!$url || $url == 'http://') {
-            $errors[] = Context::getContext()->getTranslator()->trans('Please specify module URL', [], 'Admin.Modules.Notification');
+            $errors[] = Context::getContext()->getTranslator()->trans('Please specify module URL', array(), 'Admin.Modules.Notification');
         } elseif (substr($url, -4) != '.tar' && substr($url, -4) != '.zip' && substr($url, -4) != '.tgz' && substr($url, -7) != '.tar.gz') {
-            $errors[] = Context::getContext()->getTranslator()->trans('Unknown archive type.', [], 'Admin.Modules.Notification');
+            $errors[] = Context::getContext()->getTranslator()->trans('Unknown archive type.', array(), 'Admin.Modules.Notification');
         } else {
             if ((strpos($url, 'http')) === false) {
                 $url = 'http://' . $url;
             }
             if (!is_array(@get_headers($url))) {
-                $errors[] = Context::getContext()->getTranslator()->trans('Invalid URL', [], 'Admin.Notifications.Error');
+                $errors[] = Context::getContext()->getTranslator()->trans('Invalid URL', array(), 'Admin.Notifications.Error');
             }
         }
         if (!count($errors)) {
@@ -176,20 +161,15 @@ class ValidateCore
      *
      * @param string $name Name to validate
      *
-     * @return bool
+     * @return int 1 if given input is a name, 0 else
      */
     public static function isCustomerName($name)
     {
-        $validatorBuilder = Validation::createValidatorBuilder();
-        $validatorBuilder->setConstraintValidatorFactory(
-            new CustomerNameValidatorFactory(new CharacterCleaner())
+        $validityPattern = Tools::cleanNonUnicodeSupport(
+            '/^(?:[^0-9!<>,;?=+()\/\\@#"°*`{}_^$%:¤\[\]|\.。]|[\.。](?:\s|$))*$/u'
         );
-        $validator = $validatorBuilder->getValidator();
-        $violations = $validator->validate($name, [
-            new CustomerName(),
-        ]);
 
-        return (count($violations) !== 0) ? 0 : 1;
+        return preg_match($validityPattern, $name);
     }
 
     /**
@@ -197,7 +177,7 @@ class ValidateCore
      *
      * @param string $name Name to validate
      *
-     * @return bool
+     * @return int 1 if given input is a name, 0 else
      */
     public static function isName($name)
     {
@@ -340,7 +320,7 @@ class ValidateCore
 
     public static function isNumericIsoCode($iso_code)
     {
-        return preg_match(NumericIsoCode::PATTERN, $iso_code);
+        return preg_match('/^[0-9]{2,3}$/', $iso_code);
     }
 
     /**
@@ -630,7 +610,7 @@ class ValidateCore
     }
 
     /**
-     * Check for birthDate validity. To avoid year in two digits, disallow date < 200 years ago
+     * Check for birthDate validity.
      *
      * @param string $date birthdate to validate
      * @param string $format optional format
@@ -647,10 +627,8 @@ class ValidateCore
         if (!empty(DateTime::getLastErrors()['warning_count']) || false === $d) {
             return false;
         }
-        $twoHundredYearsAgo = new Datetime();
-        $twoHundredYearsAgo->sub(new DateInterval('P200Y'));
 
-        return $d->setTime(0, 0, 0) <= new Datetime() && $d->setTime(0, 0, 0) >= $twoHundredYearsAgo;
+        return $d->getTimestamp() <= time();
     }
 
     /**
@@ -714,18 +692,6 @@ class ValidateCore
     }
 
     /**
-     * Check for MPN validity.
-     *
-     * @param string $mpn to validate
-     *
-     * @return bool Validity is ok or not
-     */
-    public static function isMpn($mpn)
-    {
-        return Tools::strlen($mpn) <= 40;
-    }
-
-    /**
      * Check for postal code validity.
      *
      * @param string $postcode Postal code to validate
@@ -759,7 +725,7 @@ class ValidateCore
      *
      * @param string $way Keyword to validate
      *
-     * @return int Validity is ok or not
+     * @return bool Validity is ok or not
      */
     public static function isOrderWay($way)
     {
@@ -776,7 +742,7 @@ class ValidateCore
      */
     public static function isOrderBy($order)
     {
-        return preg_match(static::ORDER_BY_REGEXP, $order);
+        return preg_match('/^[a-zA-Z0-9.!_-]+$/', $order);
     }
 
     /**
@@ -837,7 +803,7 @@ class ValidateCore
      */
     public static function isUnsignedInt($value)
     {
-        return (is_numeric($value) || is_string($value)) && (string) (int) $value === (string) $value && $value < 4294967296 && $value >= 0;
+        return (string) (int) $value === (string) $value && $value < 4294967296 && $value >= 0;
     }
 
     /**
@@ -948,7 +914,7 @@ class ValidateCore
 
     public static function isMySQLEngine($engine)
     {
-        return in_array($engine, ['InnoDB', 'MyISAM']);
+        return in_array($engine, array('InnoDB', 'MyISAM'));
     }
 
     public static function isUnixName($data)
@@ -1121,7 +1087,7 @@ class ValidateCore
      */
     public static function isLocalizationPackSelection($data)
     {
-        return in_array((string) $data, ['states', 'taxes', 'currencies', 'languages', 'units', 'groups']);
+        return in_array((string) $data, array('states', 'taxes', 'currencies', 'languages', 'units', 'groups'));
     }
 
     /**
@@ -1189,17 +1155,15 @@ class ValidateCore
     /**
      * @param array $ids
      *
-     * @return bool return true if the array contain only unsigned int value and not empty
+     * @return bool return true if the array contain only unsigned int value
      */
     public static function isArrayWithIds($ids)
     {
-        if (!is_array($ids) || count($ids) < 1) {
-            return false;
-        }
-
-        foreach ($ids as $id) {
-            if ($id == 0 || !Validate::isUnsignedInt($id)) {
-                return false;
+        if (count($ids)) {
+            foreach ($ids as $id) {
+                if ($id == 0 || !Validate::isUnsignedInt($id)) {
+                    return false;
+                }
             }
         }
 
@@ -1213,7 +1177,7 @@ class ValidateCore
      */
     public static function isStockManagement($stock_management)
     {
-        if (!in_array($stock_management, ['WA', 'FIFO', 'LIFO'])) {
+        if (!in_array($stock_management, array('WA', 'FIFO', 'LIFO'))) {
             return false;
         }
 

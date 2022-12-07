@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 abstract class CacheCore
 {
@@ -40,7 +40,7 @@ abstract class CacheCore
      *
      * @var array
      */
-    protected $queryCounter = [];
+    protected $queryCounter = array();
 
     /**
      * @var Cache
@@ -64,17 +64,17 @@ abstract class CacheCore
     /**
      * @var array List all keys of cached data and their associated ttl
      */
-    protected $keys = [];
+    protected $keys = array();
 
     /**
      * @var array Store list of tables and their associated keys for SQL cache
      */
-    protected $sql_tables_cached = [];
+    protected $sql_tables_cached = array();
 
     /**
      * @var array List of blacklisted tables for SQL cache, these tables won't be indexed
      */
-    protected $blacklist = [
+    protected $blacklist = array(
         'cart',
         'cart_cart_rule',
         'cart_product',
@@ -89,12 +89,12 @@ abstract class CacheCore
         'page_viewed',
         'employee',
         'log',
-    ];
+    );
 
     /**
      * @var array Store local cache
      */
-    protected static $local = [];
+    protected static $local = array();
 
     /**
      * Cache a data.
@@ -294,11 +294,11 @@ abstract class CacheCore
     public function delete($key)
     {
         // Get list of keys to delete
-        $keys = [];
+        $keys = array();
         if ($key == '*') {
             $keys = $this->keys;
         } elseif (strpos($key, '*') === false) {
-            $keys = [$key];
+            $keys = array($key);
         } else {
             $pattern = str_replace('\\*', '.*', preg_quote($key));
             foreach ($this->keys as $k => $ttl) {
@@ -350,8 +350,8 @@ abstract class CacheCore
             return;
         }
 
-        if (empty($result)) {
-            $result = [];
+        if (empty($result) || $result === false) {
+            $result = array();
         }
 
         // use the query counter to update the cache statistics
@@ -415,9 +415,9 @@ abstract class CacheCore
      *
      * @param string $key query hash
      * @param string $table table name
-     * @param array $otherTables the tables associated with the query
+     * @param array $tables the tables associated with the query
      */
-    private function addQueryKeyToTableMap($key, $table, $otherTables)
+    private function addQueryKeyToTableMap($key, $table, $tables)
     {
         // the name of the cache entry which cache the table map
         $cacheKey = $this->getTableMapCacheKey($table);
@@ -425,15 +425,16 @@ abstract class CacheCore
         $this->initializeTableCache($table);
 
         if (!isset($this->sql_tables_cached[$table][$key])) {
-            if (count($this->sql_tables_cached[$table]) >= $this->maxCachedObjectsByTable) {
+            if ((count($this->sql_tables_cached[$table]) + 1) > $this->maxCachedObjectsByTable) {
                 $this->adjustTableCacheSize($table);
             }
 
-            unset($otherTables[array_search($table, $otherTables)]);
-            $this->sql_tables_cached[$table][$key] = [
+            $otherTables = $tables;
+            unset($otherTables[array_search($table, $tables)]);
+            $this->sql_tables_cached[$table][$key] = array(
                 'count' => 1,
                 'otherTables' => $otherTables,
-            ];
+            );
             $this->set($cacheKey, $this->sql_tables_cached[$table]);
             // if the set fails because the object is too big, the adjustTableCacheSize flag is set
             if ($this->adjustTableCacheSize) {
@@ -449,7 +450,7 @@ abstract class CacheCore
      */
     protected function updateQueryCacheStatistics()
     {
-        $changedTables = [];
+        $changedTables = array();
 
         foreach ($this->queryCounter as $query => $count) {
             $key = $this->getQueryHash($query);
@@ -470,7 +471,7 @@ abstract class CacheCore
             $this->set($this->getTableMapCacheKey($table), $this->sql_tables_cached[$table]);
         }
 
-        $this->queryCounter = [];
+        $this->queryCounter = array();
     }
 
     /**
@@ -481,10 +482,9 @@ abstract class CacheCore
      */
     protected function adjustTableCacheSize($table, $keyToKeep = null)
     {
-        $invalidKeys = [];
+        $invalidKeys = array();
         if (isset($this->sql_tables_cached[$table])) {
             if ($keyToKeep && isset($this->sql_tables_cached[$table][$keyToKeep])) {
-                $toKeep = $this->sql_tables_cached[$table][$keyToKeep];
                 // remove the key we plan to keep before adjusting the table cache size
                 unset($this->sql_tables_cached[$table][$keyToKeep]);
             }
@@ -512,7 +512,7 @@ abstract class CacheCore
             $this->_deleteMulti($invalidKeys);
 
             if ($keyToKeep) {
-                $this->sql_tables_cached[$table][$keyToKeep] = $toKeep;
+                $this->sql_tables_cached[$table][$keyToKeep] = 1;
             }
         }
         $this->adjustTableCacheSize = false;
@@ -553,8 +553,8 @@ abstract class CacheCore
             return;
         }
 
-        $invalidKeys = [];
-        $tableKeysToUpdate = [];
+        $invalidKeys = array();
+        $tableKeysToUpdate = array();
         if ($tables = $this->getTables($query)) {
             foreach ($tables as $table) {
                 $cacheKey = $this->initializeTableCache($table);
@@ -610,7 +610,7 @@ abstract class CacheCore
         if (!array_key_exists($table, $this->sql_tables_cached)) {
             $this->sql_tables_cached[$table] = $this->get($cacheKey);
             if (!is_array($this->sql_tables_cached[$table])) {
-                $this->sql_tables_cached[$table] = [];
+                $this->sql_tables_cached[$table] = array();
             }
         }
 
@@ -656,7 +656,7 @@ abstract class CacheCore
 
     /**
      * @param string $key
-     * @param mixed $value
+     * @param string $value
      */
     public static function store($key, $value)
     {
@@ -664,20 +664,20 @@ abstract class CacheCore
         // Better delete the whole cache if there are
         // more than 1000 elements in the array
         if (count(Cache::$local) > 1000) {
-            Cache::$local = [];
+            Cache::$local = array();
         }
         Cache::$local[$key] = $value;
     }
 
     public static function clear()
     {
-        Cache::$local = [];
+        Cache::$local = array();
     }
 
     /**
      * @param string $key
      *
-     * @return mixed|null The cache item if found, null otherwise
+     * @return mixed
      */
     public static function retrieve($key)
     {

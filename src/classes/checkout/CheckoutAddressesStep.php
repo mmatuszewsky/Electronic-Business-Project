@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -46,9 +46,9 @@ class CheckoutAddressesStepCore extends AbstractCheckoutStep
 
     public function getDataToPersist()
     {
-        return [
+        return array(
             'use_same_address' => $this->use_same_address,
-        ];
+        );
     }
 
     public function restorePersistedData(array $data)
@@ -60,7 +60,7 @@ class CheckoutAddressesStepCore extends AbstractCheckoutStep
         return $this;
     }
 
-    public function handleRequest(array $requestParams = [])
+    public function handleRequest(array $requestParams = array())
     {
         $this->addressForm->setAction($this->getCheckoutSession()->getCheckoutURL());
 
@@ -81,10 +81,10 @@ class CheckoutAddressesStepCore extends AbstractCheckoutStep
         }
 
         // Can't really hurt to set the firstname and lastname.
-        $this->addressForm->fillWith([
+        $this->addressForm->fillWith(array(
             'firstname' => $this->getCheckoutSession()->getCustomer()->firstname,
             'lastname' => $this->getCheckoutSession()->getCustomer()->lastname,
-        ]);
+        ));
 
         if (isset($requestParams['saveAddress'])) {
             $saved = $this->addressForm->fillWith($requestParams)->submit();
@@ -103,8 +103,9 @@ class CheckoutAddressesStepCore extends AbstractCheckoutStep
                 $id_address = $this->addressForm->getAddress()->id;
                 if ($requestParams['saveAddress'] === 'delivery') {
                     $this->getCheckoutSession()->setIdAddressDelivery($id_address);
-                    $idAddressInvoice = $this->use_same_address ? $id_address : null;
-                    $this->getCheckoutSession()->setIdAddressInvoice($idAddressInvoice);
+                    if ($this->use_same_address) {
+                        $this->getCheckoutSession()->setIdAddressInvoice($id_address);
+                    }
                 } else {
                     $this->getCheckoutSession()->setIdAddressInvoice($id_address);
                 }
@@ -142,7 +143,7 @@ class CheckoutAddressesStepCore extends AbstractCheckoutStep
             if ($deletionResult) {
                 $this->context->controller->success[] = $this->getTranslator()->trans(
                     'Address successfully deleted!',
-                    [],
+                    array(),
                     'Shop.Notifications.Success'
                 );
                 $this->context->controller->redirectWithNotifications(
@@ -152,7 +153,7 @@ class CheckoutAddressesStepCore extends AbstractCheckoutStep
                 $this->getCheckoutProcess()->setHasErrors(true);
                 $this->context->controller->errors[] = $this->getTranslator()->trans(
                     'Could not delete address.',
-                    [],
+                    array(),
                     'Shop.Notifications.Error'
                 );
             }
@@ -192,12 +193,6 @@ class CheckoutAddressesStepCore extends AbstractCheckoutStep
                     $this->getCheckoutSession()->getIdAddressInvoice() &&
                     $this->getCheckoutSession()->getIdAddressDelivery()
                 );
-
-                // if we just pushed the invoice address form, we are using another address for invoice
-                // (param 'id_address_delivery' is only pushed in invoice address form)
-                if (isset($requestParams['saveAddress'], $requestParams['id_address_delivery'])) {
-                    $this->use_same_address = false;
-                }
             }
         }
 
@@ -221,7 +216,7 @@ class CheckoutAddressesStepCore extends AbstractCheckoutStep
             }
         }
 
-        $this->setTitle($this->getTranslator()->trans('Addresses', [], 'Shop.Theme.Checkout'));
+        $this->setTitle($this->getTranslator()->trans('Addresses', array(), 'Shop.Theme.Checkout'));
 
         return $this;
     }
@@ -230,26 +225,26 @@ class CheckoutAddressesStepCore extends AbstractCheckoutStep
     {
         $idAddressDelivery = (int) $this->getCheckoutSession()->getIdAddressDelivery();
         $idAddressInvoice = (int) $this->getCheckoutSession()->getIdAddressInvoice();
-        $params = [
+        $params = array(
             'address_form' => $this->addressForm->getProxy(),
             'use_same_address' => $this->use_same_address,
             'use_different_address_url' => $this->context->link->getPageLink(
                 'order',
                 true,
                 null,
-                ['use_same_address' => 0]
+                array('use_same_address' => 0)
             ),
             'new_address_delivery_url' => $this->context->link->getPageLink(
                 'order',
                 true,
                 null,
-                ['newAddress' => 'delivery']
+                array('newAddress' => 'delivery')
             ),
             'new_address_invoice_url' => $this->context->link->getPageLink(
                 'order',
                 true,
                 null,
-                ['newAddress' => 'invoice']
+                array('newAddress' => 'invoice')
             ),
             'id_address' => (int) Tools::getValue('id_address'),
             'id_address_delivery' => $idAddressDelivery,
@@ -257,7 +252,7 @@ class CheckoutAddressesStepCore extends AbstractCheckoutStep
             'show_delivery_address_form' => $this->show_delivery_address_form,
             'show_invoice_address_form' => $this->show_invoice_address_form,
             'form_has_continue_button' => $this->form_has_continue_button,
-        ];
+        );
 
         /** @var OrderControllerCore $controller */
         $controller = $this->context->controller;
@@ -268,9 +263,9 @@ class CheckoutAddressesStepCore extends AbstractCheckoutStep
                 : false;
             $invalidAddresses = isset($warnings['invalid_addresses'])
                 ? $warnings['invalid_addresses']
-                : [];
+                : array();
 
-            $errors = [];
+            $errors = array();
             if (in_array($idAddressDelivery, $invalidAddresses)) {
                 $errors['delivery_address_error'] = $addressWarning;
             }
@@ -289,10 +284,10 @@ class CheckoutAddressesStepCore extends AbstractCheckoutStep
             // Add specific parameters
             $params = array_replace(
                 $params,
-                [
+                array(
                     'not_valid_addresses' => implode(',', $invalidAddresses),
                     'use_same_address' => $this->use_same_address,
-                ],
+                ),
                 $errors
             );
         }
@@ -300,7 +295,7 @@ class CheckoutAddressesStepCore extends AbstractCheckoutStep
         return $params;
     }
 
-    public function render(array $extraParams = [])
+    public function render(array $extraParams = array())
     {
         return $this->renderTemplate(
             $this->getTemplate(),

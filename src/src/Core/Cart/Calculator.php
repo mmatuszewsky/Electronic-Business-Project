@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,19 +16,17 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Core\Cart;
 
 use Cart;
-use Currency;
-use PrestaShop\PrestaShop\Core\Localization\CLDR\ComputingPrecision;
-use Tools;
 
 /**
  * provides methods to process cart calculation.
@@ -45,11 +42,6 @@ class Calculator
      * @var int
      */
     protected $id_carrier;
-
-    /**
-     * @var int|null
-     */
-    protected $orderId;
 
     /**
      * @var CartRowCollection collection of cart content row (product+qty)
@@ -78,32 +70,14 @@ class Calculator
      */
     protected $isProcessed = false;
 
-    /**
-     * @var int|null
-     */
-    protected $computePrecision;
-
-    /**
-     * @param Cart $cart
-     * @param int $carrierId
-     * @param int|null $computePrecision
-     * @param int|null $orderId
-     */
-    public function __construct(Cart $cart, $carrierId, ?int $computePrecision = null, ?int $orderId = null)
+    public function __construct(Cart $cart, $carrierId)
     {
         $this->setCart($cart);
         $this->setCarrierId($carrierId);
-        $this->orderId = $orderId;
         $this->cartRows = new CartRowCollection();
-        $this->fees = new Fees($this->orderId);
+        $this->fees = new Fees();
         $this->cartRules = new CartRuleCollection();
         $this->cartRuleCalculator = new CartRuleCalculator();
-
-        if (null === $computePrecision) {
-            $currency = new Currency((int) $cart->id_currency);
-            $computePrecision = (new ComputingPrecision())->getPrecision($currency->precision);
-        }
-        $this->computePrecision = $computePrecision;
     }
 
     /**
@@ -143,16 +117,16 @@ class Calculator
     /**
      * run the whole calculation process: calculate rows, discounts, fees.
      *
-     * @param int $computePrecision Not used since 1.7.7.0, kept for backward compatibility
+     * @param int $computePrecision
      *
      * @return $this
      */
-    public function processCalculation($computePrecision = null)
+    public function processCalculation($computePrecision)
     {
         // calculate product rows
         $this->calculateRows();
         // calculate fees
-        $this->calculateFees();
+        $this->calculateFees($computePrecision);
         // calculate discounts
         $this->calculateCartRules();
         // store state
@@ -174,15 +148,18 @@ class Calculator
             throw new \Exception('Cart must be processed before getting its total');
         }
 
-        $amount = $this->getRowTotalWithoutDiscount();
-        $amount = $amount->sub($this->rounded($this->getDiscountTotal(), $this->computePrecision));
-        $shippingFees = $this->fees->getInitialShippingFees();
+        $amount = new AmountImmutable();
+        foreach ($this->cartRows as $cartRow) {
+            $rowPrice = $cartRow->getFinalTotalPrice();
+            $amount = $amount->add($rowPrice);
+        }
+        $shippingFees = $this->fees->getFinalShippingFees();
         if (null !== $shippingFees) {
-            $amount = $amount->add($this->rounded($shippingFees, $this->computePrecision));
+            $amount = $amount->add($shippingFees);
         }
         $wrappingFees = $this->fees->getFinalWrappingFees();
         if (null !== $wrappingFees) {
-            $amount = $amount->add($this->rounded($wrappingFees, $this->computePrecision));
+            $amount = $amount->add($wrappingFees);
         }
 
         return $amount;
@@ -208,55 +185,18 @@ class Calculator
      *
      * @throws \Exception
      */
-    public function getRowTotalWithoutDiscount()
-    {
-        $amount = new AmountImmutable();
-        foreach ($this->cartRows as $cartRow) {
-            $amount = $amount->add($cartRow->getInitialTotalPrice());
-        }
-
-        return $amount;
-    }
-
-    /**
-     * @return AmountImmutable
-     *
-     * @throws \Exception
-     */
     public function getDiscountTotal()
     {
         $amount = new AmountImmutable();
-        $isFreeShippingAppliedToAmount = false;
         foreach ($this->cartRules as $cartRule) {
-            if ((bool) $cartRule->getRuleData()['free_shipping']) {
-                if ($isFreeShippingAppliedToAmount) {
-                    $initialShippingFees = $this->getFees()->getInitialShippingFees();
-                    $amount = $amount->sub($initialShippingFees);
-                }
-                $isFreeShippingAppliedToAmount = true;
-            }
             $amount = $amount->add($cartRule->getDiscountApplied());
-        }
-
-        $allowedMaxDiscount = $this->getRowTotalWithoutDiscount();
-
-        if (null !== $this->getFees()->getFinalShippingFees()) {
-            $shippingDiscount = (new AmountImmutable())
-                ->add($this->getFees()->getInitialShippingFees())
-                ->sub($this->getFees()->getFinalShippingFees())
-            ;
-            $allowedMaxDiscount = $allowedMaxDiscount->add($shippingDiscount);
-        }
-        // discount cannot be above total cart price
-        if ($amount > $allowedMaxDiscount) {
-            $amount = $allowedMaxDiscount;
         }
 
         return $amount;
     }
 
     /**
-     * @param Cart $cart
+     * @param \CartCore $cart
      *
      * @return Calculator
      */
@@ -347,11 +287,11 @@ class Calculator
     /**
      * calculate wrapping and shipping fees (rows have to be calculated first).
      *
-     * @param int|null $computePrecision Not used since 1.7.7.0, kept for backward compatibility
+     * @param int $computePrecision
      */
-    public function calculateFees($computePrecision = null)
+    public function calculateFees($computePrecision)
     {
-        $this->fees->processCalculation($this->cart, $this->cartRows, $this->computePrecision, $this->id_carrier);
+        $this->fees->processCalculation($this->cart, $this->cartRows, $computePrecision, $this->id_carrier);
     }
 
     /**
@@ -360,19 +300,5 @@ class Calculator
     public function getCartRulesData()
     {
         return $this->cartRuleCalculator->getCartRulesData();
-    }
-
-    /**
-     * @param AmountImmutable $amount
-     * @param int $computePrecision
-     *
-     * @return AmountImmutable
-     */
-    private function rounded(AmountImmutable $amount, int $computePrecision)
-    {
-        return new AmountImmutable(
-            Tools::ps_round($amount->getTaxIncluded(), $computePrecision),
-            Tools::ps_round($amount->getTaxExcluded(), $computePrecision)
-        );
     }
 }

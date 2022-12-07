@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter;
@@ -44,10 +44,7 @@ use Tab;
  */
 class LegacyContext
 {
-    /** @var Context */
-    protected static $instance = null;
-
-    /** @var Currency|null */
+    /** @var Currency */
     private $employeeCurrency;
 
     /** @var string Contains the base uri for mail themes (by default https://domain.com/mails/themes/). Used for mails assets. */
@@ -78,7 +75,9 @@ class LegacyContext
      */
     public function getContext()
     {
-        if (null === static::$instance) {
+        static $legacyContext = null;
+
+        if (null === $legacyContext) {
             $legacyContext = Context::getContext();
 
             if ($legacyContext && !empty($legacyContext->shop) && !isset($legacyContext->controller) && isset($legacyContext->employee)) {
@@ -86,10 +85,9 @@ class LegacyContext
                 $adminController = new AdminController();
                 $adminController->initShopContext();
             }
-            static::$instance = $legacyContext;
         }
 
-        return static::$instance;
+        return $legacyContext;
     }
 
     /**
@@ -117,11 +115,11 @@ class LegacyContext
      *
      * @param string $controller the controller name
      * @param bool $withToken
-     * @param array<string> $extraParams
+     * @param array[string] $extraParams
      *
      * @return string
      */
-    public function getAdminLink($controller, $withToken = true, $extraParams = [])
+    public function getAdminLink($controller, $withToken = true, $extraParams = array())
     {
         return $this->getContext()->link->getAdminLink($controller, $withToken, $extraParams, $extraParams);
     }
@@ -135,7 +133,7 @@ class LegacyContext
      *
      * @return string
      */
-    public function getLegacyAdminLink($controller, $withToken = true, $extraParams = [])
+    public function getLegacyAdminLink($controller, $withToken = true, $extraParams = array())
     {
         return $this->getContext()->link->getLegacyAdminLink($controller, $withToken, $extraParams);
     }
@@ -165,16 +163,6 @@ class LegacyContext
     }
 
     /**
-     * Adapter to get upload directory
-     *
-     * @return string
-     */
-    public function getUploadDirectory()
-    {
-        return _PS_UPLOAD_DIR_;
-    }
-
-    /**
      * Url to the mail themes folder
      *
      * @return string
@@ -197,19 +185,15 @@ class LegacyContext
     }
 
     /**
-     * Adapter to get admin legacy layout into legacy controller context.
+     * Adapter to get admin legacy layout into old controller context.
      *
      * @param string $controllerName The legacy controller name
      * @param string $title The page title to override default one
      * @param array $headerToolbarBtn The header toolbar to override
      * @param string $displayType The legacy display type variable
      * @param bool $showContentHeader can force header toolbar (buttons and title) to be hidden with false value
-     * @param string $headerTabContent
      * @param bool $enableSidebar Allow to use right sidebar to display docs for instance
      * @param string $helpLink If specified, will be used instead of legacy one
-     * @param string[] $jsRouterMetadata array to provide base_url and security token for JS Router
-     * @param string $metaTitle
-     * @param bool $useRegularH1Structure allows complex <h1> structure if set to false
      *
      * @return string The html layout
      */
@@ -221,10 +205,7 @@ class LegacyContext
         $showContentHeader,
         $headerTabContent,
         $enableSidebar,
-        $helpLink = '',
-        $jsRouterMetadata = [],
-        $metaTitle = '',
-        $useRegularH1Structure = true
+        $helpLink = ''
     ) {
         $originCtrl = new AdminLegacyLayoutControllerCore(
             $controllerName,
@@ -234,10 +215,7 @@ class LegacyContext
             $showContentHeader,
             $headerTabContent,
             $enableSidebar,
-            $helpLink,
-            $jsRouterMetadata,
-            $metaTitle,
-            $useRegularH1Structure
+            $helpLink
         );
         $originCtrl->run();
 
@@ -251,11 +229,11 @@ class LegacyContext
      * @param int|bool $id_shop Shop ID
      * @param bool $ids_only If true, returns an array of language IDs
      *
-     * @return array<int|array> Languages
+     * @return array Languages
      */
     public function getLanguages($active = true, $id_shop = false, $ids_only = false)
     {
-        $languages = $this->getLegacyLanguages($active, $id_shop, $ids_only);
+        $languages = Language::getLanguages($active, $id_shop, $ids_only);
         $defaultLanguageFirst = $this->getLanguage();
         usort($languages, function ($a, $b) use ($defaultLanguageFirst) {
             if ($a['id_lang'] == $defaultLanguageFirst->id) {
@@ -284,12 +262,12 @@ class LegacyContext
     /**
      * Returns Currency set for the current employee.
      *
-     * @return Currency|null
+     * @return Currency
      */
     public function getEmployeeCurrency()
     {
         if (null === $this->employeeCurrency && $this->getContext()->currency) {
-            $this->employeeCurrency = $this->getContext()->currency;
+            $this->employeeCurrency = $this->getContext()->currency->sign;
         }
 
         return $this->employeeCurrency;
@@ -343,27 +321,6 @@ class LegacyContext
      */
     public function getAvailableLanguages()
     {
-        return $this->getLegacyLanguages(false);
-    }
-
-    /**
-     * @param bool $active
-     * @param bool|int $id_shop
-     * @param bool $ids_only
-     *
-     * @return array
-     */
-    private function getLegacyLanguages(bool $active = true, $id_shop = false, bool $ids_only = false): array
-    {
-        return Language::getLanguages($active, $id_shop, $ids_only);
-    }
-
-    /**
-     * @param Context $testInstance
-     *                              Unit testing purpose only
-     */
-    public static function setInstanceForTesting(Context $testInstance)
-    {
-        static::$instance = $testInstance;
+        return $this->getLanguages(false);
     }
 }

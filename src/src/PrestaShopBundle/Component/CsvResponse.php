@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Component;
@@ -32,13 +32,13 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class CsvResponse extends StreamedResponse
 {
     // Mode used to paginate page per page, 1/100, 2/100, 3/000, etc
-    public const MODE_PAGINATION = 1;
+    const MODE_PAGINATION = 1;
 
     // Mode used to paginate by offset, 1/100, 100/100, 200/100, etc (like MySql limit)
-    public const MODE_OFFSET = 2;
+    const MODE_OFFSET = 2;
 
     /**
-     * @var array|callable CSV content
+     * @var array() CSV content
      */
     private $data;
 
@@ -50,7 +50,7 @@ class CsvResponse extends StreamedResponse
     /**
      * @var array
      */
-    private $headersData = [];
+    private $headersData = array();
 
     /**
      * @var int, self::MODE_PAGINATION by default
@@ -74,12 +74,12 @@ class CsvResponse extends StreamedResponse
      * @param int $status The response status code
      * @param array $headers An array of response headers
      */
-    public function __construct($callback = null, $status = 200, $headers = [])
+    public function __construct($callback = null, $status = 200, $headers = array())
     {
         parent::__construct($callback, $status, $headers);
 
         if (null === $callback) {
-            $this->setCallback([$this, 'processData']);
+            $this->setCallback(array($this, 'processData'));
         }
 
         $this->setFileName('export_' . date('Y-m-d_His') . '.csv');
@@ -111,7 +111,7 @@ class CsvResponse extends StreamedResponse
     }
 
     /**
-     * @param int $modeType
+     * @param $modeType int
      *
      * @return $this
      */
@@ -123,7 +123,7 @@ class CsvResponse extends StreamedResponse
     }
 
     /**
-     * @param int $start
+     * @param $start int
      *
      * @return $this
      */
@@ -135,7 +135,7 @@ class CsvResponse extends StreamedResponse
     }
 
     /**
-     * @param int $limit
+     * @param $limit int
      *
      * @return $this
      */
@@ -214,7 +214,7 @@ class CsvResponse extends StreamedResponse
         fputcsv($handle, $this->headersData, ';');
 
         do {
-            $data = call_user_func_array($this->data, [$this->start, $this->limit]);
+            $data = call_user_func_array($this->data, array($this->start, $this->limit));
 
             $count = count($data);
             if ($count === 0) {
@@ -222,7 +222,7 @@ class CsvResponse extends StreamedResponse
             }
 
             foreach ($data as $line) {
-                $lineData = [];
+                $lineData = array();
 
                 foreach (array_keys($this->headersData) as $column) {
                     if (array_key_exists($column, $line)) {
@@ -280,7 +280,7 @@ class CsvResponse extends StreamedResponse
     }
 
     /**
-     * @param resource $handle file pointer
+     * @param $handle, file pointer
      */
     private function dumpFile($handle)
     {

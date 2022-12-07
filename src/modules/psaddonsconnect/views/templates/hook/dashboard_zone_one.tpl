@@ -73,7 +73,7 @@
 		                                <button id="ps-addons_login_btn" class="btn btn-primary-reverse btn-lg onclick" style="display:none;"></button>
 		                            </form>
 		                            <p>
-		                                <a href="http://addons.prestashop.com/password.php" target="_blank">{l s='Forgot your password?' mod='psaddonsconnect'}</a>
+		                                <a href="http://addons.prestashop.com/password.php?utm_source=back-office&utm_medium=AddonsConnect&utm_campaign=back-office-{$currentLangIsoCode}&utm_content=password" target="_blank">{l s='Forgot your password?' mod='psaddonsconnect'}</a>
 		                            </p>
 		                        </div>
 		                    </div>

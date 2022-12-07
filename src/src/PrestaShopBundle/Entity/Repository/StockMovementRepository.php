@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Entity\Repository;
@@ -44,7 +44,7 @@ class StockMovementRepository extends StockManagementRepository
      * @param EntityManager $entityManager
      * @param ContextAdapter $contextAdapter
      * @param ImageManager $imageManager
-     * @param string $tablePrefix
+     * @param $tablePrefix
      */
     public function __construct(
         ContainerInterface $container,
@@ -81,25 +81,22 @@ class StockMovementRepository extends StockManagementRepository
         }
 
         $combinationNameQuery = $this->getCombinationNameSubquery();
-        $attributeNameQuery = $this->getAttributeNameSubquery();
 
         return str_replace(
-            [
+            array(
                 '{and_where}',
                 '{having}',
                 '{order_by}',
                 '{table_prefix}',
                 '{combination_name}',
-                '{attribute_name}',
-            ],
-            [
+            ),
+            array(
                 $andWhereClause,
                 $having,
                 $orderByClause,
                 $this->tablePrefix,
                 $combinationNameQuery,
-                $attributeNameQuery,
-            ],
+            ),
             'SELECT SQL_CALC_FOUND_ROWS
               sm.id_stock_mvt,
               sm.id_stock,
@@ -123,8 +120,7 @@ class StockMovementRepository extends StockManagementRepository
               p.id_supplier                               AS supplier_id,
               COALESCE(s.name, "N/A")                     AS supplier_name,
               COALESCE(ic.id_image, 0)                    AS product_cover_id,
-              {combination_name},
-              {attribute_name}
+              {combination_name}
            FROM {table_prefix}stock_mvt sm
             INNER JOIN {table_prefix}stock_mvt_reason_lang smrl ON (
               smrl.id_stock_mvt_reason = sm.id_stock_mvt_reason
@@ -205,8 +201,8 @@ class StockMovementRepository extends StockManagementRepository
                 $row['order_link'] = $this->contextAdapter->getContext()->link->getAdminLink(
                     'AdminOrders',
                     true,
-                    [],
-                    ['vieworder' => true, 'id_order' => (int) $row['id_order']]
+                    array(),
+                    array('vieworder' => true, 'id_order' => (int) $row['id_order'])
                 );
             } else {
                 $row['order_link'] = 'N/A';

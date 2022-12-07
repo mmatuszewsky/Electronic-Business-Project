@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,18 +16,18 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Domain;
 
 use Context;
 use Db;
-use ImageManager;
 use ObjectModel;
 use PrestaShopDatabaseException;
 use Shop;
@@ -70,8 +69,10 @@ abstract class AbstractObjectModelHandler
             }
         }
 
-        $excludeShopsCondtion =
-            ' AND id_shop NOT IN (' . implode(', ', array_map('intval', $excludeIds)) . ')';
+        $excludeShopsCondtion = $excludeIds ?
+            ' AND id_shop NOT IN (' . implode(', ', array_map('intval', $excludeIds)) . ')' :
+            ''
+        ;
 
         Db::getInstance()->delete(
             $tableName . '_shop',
@@ -127,36 +128,5 @@ abstract class AbstractObjectModelHandler
                 $primaryKey . '=' . $primaryKeyValue
             );
         }
-    }
-
-    /**
-     * @param string $imagePath the original image path
-     * @param int $imageId
-     * @param string $belongsTo object name to which image belongs (e.g. 'supplier', 'manufacturer')
-     *
-     * @return string
-     */
-    protected function getTmpImageTag($imagePath, $imageId, $belongsTo)
-    {
-        return ImageManager::thumbnail(
-            $imagePath,
-            $belongsTo . '_' . $imageId . '.jpg',
-            350,
-            'jpg',
-            true,
-            true
-        );
-    }
-
-    /**
-     * Calculates and returns image size in kb for provided image path. Returns null if image doesn't exist
-     *
-     * @param string $imagePath
-     *
-     * @return float|null
-     */
-    protected function getImageSize($imagePath)
-    {
-        return file_exists($imagePath) ? filesize($imagePath) / 1000 : null;
     }
 }

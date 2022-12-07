@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 use PrestaShop\PrestaShop\Adapter\Configuration;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -37,32 +37,27 @@ class LegacyCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $this->buildDefinitions([
-            'configuration' => Configuration::class,
-            'context' => [Context::class, 'getContext'],
-            'db' => [Db::class, 'getInstance'],
+        $context = Context::getContext();
+
+        $this->buildSyntheticDefinitions([
+            'configuration',
+            'context',
+            'db',
+            'shop',
+            'employee',
         ], $container);
 
-        $this->buildSyntheticDefinitions(['shop' => Shop::class, 'employee' => Employee::class], $container);
+        $container->set('context', $context);
+        $container->set('configuration', new Configuration());
+        $container->set('db', Db::getInstance());
+        $container->set('shop', $context->shop);
+        $container->set('employee', $context->employee);
     }
 
-    private function buildDefinitions(array $keys, ContainerBuilder $container): void
+    private function buildSyntheticDefinitions(array $keys, ContainerBuilder $container)
     {
-        foreach ($keys as $key => $class) {
-            if (is_array($class)) {
-                $definition = new Definition($class[0]);
-                $definition->setFactory($class);
-            } else {
-                $definition = new Definition($class);
-            }
-            $container->setDefinition($key, $definition);
-        }
-    }
-
-    private function buildSyntheticDefinitions(array $keys, ContainerBuilder $container): void
-    {
-        foreach ($keys as $key => $class) {
-            $definition = new Definition($class);
+        foreach ($keys as $key) {
+            $definition = new Definition();
             $definition->setSynthetic(true);
             $container->setDefinition($key, $definition);
         }

@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints;
@@ -34,27 +34,6 @@ use Symfony\Component\Validator\Constraint;
  */
 class TypedRegex extends Constraint
 {
-    /**
-     * Available types
-     */
-    public const TYPE_NAME = 'name';
-    public const TYPE_CATALOG_NAME = 'catalog_name';
-    public const TYPE_GENERIC_NAME = 'generic_name';
-    public const TYPE_CITY_NAME = 'city_name';
-    public const TYPE_ADDRESS = 'address';
-    public const TYPE_POST_CODE = 'post_code';
-    public const TYPE_PHONE_NUMBER = 'phone_number';
-    public const TYPE_MESSAGE = 'message';
-    public const TYPE_LANGUAGE_ISO_CODE = 'language_iso_code';
-    public const TYPE_LANGUAGE_CODE = 'language_code';
-    public const TYPE_CURRENCY_ISO_CODE = 'currency_iso_code';
-    public const TYPE_FILE_NAME = 'file_name';
-    public const TYPE_DNI_LITE = 'dni_lite';
-    public const TYPE_UPC = 'upc';
-    public const TYPE_EAN_13 = 'ean_13';
-    public const TYPE_ISBN = 'isbn';
-    public const TYPE_REFERENCE = 'reference';
-
     /**
      * @var string
      */
@@ -79,13 +58,5 @@ class TypedRegex extends Constraint
     public function validatedBy()
     {
         return TypedRegexValidator::class;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getDefaultOption()
-    {
-        return 'type';
     }
 }

@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Install;
@@ -31,7 +31,7 @@ use Symfony\Component\Finder\Finder;
 
 class LanguageList
 {
-    public const DEFAULT_ISO = 'en';
+    const DEFAULT_ISO = 'en';
 
     /**
      * @var array List of available languages
@@ -70,9 +70,9 @@ class LanguageList
             throw new PrestashopInstallerException('English language is missing');
         }
 
-        $this->languages = [
+        $this->languages = array(
             self::DEFAULT_ISO => new Language(self::DEFAULT_ISO),
-        ];
+        );
 
         // Load other languages
         foreach ((new Finder())->files()->name('language.xml')->in(_PS_INSTALL_LANGS_PATH_) as $langFile) {
@@ -119,7 +119,7 @@ class LanguageList
      */
     public function getLanguage($iso = null)
     {
-        if (!isset($this->languages[$iso])) {
+        if (!$iso) {
             $iso = $this->language;
         }
 
@@ -151,32 +151,20 @@ class LanguageList
         static $countries = null;
 
         if (null === $countries) {
-            $countries = $this->getCountriesByLanguage();
+            $countries = array();
+            $countries_lang = $this->getLanguage()->getCountries();
+            $countries_default = $this->getLanguage(self::DEFAULT_ISO)->getCountries();
+            $xml = @simplexml_load_file(_PS_INSTALL_DATA_PATH_ . 'xml/country.xml');
+            if ($xml) {
+                foreach ($xml->entities->country as $country) {
+                    $iso = strtolower((string) $country['iso_code']);
+                    $countries[$iso] = isset($countries_lang[$iso]) ? $countries_lang[$iso] : $countries_default[$iso];
+                }
+            }
+            asort($countries);
         }
 
         return $countries;
-    }
-
-    /**
-     * @param string|null $iso
-     *
-     * @return array
-     */
-    public function getCountriesByLanguage(?string $iso = null): array
-    {
-        $countryList = [];
-        $langCountries = $this->getLanguage($iso)->getCountries();
-        $defaultCountries = $this->getLanguage(self::DEFAULT_ISO)->getCountries();
-        $xml = @simplexml_load_file(_PS_INSTALL_DATA_PATH_ . 'xml/country.xml');
-        if ($xml) {
-            foreach ($xml->entities->country as $country) {
-                $iso = strtolower((string) $country['iso_code']);
-                $countryList[$iso] = isset($langCountries[$iso]) ? $langCountries[$iso] : $defaultCountries[$iso];
-            }
-        }
-        asort($countryList);
-
-        return $countryList;
     }
 
     /**

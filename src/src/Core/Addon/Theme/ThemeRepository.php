@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Core\Addon\Theme;
@@ -31,6 +31,7 @@ use PrestaShop\PrestaShop\Core\Addon\AddonListFilterStatus;
 use PrestaShop\PrestaShop\Core\Addon\AddonListFilterType;
 use PrestaShop\PrestaShop\Core\Addon\AddonRepositoryInterface;
 use PrestaShop\PrestaShop\Core\ConfigurationInterface;
+use PrestaShop\PrestaShop\Core\Foundation\Filesystem\FileSystem as PsFileSystem;
 use PrestaShopException;
 use Shop;
 use Symfony\Component\Filesystem\Filesystem;
@@ -38,22 +39,9 @@ use Symfony\Component\Yaml\Parser;
 
 class ThemeRepository implements AddonRepositoryInterface
 {
-    /**
-     * @var ConfigurationInterface
-     */
     private $appConfiguration;
-    /**
-     * @var Filesystem
-     */
     private $filesystem;
-    /**
-     * @var Shop|null
-     */
     private $shop;
-    /**
-     * @var array
-     */
-    public $themes;
 
     public function __construct(ConfigurationInterface $configuration, Filesystem $filesystem, Shop $shop = null)
     {
@@ -62,13 +50,6 @@ class ThemeRepository implements AddonRepositoryInterface
         $this->shop = $shop;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return \PrestaShop\PrestaShop\Core\Addon\AddonInterface|Theme
-     *
-     * @throws PrestaShopException
-     */
     public function getInstanceByName($name)
     {
         $dir = $this->appConfiguration->get('_PS_ALL_THEMES_DIR_') . $name;
@@ -85,7 +66,7 @@ class ThemeRepository implements AddonRepositoryInterface
             $data = $this->getConfigFromFile($dir . '/config/theme.yml');
 
             // Write parsed yml data into json conf (faster parsing next time)
-            $this->filesystem->dumpFile($jsonConf, json_encode($data));
+            $this->filesystem->dumpFile($jsonConf, json_encode($data), PsFileSystem::DEFAULT_MODE_FILE);
         }
 
         $data['directory'] = $dir;
@@ -146,10 +127,13 @@ class ThemeRepository implements AddonRepositoryInterface
         $suffix = 'config/theme.yml';
         $themeDirectories = glob($this->appConfiguration->get('_PS_ALL_THEMES_DIR_') . '*/' . $suffix, GLOB_NOSORT);
 
-        $themes = [];
+        $themes = array();
         foreach ($themeDirectories as $directory) {
             $name = basename(substr($directory, 0, -strlen($suffix)));
-            $themes[$name] = $this->getInstanceByName($name);
+            $theme = $this->getInstanceByName($name);
+            if (isset($theme)) {
+                $themes[$name] = $theme;
+            }
         }
 
         return $themes;
@@ -158,7 +142,10 @@ class ThemeRepository implements AddonRepositoryInterface
     private function getConfigFromFile($file)
     {
         if (!$this->filesystem->exists($file)) {
-            throw new PrestaShopException(sprintf('[ThemeRepository] Theme configuration file not found for theme at `%s`.', $file));
+            throw new PrestaShopException(sprintf(
+                '[ThemeRepository] Theme configuration file not found for theme at `%s`.',
+                $file
+            ));
         }
 
         $content = file_get_contents($file);

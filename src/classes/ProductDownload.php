@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,14 +16,13 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
-
-use PrestaShop\PrestaShop\Core\Domain\Product\VirtualProductFile\VirtualProductFileSettings;
 
 /**
  * Class ProductDownloadCore.
@@ -46,10 +44,10 @@ class ProductDownloadCore extends ObjectModel
     /** @var string DateExpiration deadline of the file */
     public $date_expiration;
 
-    /** @var int NbDaysAccessible how many days the customer can access to file */
+    /** @var string NbDaysAccessible how many days the customer can access to file */
     public $nb_days_accessible;
 
-    /** @var int NbDownloadable how many time the customer can download the file */
+    /** @var string NbDownloadable how many time the customer can download the file */
     public $nb_downloadable;
 
     /** @var bool Active if file is accessible or not */
@@ -58,26 +56,26 @@ class ProductDownloadCore extends ObjectModel
     /** @var bool is_shareable indicates whether the product can be shared */
     public $is_shareable = 0;
 
-    protected static $_productIds = [];
+    protected static $_productIds = array();
 
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = [
+    public static $definition = array(
         'table' => 'product_download',
         'primary' => 'id_product_download',
-        'fields' => [
-            'id_product' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'display_filename' => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => VirtualProductFileSettings::MAX_DISPLAY_FILENAME_LENGTH],
-            'filename' => ['type' => self::TYPE_STRING, 'validate' => 'isSha1', 'size' => VirtualProductFileSettings::MAX_FILENAME_LENGTH],
-            'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-            'date_expiration' => ['type' => self::TYPE_DATE, 'validate' => 'isDateOrNull'],
-            'nb_days_accessible' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'size' => 10],
-            'nb_downloadable' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'size' => 10],
-            'active' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'is_shareable' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-        ],
-    ];
+        'fields' => array(
+            'id_product' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
+            'display_filename' => array('type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 255),
+            'filename' => array('type' => self::TYPE_STRING, 'validate' => 'isSha1', 'size' => 255),
+            'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
+            'date_expiration' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
+            'nb_days_accessible' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'size' => 10),
+            'nb_downloadable' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'size' => 10),
+            'active' => array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
+            'is_shareable' => array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
+        ),
+    );
 
     /**
      * Build a virtual product.

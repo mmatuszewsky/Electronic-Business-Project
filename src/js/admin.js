@@ -1,11 +1,10 @@
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -16,11 +15,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 var ajax_running_timeout = null;
@@ -362,11 +362,8 @@ function gencode(size)
   getE('code').value = '';
   /* There are no O/0 in the codes in order to avoid confusion */
   var chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZ";
-  for (var i = 1; i <= size; ++i) {
+  for (var i = 1; i <= size; ++i)
     getE('code').value += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-
-  getE('cart-rules-highlight').style.display = '';
 }
 
 var tpl_viewing_window = null;
@@ -753,24 +750,21 @@ $(document).ready(function()
       return copyMeta2friendlyURL()
   });
 
-  $(document)
-    .ajaxStart(function() {
-      ajax_running_timeout = setTimeout(function() {
-        showAjaxOverlay()
-      }, 1000);
-    })
-    .ajaxStop(function() {
-      setTimeout(function() {
-        $('#ajax_running').hide()
-      }, 1000);
-      clearTimeout(ajax_running_timeout);
-    })
-    .ajaxError(function() {
-      setTimeout(function() {
-        $('#ajax_running').hide()
-      }, 1000);
-      clearTimeout(ajax_running_timeout);
-    });
+  $('#ajax_running').ajaxStart(function() {
+    ajax_running_timeout = setTimeout(function() {showAjaxOverlay()}, 1000);
+  });
+
+  $('#ajax_running').ajaxStop(function() {
+    var element = $(this)
+    setTimeout(function(){element.hide()}, 1000);
+    clearTimeout(ajax_running_timeout);
+  });
+
+  $('#ajax_running').ajaxError(function() {
+    var element = $(this)
+    setTimeout(function(){element.hide()}, 1000);
+    clearTimeout(ajax_running_timeout);
+  });
 
   bindTabModuleListAction();
 
@@ -905,7 +899,6 @@ $(document).ready(function()
   });
 
   $('.swap-container').each(function() {
-    var swap_container = this;
     /** make sure that all the swap id is present in the dom to prevent mistake **/
     if (typeof $('.addSwap', this) !== undefined && typeof $(".removeSwap", this) !== undefined &&
       typeof $('.selectedSwap', this) !== undefined && typeof $('.availableSwap', this) !== undefined)
@@ -914,7 +907,7 @@ $(document).ready(function()
       bindSwapButton('remove', 'selected', 'available', this);
 
       $('button:submit').click(function() {
-        bindSwapSave(swap_container);
+        bindSwapSave(this);
       });
     }
   });
@@ -1553,7 +1546,7 @@ function checkLangPack(token){
           content = $.parseJSON(ret.content);
           message = langPackOk + ' <b>'+content['name'] + '</b>) :'
             +'<br />' + langPackVersion + ' ' + content['version']
-            + ' <a href="https://www.prestashop.com/download/lang_packs/gzip/' + content['version'] + '/'
+            + ' <a href="http://www.prestashop.com/download/lang_packs/gzip/' + content['version'] + '/'
             + ($('#iso_code').val()).toLowerCase()+'.gzip" target="_blank" class="link">'+download+'</a><br />' + langPackInfo;
           $('#lang_pack_msg').html(message);
           $('#lang_pack_msg').show();
@@ -1566,6 +1559,25 @@ function checkLangPack(token){
 }
 
 function redirect(new_page) { window.location = new_page; }
+
+function saveCustomerNote() {
+  var $customerNoteForm = $('#customer_note');
+  var noteContent = $('#noteContent').val();
+
+  $.ajax({
+    type: "POST",
+    url: $customerNoteForm.attr('action'),
+    data: {
+      'private_note': {
+        'note': noteContent
+      }
+    },
+    async : true,
+    success: function(r) {
+      showSuccessMessage(r.message);
+    }
+  });
+}
 
 function isCleanHtml(content)
 {

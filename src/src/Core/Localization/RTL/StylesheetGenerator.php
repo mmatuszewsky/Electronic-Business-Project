@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Core\Localization\RTL;
@@ -46,17 +46,17 @@ class StylesheetGenerator
     /**
      * Default file type to look up.
      */
-    public const DEFAULT_FILE_TYPE = 'css';
+    const DEFAULT_FILE_TYPE = 'css';
 
     /**
      * Default suffix to use for RTL transformed files.
      */
-    public const DEFAULT_RTL_SUFFIX = '_rtl';
+    const DEFAULT_RTL_SUFFIX = '_rtl';
 
     /**
      * Extension of RTL fix files.
      */
-    public const RTLFIX_EXTENSION = 'rtlfix';
+    const RTLFIX_EXTENSION = 'rtlfix';
 
     /**
      * @var string
@@ -127,13 +127,20 @@ class StylesheetGenerator
         $content = file_get_contents($filePath);
 
         if ($content === false) {
-            throw new GenerationException(sprintf('Unable to read from CSS file: %s', $filePath));
+            throw new GenerationException(
+                sprintf(
+                    'Unable to read from CSS file: %s',
+                    $filePath
+                )
+            );
         }
 
         $rendered = CSSJanus::transform($content);
 
         if (strlen($rendered) === 0 && strlen($content) !== 0) {
-            throw new GenerationException(sprintf('Failed to generate RTL CSS from file: %s', $filePath));
+            throw new GenerationException(
+                sprintf('Failed to generate RTL CSS from file: %s', $filePath)
+            );
         }
 
         $content = $this->appendRtlFixIfNecessary(
@@ -202,7 +209,12 @@ class StylesheetGenerator
             $rtlFixContent = file_get_contents($rtlFixFilePath);
 
             if ($rtlFixContent === false) {
-                throw new GenerationException(sprintf('Failed to read from file: %s', $rtlFixFilePath));
+                throw new GenerationException(
+                    sprintf(
+                        'Failed to read from file: %s',
+                        $rtlFixFilePath
+                    )
+                );
             }
 
             return $content . PHP_EOL . $rtlFixContent;
@@ -224,7 +236,12 @@ class StylesheetGenerator
         $rtlFilePath = $this->getRtlFileName($baseFile);
 
         if (false === file_put_contents($rtlFilePath, $content)) {
-            throw new GenerationException(sprintf('Unable to write file to: %s', $rtlFilePath));
+            throw new GenerationException(
+                sprintf(
+                    'Unable to write file to: %s',
+                    $rtlFilePath
+                )
+            );
         }
 
         @chmod($rtlFilePath, FileSystem::DEFAULT_MODE_FILE);

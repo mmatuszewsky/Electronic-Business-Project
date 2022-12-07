@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,20 +16,21 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Core\Domain\Currency\Command;
 
 use PrestaShop\PrestaShop\Core\Domain\Currency\Exception\CurrencyConstraintException;
 use PrestaShop\PrestaShop\Core\Domain\Currency\Exception\CurrencyException;
-use PrestaShop\PrestaShop\Core\Domain\Currency\ValueObject\CurrencyId;
 use PrestaShop\PrestaShop\Core\Domain\Currency\ValueObject\ExchangeRate;
-use PrestaShop\PrestaShop\Core\Domain\Currency\ValueObject\Precision;
+use PrestaShop\PrestaShop\Core\Domain\Currency\ValueObject\CurrencyId;
+use PrestaShop\PrestaShop\Core\Domain\Currency\ValueObject\AlphaIsoCode;
 
 /**
  * Class EditCurrencyCommand
@@ -40,42 +40,27 @@ class EditCurrencyCommand
     /**
      * @var CurrencyId
      */
-    protected $currencyId;
+    private $currencyId;
 
     /**
-     * @var ExchangeRate|null
+     * @var AlphaIsoCode
      */
-    protected $exchangeRate;
+    private $isoCode;
 
     /**
-     * @var Precision|null
+     * @var ExchangeRate
      */
-    protected $precision;
-
-    /**
-     * @var string[]
-     */
-    protected $localizedNames = [];
-
-    /**
-     * @var string[]
-     */
-    protected $localizedSymbols = [];
+    private $exchangeRate;
 
     /**
      * @var bool
      */
-    protected $isEnabled;
+    private $isEnabled;
 
     /**
      * @var int[]
      */
-    protected $shopIds = [];
-
-    /**
-     * @var string[]
-     */
-    protected $localizedTransformations = [];
+    private $shopIds;
 
     /**
      * @param int $currencyId
@@ -96,7 +81,29 @@ class EditCurrencyCommand
     }
 
     /**
-     * @return ExchangeRate|null
+     * @return AlphaIsoCode
+     */
+    public function getIsoCode()
+    {
+        return $this->isoCode;
+    }
+
+    /**
+     * @param string $isoCode
+     *
+     * @return self
+     *
+     * @throws CurrencyConstraintException
+     */
+    public function setIsoCode($isoCode)
+    {
+        $this->isoCode = new AlphaIsoCode($isoCode);
+
+        return $this;
+    }
+
+    /**
+     * @return ExchangeRate
      */
     public function getExchangeRate()
     {
@@ -113,80 +120,6 @@ class EditCurrencyCommand
     public function setExchangeRate($exchangeRate)
     {
         $this->exchangeRate = new ExchangeRate($exchangeRate);
-
-        return $this;
-    }
-
-    /**
-     * @return Precision|null
-     */
-    public function getPrecision(): ?Precision
-    {
-        return $this->precision;
-    }
-
-    /**
-     * @param int|string $precision
-     *
-     * @return self
-     *
-     * @throws CurrencyConstraintException
-     */
-    public function setPrecision($precision): EditCurrencyCommand
-    {
-        $this->precision = new Precision($precision);
-
-        return $this;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getLocalizedNames(): array
-    {
-        return $this->localizedNames;
-    }
-
-    /**
-     * @param string[] $localizedNames currency's localized names, indexed by language id
-     *
-     * @return $this
-     *
-     * @throws CurrencyConstraintException
-     */
-    public function setLocalizedNames(array $localizedNames): EditCurrencyCommand
-    {
-        if (empty($localizedNames)) {
-            throw new CurrencyConstraintException('Currency name cannot be empty', CurrencyConstraintException::EMPTY_NAME);
-        }
-
-        $this->localizedNames = $localizedNames;
-
-        return $this;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getLocalizedSymbols()
-    {
-        return $this->localizedSymbols;
-    }
-
-    /**
-     * @param string[] $localizedSymbols currency's localized symbols, indexed by language id
-     *
-     * @return $this
-     *
-     * @throws CurrencyConstraintException
-     */
-    public function setLocalizedSymbols(array $localizedSymbols): EditCurrencyCommand
-    {
-        if (empty($localizedSymbols)) {
-            throw new CurrencyConstraintException('Currency symbol cannot be empty', CurrencyConstraintException::EMPTY_SYMBOL);
-        }
-
-        $this->localizedSymbols = $localizedSymbols;
 
         return $this;
     }
@@ -227,28 +160,6 @@ class EditCurrencyCommand
     public function setShopIds(array $shopIds)
     {
         $this->shopIds = $shopIds;
-
-        return $this;
-    }
-
-    /**
-     * Returns the currency's localized transformations, indexed by language id
-     *
-     * @return string[]
-     */
-    public function getLocalizedTransformations(): array
-    {
-        return $this->localizedTransformations;
-    }
-
-    /**
-     * @param string[] $localizedTransformations currency's localized transformations, indexed by language id
-     *
-     * @return $this
-     */
-    public function setLocalizedTransformations(array $localizedTransformations): EditCurrencyCommand
-    {
-        $this->localizedTransformations = $localizedTransformations;
 
         return $this;
     }

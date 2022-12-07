@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,25 +16,26 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Form\Admin\Improve\International\Translations;
 
 use PrestaShop\PrestaShop\Core\Form\FormHandlerInterface;
 use PrestaShop\PrestaShop\Core\Hook\HookDispatcherInterface;
-use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormBuilderInterface;
 
 final class TranslationsSettingsFormHandler implements FormHandlerInterface
 {
     /**
-     * @var FormFactoryInterface the form builder
+     * @var FormBuilderInterface the form builder
      */
-    protected $formFactory;
+    protected $formBuilder;
 
     /**
      * @var HookDispatcherInterface the event dispatcher
@@ -48,25 +48,25 @@ final class TranslationsSettingsFormHandler implements FormHandlerInterface
     protected $hookName;
 
     /**
-     * @var string
+     * @var array the list of Form Types
      */
-    protected $form;
+    protected $formTypes;
 
     /**
-     * @param FormFactoryInterface $formFactory
+     * @param FormBuilderInterface $formBuilder
      * @param HookDispatcherInterface $hookDispatcher
-     * @param string $form
+     * @param array $formTypes
      * @param string $hookName
      */
     public function __construct(
-        FormFactoryInterface $formFactory,
+        FormBuilderInterface $formBuilder,
         HookDispatcherInterface $hookDispatcher,
-        string $form,
-        string $hookName
+        array $formTypes,
+        $hookName
     ) {
-        $this->formFactory = $formFactory;
+        $this->formBuilder = $formBuilder;
         $this->hookDispatcher = $hookDispatcher;
-        $this->form = $form;
+        $this->formTypes = $formTypes;
         $this->hookName = $hookName;
     }
 
@@ -75,16 +75,18 @@ final class TranslationsSettingsFormHandler implements FormHandlerInterface
      */
     public function getForm()
     {
-        $formBuilder = $this->formFactory->createNamedBuilder('form', $this->form);
+        foreach ($this->formTypes as $formName => $formType) {
+            $this->formBuilder->add($formName, $formType);
+        }
 
         $this->hookDispatcher->dispatchWithParameters(
             "action{$this->hookName}Form",
             [
-                'form_builder' => $formBuilder,
+                'form_builder' => $this->formBuilder,
             ]
         );
 
-        return $formBuilder->getForm();
+        return $this->formBuilder->getForm();
     }
 
     /**

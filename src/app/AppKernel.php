@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,29 +16,29 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
-use PrestaShop\PrestaShop\Adapter\Module\Repository\ModuleRepository;
-use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
+use PrestaShopBundle\Kernel\ModuleRepositoryFactory;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 
 class AppKernel extends Kernel
 {
-    const VERSION = '1.7.8.7';
+    const VERSION = '1.7.6.5';
     const MAJOR_VERSION_STRING = '1.7';
     const MAJOR_VERSION = 17;
-    const MINOR_VERSION = 8;
-    const RELEASE_VERSION = 7;
+    const MINOR_VERSION = 6;
+    const RELEASE_VERSION = 5;
 
     /**
-     * {@inheritdoc}
+     * @{inheritdoc}
      */
     public function registerBundles()
     {
@@ -58,7 +57,6 @@ class AppKernel extends Kernel
             // REST API consumer
             new Csa\Bundle\GuzzleBundle\CsaGuzzleBundle(),
             new League\Tactician\Bundle\TacticianBundle(),
-            new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'), true)) {
@@ -84,21 +82,7 @@ class AppKernel extends Kernel
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function reboot($warmupDir)
-    {
-        parent::reboot($warmupDir);
-
-        // We have classes to access the container from legacy code, they need to be cleaned after reboot
-        Context::getContext()->container = null;
-        SymfonyContainer::resetStaticCache();
-        // @todo: do not want to risk right now but maybe Context::getContext()->controller->container needs refreshing
-        //        but only if it is a Symfony container (do not override front legacy container)
-    }
-
-    /**
-     * {@inheritdoc}
+     * @{inheritdoc}
      */
     protected function getKernelParameters()
     {
@@ -111,7 +95,7 @@ class AppKernel extends Kernel
     }
 
     /**
-     * {@inheritdoc}
+     * @{inheritdoc}
      */
     public function getRootDir()
     {
@@ -119,24 +103,23 @@ class AppKernel extends Kernel
     }
 
     /**
-     * {@inheritdoc}
+     * @{inheritdoc}
      */
     public function getCacheDir()
     {
-        return _PS_CACHE_DIR_;
+        return dirname(__DIR__).'/var/cache/'.$this->getEnvironment();
     }
 
     /**
-     * {@inheritdoc}
+     * @{inheritdoc}
      */
     public function getLogDir()
     {
-        return dirname(__DIR__) . '/var/logs';
+        return dirname(__DIR__).'/var/logs';
     }
 
     /**
-     * {@inheritdoc}
-     *
+     * @{inheritdoc}
      * @throws \Exception
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
@@ -147,19 +130,28 @@ class AppKernel extends Kernel
             $container->addObjectResource($this);
         });
 
-        $loader->load($this->getRootDir() . '/config/config_' . $this->getEnvironment() . '.yml');
+        $loader->load($this->getRootDir().'/config/config_'.$this->getEnvironment().'.yml');
+    }
 
-        // Add translation paths to load into the translator. The paths are loaded by the Symfony's FrameworkExtension
-        $loader->load(function (ContainerBuilder $container) {
-            $moduleTranslationsPaths = $container->getParameter('modules_translation_paths');
-            foreach ($this->getActiveModules() as $activeModulePath) {
-                $translationsDir = _PS_MODULE_DIR_ . $activeModulePath . '/translations';
-                if (is_dir($translationsDir)) {
-                    $moduleTranslationsPaths[] = $translationsDir;
-                }
+    /**
+     * Return all active modules.
+     *
+     * @return array list of modules names.
+     */
+    private function getActiveModules()
+    {
+        $activeModules = [];
+        try {
+            if ($modulesRepository = ModuleRepositoryFactory::getInstance()->getRepository()) {
+                $activeModules = $modulesRepository->getActiveModules();
             }
-            $container->setParameter('modules_translation_paths', $moduleTranslationsPaths);
-        });
+        } catch (\Exception $e) {
+            //Do nothing because the modules retrieval must not block the kernel, and it won't work
+            //during the installation process
+        }
+
+
+        return $activeModules;
     }
 
     /**
@@ -173,9 +165,8 @@ class AppKernel extends Kernel
      */
     private function enableComposerAutoloaderOnModules($modules)
     {
-        $moduleDirectoryPath = rtrim(_PS_MODULE_DIR_, '/') . '/';
         foreach ($modules as $module) {
-            $autoloader = $moduleDirectoryPath . $module . '/vendor/autoload.php';
+            $autoloader = __DIR__.'/../modules/'.$module.'/vendor/autoload.php';
 
             if (file_exists($autoloader)) {
                 include_once $autoloader;
@@ -194,18 +185,5 @@ class AppKernel extends Kernel
     public function getProjectDir()
     {
         return realpath(__DIR__ . '/..');
-    }
-
-    private function getActiveModules(): array
-    {
-        $activeModules = [];
-        try {
-            $activeModules = (new ModuleRepository())->getActiveModules();
-        } catch (\Exception $e) {
-            //Do nothing because the modules retrieval must not block the kernel, and it won't work
-            //during the installation process
-        }
-
-        return $activeModules;
     }
 }

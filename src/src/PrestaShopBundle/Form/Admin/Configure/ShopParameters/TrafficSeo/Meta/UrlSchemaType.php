@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,40 +16,40 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Form\Admin\Configure\ShopParameters\TrafficSeo\Meta;
 
-use PrestaShop\PrestaShop\Adapter\Routes\DefaultRouteProvider;
-use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class UrlSchemaType is responsible for providing form fields for
  * Shop parameters -> Traffic & Seo -> Seo & Urls -> Schema of urls block.
  */
-class UrlSchemaType extends TranslatorAwareType
+class UrlSchemaType extends AbstractType
 {
     /**
-     * @var DefaultRouteProvider
+     * @var bool
      */
-    private $defaultRouteProvider;
+    private $isRewriteSettingEnabled;
 
-    public function __construct(
-        TranslatorInterface $translator,
-        array $locales,
-        DefaultRouteProvider $defaultRouteProvider
-    ) {
-        parent::__construct($translator, $locales);
-        $this->defaultRouteProvider = $defaultRouteProvider;
+    /**
+     * UrlSchemaType constructor.
+     *
+     * @param bool $isRewriteSettingEnabled
+     */
+    public function __construct($isRewriteSettingEnabled)
+    {
+        $this->isRewriteSettingEnabled = $isRewriteSettingEnabled;
     }
 
     /**
@@ -58,56 +57,17 @@ class UrlSchemaType extends TranslatorAwareType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('product_rule', TextType::class, [
-                'label' => $this->trans(
-                    'Route to products',
-                    'Admin.Shopparameters.Feature'
-                ),
-                'help' => $this->getKeywords('product_rule'),
-            ])
-            ->add('category_rule', TextType::class, [
-                'label' => $this->trans(
-                    'Route to category',
-                    'Admin.Shopparameters.Feature'
-                ),
-                'help' => $this->getKeywords('category_rule'),
-            ])
-            ->add('supplier_rule', TextType::class, [
-                'label' => $this->trans(
-                    'Route to supplier',
-                    'Admin.Shopparameters.Feature'
-                ),
-                'help' => $this->getKeywords('supplier_rule'),
-            ])
-            ->add('manufacturer_rule', TextType::class, [
-                'label' => $this->trans(
-                    'Route to brand',
-                    'Admin.Shopparameters.Feature'
-                ),
-                'help' => $this->getKeywords('manufacturer_rule'),
-            ])
-            ->add('cms_rule', TextType::class, [
-                'label' => $this->trans(
-                    'Route to page',
-                    'Admin.Shopparameters.Feature'
-                ),
-                'help' => $this->getKeywords('cms_rule'),
-            ])
-            ->add('cms_category_rule', TextType::class, [
-                'label' => $this->trans(
-                    'Route to page category',
-                    'Admin.Shopparameters.Feature'
-                ),
-                'help' => $this->getKeywords('cms_category_rule'),
-            ])
-            ->add('module', TextType::class, [
-                'label' => $this->trans(
-                    'Route to modules',
-                    'Admin.Shopparameters.Feature'
-                ),
-                'help' => $this->getKeywords('module'),
-            ]);
+        if ($this->isRewriteSettingEnabled) {
+            $builder
+                ->add('product_rule', TextType::class)
+                ->add('category_rule', TextType::class)
+                ->add('layered_rule', TextType::class)
+                ->add('supplier_rule', TextType::class)
+                ->add('manufacturer_rule', TextType::class)
+                ->add('cms_rule', TextType::class)
+                ->add('cms_category_rule', TextType::class)
+                ->add('module', TextType::class);
+        }
     }
 
     /**
@@ -118,35 +78,5 @@ class UrlSchemaType extends TranslatorAwareType
         $resolver->setDefaults([
             'label' => false,
         ]);
-    }
-
-    /**
-     * @param string $idRoute
-     *
-     * @return string
-     *
-     * @throws \PrestaShopException
-     */
-    private function getKeywords($idRoute)
-    {
-        $keyWords = $this->defaultRouteProvider->getKeywords();
-        $formattedKeyWords = [];
-        if ($keyWords[$idRoute]) {
-            foreach ($keyWords[$idRoute] as $key => $keyWord) {
-                $value = $key;
-                if (isset($keyWord['param'])) {
-                    $value .= '*';
-                }
-                $formattedKeyWords[] = $value;
-            }
-        }
-
-        return $this->trans(
-                'Keywords: %keywords%',
-                'Admin.Shopparameters.Feature',
-                [
-                    '%keywords%' => implode(', ', $formattedKeyWords),
-                ]
-        );
     }
 }

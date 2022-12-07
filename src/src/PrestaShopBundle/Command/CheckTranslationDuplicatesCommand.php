@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,16 +16,17 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Command;
 
-use PrestaShopBundle\Translation\Translator;
+use PrestaShopBundle\Translation\PrestaShopTranslatorTrait;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
@@ -52,7 +52,7 @@ class CheckTranslationDuplicatesCommand extends ContainerAwareCommand
         $progress->start();
         $progress->setRedrawFrequency(20);
 
-        $duplicates = [];
+        $duplicates = array();
 
         foreach ($catalogue as $domain => $messages) {
             $nbOfMessages = count($messages);
@@ -63,7 +63,7 @@ class CheckTranslationDuplicatesCommand extends ContainerAwareCommand
             for ($i = 0; $i < $nbOfMessages; ++$i) {
                 for ($j = ($i + 1); $j < $nbOfMessages; ++$j) {
                     if ($this->check($messages[$i], $messages[$j])) {
-                        $duplicates[$domain][] = [$i => $messages[$i], $j => $messages[$j]];
+                        $duplicates[$domain][] = array($i => $messages[$i], $j => $messages[$j]);
                     }
                 }
                 $progress->advance();
@@ -112,9 +112,9 @@ class CheckTranslationDuplicatesCommand extends ContainerAwareCommand
     protected function removeParams($message)
     {
         // Remove PrestaShop arguments %<arg>%
-        $message = preg_replace(Translator::$regexClassicParams, '~', $message);
+        $message = preg_replace(PrestaShopTranslatorTrait::$regexClassicParams, '~', $message);
         // Remove all related sprintf arguments
-        $message = preg_replace(Translator::$regexSprintfParams, '~', $message);
+        $message = preg_replace(PrestaShopTranslatorTrait::$regexSprintfParams, '~', $message);
 
         return $message;
     }

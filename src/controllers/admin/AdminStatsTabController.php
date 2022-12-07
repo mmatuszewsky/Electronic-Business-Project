@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,18 +16,19 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
-abstract class AdminStatsTabControllerCore extends AdminController
+abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCore
 {
     public function init()
     {
         parent::init();
-        $this->bootstrap = true;
+
         $this->action = 'view';
         $this->display = 'view';
     }
@@ -39,7 +39,8 @@ abstract class AdminStatsTabControllerCore extends AdminController
             return;
         }
 
-        $this->toolbar_title = $this->trans('Stats', [], 'Admin.Stats.Feature');
+        $this->addToolBarModulesListButton();
+        $this->toolbar_title = $this->trans('Stats', array(), 'Admin.Stats.Feature');
 
         if ($this->display == 'view') {
             // Some controllers use the view action without an object
@@ -53,9 +54,9 @@ abstract class AdminStatsTabControllerCore extends AdminController
         $this->content .= $this->displayCalendar();
         $this->content .= $this->displayStats();
 
-        $this->context->smarty->assign([
+        $this->context->smarty->assign(array(
             'content' => $this->content,
-        ]);
+        ));
     }
 
     public function initPageHeaderToolbar()
@@ -66,15 +67,15 @@ abstract class AdminStatsTabControllerCore extends AdminController
 
     public function displayCalendar()
     {
-        return AdminStatsTabController::displayCalendarForm([
-            'Calendar' => $this->trans('Calendar', [], 'Admin.Global'),
-            'Day' => $this->trans('Day', [], 'Admin.Global'),
-            'Month' => $this->trans('Month', [], 'Admin.Global'),
-            'Year' => $this->trans('Year', [], 'Admin.Global'),
-            'From' => $this->trans('From:', [], 'Admin.Global'),
-            'To' => $this->trans('To:', [], 'Admin.Global'),
-            'Save' => $this->trans('Save', [], 'Admin.Global'),
-        ], $this->token);
+        return AdminStatsTabController::displayCalendarForm(array(
+            'Calendar' => $this->trans('Calendar', array(), 'Admin.Global'),
+            'Day' => $this->trans('Day', array(), 'Admin.Global'),
+            'Month' => $this->trans('Month', array(), 'Admin.Global'),
+            'Year' => $this->trans('Year', array(), 'Admin.Global'),
+            'From' => $this->trans('From:', array(), 'Admin.Global'),
+            'To' => $this->trans('To:', array(), 'Admin.Global'),
+            'Save' => $this->trans('Save', array(), 'Admin.Global'),
+        ), $this->token);
     }
 
     public static function displayCalendarForm($translations, $token, $action = null, $table = null, $identifier = null, $id = null)
@@ -96,7 +97,7 @@ abstract class AdminStatsTabControllerCore extends AdminController
         $module = Tools::getValue('module');
         $action .= ($module ? '&module=' . Tools::safeOutput($module) : '');
         $action .= (($id_product = Tools::getValue('id_product')) ? '&id_product=' . Tools::safeOutput($id_product) : '');
-        $tpl->assign([
+        $tpl->assign(array(
             'current' => self::$currentIndex,
             'token' => $token,
             'action' => $action,
@@ -106,7 +107,7 @@ abstract class AdminStatsTabControllerCore extends AdminController
             'translations' => $translations,
             'datepickerFrom' => Tools::getValue('datepickerFrom', $context->employee->stats_date_from),
             'datepickerTo' => Tools::getValue('datepickerTo', $context->employee->stats_date_to),
-        ]);
+        ));
 
         return $tpl->fetch();
     }
@@ -116,14 +117,14 @@ abstract class AdminStatsTabControllerCore extends AdminController
     {
         $tpl = $this->createTemplate('engines.tpl');
 
-        $autoclean_period = [
-            'never' => $this->trans('Never', [], 'Admin.Global'),
-            'week' => $this->trans('Week', [], 'Admin.Global'),
-            'month' => $this->trans('Month', [], 'Admin.Global'),
-            'year' => $this->trans('Year', [], 'Admin.Global'),
-        ];
+        $autoclean_period = array(
+            'never' => $this->trans('Never', array(), 'Admin.Global'),
+            'week' => $this->trans('Week', array(), 'Admin.Global'),
+            'month' => $this->trans('Month', array(), 'Admin.Global'),
+            'year' => $this->trans('Year', array(), 'Admin.Global'),
+        );
 
-        $tpl->assign([
+        $tpl->assign(array(
             'current' => self::$currentIndex,
             'token' => $this->token,
             'graph_engine' => Configuration::get('PS_STATS_RENDER'),
@@ -132,7 +133,7 @@ abstract class AdminStatsTabControllerCore extends AdminController
             'array_graph_engines' => ModuleGraphEngine::getGraphEngines(),
             'array_grid_engines' => ModuleGridEngine::getGridEngines(),
             'array_auto_clean' => $autoclean_period,
-        ]);
+        ));
 
         return $tpl->fetch();
     }
@@ -142,7 +143,7 @@ abstract class AdminStatsTabControllerCore extends AdminController
         $tpl = $this->createTemplate('menu.tpl');
 
         $modules = $this->getModules();
-        $module_instance = [];
+        $module_instance = array();
         foreach ($modules as $m => $module) {
             if ($module_instance[$module['name']] = Module::getInstanceByName($module['name'])) {
                 $modules[$m]['displayName'] = $module_instance[$module['name']]->displayName;
@@ -154,15 +155,15 @@ abstract class AdminStatsTabControllerCore extends AdminController
             }
         }
 
-        uasort($modules, [$this, 'checkModulesNames']);
+        uasort($modules, array($this, 'checkModulesNames'));
 
-        $tpl->assign([
+        $tpl->assign(array(
             'current' => self::$currentIndex,
             'current_module_name' => Tools::getValue('module', 'statsforecast'),
             'token' => $this->token,
             'modules' => $modules,
             'module_instance' => $module_instance,
-        ]);
+        ));
 
         return $tpl->fetch();
     }
@@ -174,10 +175,16 @@ abstract class AdminStatsTabControllerCore extends AdminController
 
     protected function getModules()
     {
-        return array_map(
-            function ($moduleArray) {return ['name' => $moduleArray['module']]; },
-            Hook::getHookModuleExecList('displayAdminStatsModules')
-        );
+        $sql = 'SELECT h.`name` AS hook, m.`name`
+				FROM `' . _DB_PREFIX_ . 'module` m
+				LEFT JOIN `' . _DB_PREFIX_ . 'hook_module` hm ON hm.`id_module` = m.`id_module`
+				LEFT JOIN `' . _DB_PREFIX_ . 'hook` h ON hm.`id_hook` = h.`id_hook`
+				WHERE h.`name` = \'displayAdminStatsModules\'
+					AND m.`active` = 1
+				GROUP BY hm.id_module
+				ORDER BY hm.`position`';
+
+        return Db::getInstance()->executeS($sql);
     }
 
     public function displayStats()
@@ -200,11 +207,11 @@ abstract class AdminStatsTabControllerCore extends AdminController
             }
         }
 
-        $tpl->assign([
+        $tpl->assign(array(
             'module_name' => $module_name,
             'module_instance' => isset($module_instance) ? $module_instance : null,
             'hook' => isset($hook) ? $hook : null,
-        ]);
+        ));
 
         return $tpl->fetch();
     }
@@ -222,7 +229,7 @@ abstract class AdminStatsTabControllerCore extends AdminController
                 Configuration::updateValue('PS_STATS_GRID_RENDER', Tools::getValue('PS_STATS_GRID_RENDER', Configuration::get('PS_STATS_GRID_RENDER')));
                 Configuration::updateValue('PS_STATS_OLD_CONNECT_AUTO_CLEAN', Tools::getValue('PS_STATS_OLD_CONNECT_AUTO_CLEAN', Configuration::get('PS_STATS_OLD_CONNECT_AUTO_CLEAN')));
             } else {
-                $this->errors[] = $this->trans('You do not have permission to edit this.', [], 'Admin.Notifications.Error');
+                $this->errors[] = $this->trans('You do not have permission to edit this.', array(), 'Admin.Notifications.Error');
             }
         }
     }
@@ -231,7 +238,7 @@ abstract class AdminStatsTabControllerCore extends AdminController
     {
         if (Tools::isSubmit('submitDatePicker')) {
             if ((!Validate::isDate($from = Tools::getValue('datepickerFrom')) || !Validate::isDate($to = Tools::getValue('datepickerTo'))) || (strtotime($from) > strtotime($to))) {
-                $this->errors[] = $this->trans('The specified date is invalid.', [], 'Admin.Stats.Notification');
+                $this->errors[] = $this->trans('The specified date is invalid.', array(), 'Admin.Stats.Notification');
             }
         }
         if (Tools::isSubmit('submitDateDay')) {
@@ -278,18 +285,18 @@ abstract class AdminStatsTabControllerCore extends AdminController
         if ($this->isXmlHttpRequest()) {
             if (is_array($this->errors) && count($this->errors)) {
                 die(json_encode(
-                    [
+                    array(
                         'has_errors' => true,
-                        'errors' => [$this->errors],
+                        'errors' => array($this->errors),
                         'date_from' => $this->context->employee->stats_date_from,
-                        'date_to' => $this->context->employee->stats_date_to, ]
+                        'date_to' => $this->context->employee->stats_date_to, )
                 ));
             } else {
                 die(json_encode(
-                    [
+                    array(
                         'has_errors' => false,
                         'date_from' => $this->context->employee->stats_date_from,
-                        'date_to' => $this->context->employee->stats_date_to, ]
+                        'date_to' => $this->context->employee->stats_date_to, )
                     ));
             }
         }

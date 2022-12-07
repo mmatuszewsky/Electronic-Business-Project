@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,63 +16,61 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Form\Admin\Improve\International\Tax;
 
 use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\DefaultLanguage;
 use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\TypedRegex;
-use PrestaShop\PrestaShop\Core\ConstraintValidator\TypedRegexValidator;
 use PrestaShopBundle\Form\Admin\Type\SwitchType;
 use PrestaShopBundle\Form\Admin\Type\TranslatableType;
-use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Type;
 
 /**
- * Backwards compatibility break introduced in 1.7.8.0 due to extension of TranslatorAwareType
  * Form type for tax add/edit
  */
-class TaxType extends TranslatorAwareType
+class TaxType extends AbstractType
 {
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
+     * @param TranslatorInterface $translator
+     */
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $invalidCharsText = sprintf(
-            '%s ' . TypedRegexValidator::CATALOG_CHARS,
-            $this->trans('Invalid characters:', 'Admin.Notifications.Info')
-        );
-
-        $nameHintText =
-            $this->trans(
-                'Tax name to display in carts and on invoices (e.g. "VAT").',
-                'Admin.International.Help'
-            )
-            . PHP_EOL
-            . $invalidCharsText;
-
         $builder
             ->add('name', TranslatableType::class, [
-                'label' => $this->trans('Name', 'Admin.Global'),
-                'help' => $nameHintText,
                 'options' => [
                     'constraints' => [
                         new Length([
                             'max' => 32,
-                            'maxMessage' => $this->trans(
+                            'maxMessage' => $this->translator->trans(
                                 'This field cannot be longer than %limit% characters',
-                                'Admin.Notifications.Error',
-                                ['%limit%' => 32]
+                                ['%limit%' => 32],
+                                'Admin.Notifications.Error'
                             ),
                         ]),
                         new TypedRegex([
@@ -86,42 +83,37 @@ class TaxType extends TranslatorAwareType
                 ],
             ])
             ->add('rate', TextType::class, [
-                'label' => $this->trans('Rate', 'Admin.International.Feature'),
-                'help' => $this->trans(
-                    'Format: XX.XX or XX.XXX (e.g. 19.60 or 13.925)',
-                    'Admin.International.Help'
-                ),
                 'constraints' => [
                     new NotBlank([
-                        'message' => $this->trans(
+                        'message' => $this->translator->trans(
                             'The %s field is required.',
-                            'Admin.Notifications.Error',
                             [
-                                sprintf('"%s"', $this->trans(
-                                    'Rate', 'Admin.International.Feature'
+                                sprintf('"%s"', $this->translator->trans(
+                                    'Rate', [], 'Admin.International.Feature'
                                 )),
-                            ]
+                            ],
+                            'Admin.Notifications.Error'
                         ),
                     ]),
                     new Length([
                         'max' => 6,
-                        'maxMessage' => $this->trans(
+                        'maxMessage' => $this->translator->trans(
                             'This field cannot be longer than %limit% characters',
-                            'Admin.Notifications.Error',
-                            ['%limit%' => 6]
+                            ['%limit%' => 6],
+                            'Admin.Notifications.Error'
                         ),
                     ]),
                     new Type([
                         'type' => 'numeric',
-                        'message' => $this->trans(
+                        'message' => $this->translator->trans(
                             'This field is invalid, it must contain numeric values',
+                            [],
                             'Admin.Notifications.Error'
                         ),
                     ]),
                 ],
             ])
             ->add('is_enabled', SwitchType::class, [
-                'label' => $this->trans('Enable', 'Admin.Actions'),
                 'required' => false,
             ])
         ;

@@ -22,10 +22,6 @@ _email:
     resource: "email.yml"
     prefix: /emails
 
-_shop:
-    resource: "shops.yml"
-    prefix: /shops
-
 _sql_manager:
     resource: "sql_request.yml"
     prefix: /sql-requests/
@@ -45,7 +41,3 @@ _employee:
 _profiles:
     resource: "profiles.yml"
     prefix: /profiles
-
-_feature_flags:
-    resource: "feature_flags.yml"
-    prefix: /feature-flags

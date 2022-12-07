@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Module\Tab;
@@ -31,7 +31,6 @@ use PrestaShop\PrestaShop\Adapter\Module\Module;
 use PrestaShopBundle\Entity\Repository\LangRepository;
 use PrestaShopBundle\Entity\Repository\TabRepository;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
@@ -44,7 +43,7 @@ use TabCore as Tab;
  */
 class ModuleTabRegister
 {
-    public const SUFFIX = '_MTR';
+    const SUFFIX = '_MTR';
 
     /**
      * @var string
@@ -82,35 +81,21 @@ class ModuleTabRegister
     private $languages;
 
     /**
-     * @var Loader
-     */
-    private $routingConfigLoader;
-
-    /**
      * @param TabRepository $tabRepository
      * @param LangRepository $langRepository
      * @param LoggerInterface $logger
      * @param TranslatorInterface $translator
      * @param Filesystem $filesystem
      * @param array $languages
-     * @param Loader $routingConfigLoader
      */
-    public function __construct(
-        TabRepository $tabRepository,
-        LangRepository $langRepository,
-        LoggerInterface $logger,
-        TranslatorInterface $translator,
-        Filesystem $filesystem,
-        array $languages,
-        Loader $routingConfigLoader
-    ) {
+    public function __construct(TabRepository $tabRepository, LangRepository $langRepository, LoggerInterface $logger, TranslatorInterface $translator, Filesystem $filesystem, array $languages)
+    {
         $this->langRepository = $langRepository;
         $this->tabRepository = $tabRepository;
         $this->logger = $logger;
         $this->translator = $translator;
         $this->filesystem = $filesystem;
         $this->languages = $languages;
-        $this->routingConfigLoader = $routingConfigLoader;
     }
 
     /**
@@ -127,6 +112,7 @@ class ModuleTabRegister
         }
 
         $tabs = $this->addUndeclaredTabs($module->get('name'), $module->getInstance()->getTabs());
+
         foreach ($tabs as $tab) {
             try {
                 $this->registerTab($module, new ParameterBag($tab));
@@ -134,14 +120,6 @@ class ModuleTabRegister
                 $this->logger->error($e->getMessage());
             }
         }
-    }
-
-    /**
-     * @param Module $module
-     */
-    public function enableTabs(Module $module)
-    {
-        $this->tabRepository->changeEnabledByModuleName($module->get('name'), true);
     }
 
     /**
@@ -162,8 +140,8 @@ class ModuleTabRegister
             }
         }, $tabs);
 
-        $detectedControllers = $this->getDetectedModuleControllers($moduleName);
-        foreach ($detectedControllers as $adminControllerName) {
+        foreach ($this->getModuleAdminControllersFilename($moduleName) as $adminControllerFileName) {
+            $adminControllerName = str_replace('Controller.php', '', $adminControllerFileName);
             if (in_array($adminControllerName, $tabsNames)) {
                 continue;
             }
@@ -172,37 +150,13 @@ class ModuleTabRegister
                 continue;
             }
 
-            $tabs[] = [
+            $tabs[] = array(
                 'class_name' => $adminControllerName,
                 'visible' => false,
-            ];
+            );
         }
 
         return $tabs;
-    }
-
-    /**
-     * Returns a list of all detected controllers, either from admin/controllers folder
-     * or from the routing file.
-     *
-     * @param string $moduleName
-     *
-     * @return array
-     *
-     * @throws Exception
-     */
-    protected function getDetectedModuleControllers(string $moduleName): array
-    {
-        $legacyControllersFilenames = $this->getModuleAdminControllersFilename($moduleName);
-        $legacyControllers = array_map(function ($legacyControllersFilename) {
-            return str_replace('Controller.php', '', $legacyControllersFilename);
-        }, $legacyControllersFilenames);
-        $legacyControllers = $legacyControllers ?? [];
-
-        $routingControllers = $this->getModuleControllersFromRouting($moduleName);
-        $routingControllers = $routingControllers ?? [];
-
-        return array_merge($legacyControllers, $routingControllers);
     }
 
     /**
@@ -221,13 +175,10 @@ class ModuleTabRegister
         if (null === $className) {
             throw new Exception('Missing class name of tab');
         }
-
         // Check controller exists
-        $detectedControllers = $this->getDetectedModuleControllers($moduleName);
-        if (empty($data->get('route_name')) && !in_array($className, $detectedControllers)) {
-            throw new Exception(sprintf('Class "%sController" not found in controllers/admin nor routing file', $className));
+        if (!in_array($className . 'Controller.php', $this->getModuleAdminControllersFilename($moduleName))) {
+            throw new Exception(sprintf('Class "%sController" not found in controllers/admin', $className));
         }
-
         // Deprecation check
         if ($data->has('ParentClassName') && !$data->has('parent_class_name')) {
             $this->logger->warning('Tab attribute "ParentClassName" is deprecated. You must use "parent_class_name" instead.');
@@ -251,49 +202,21 @@ class ModuleTabRegister
      */
     protected function getModuleAdminControllers($moduleName)
     {
-        $modulePath = rtrim(_PS_MODULE_DIR_, '/') . '/' . $moduleName . '/controllers/admin/';
+        $modulePath = _PS_ROOT_DIR_ . '/' . basename(_PS_MODULE_DIR_) .
+                '/' . $moduleName . '/controllers/admin/';
 
         if (!$this->filesystem->exists($modulePath)) {
-            return [];
+            return array();
         }
 
         $moduleFolder = Finder::create()->files()
-            ->in($modulePath)
-            ->depth('== 0')
-            ->name('*Controller.php')
-            ->exclude(['index.php'])
-            ->contains('/Controller\s+extends\s+/i');
+                    ->in($modulePath)
+                    ->depth('== 0')
+                    ->name('*Controller.php')
+                    ->exclude(['index.php'])
+                    ->contains('/Controller\s+extends\s+/i');
 
         return iterator_to_array($moduleFolder);
-    }
-
-    /**
-     * Parses the routes file from the module and return the list of associated controller
-     * via the _legacy_controller routing option.
-     *
-     * @param string $moduleName
-     *
-     * @return string[]
-     *
-     * @throws Exception
-     */
-    protected function getModuleControllersFromRouting(string $moduleName): array
-    {
-        $routingFile = rtrim(_PS_MODULE_DIR_, '/') . '/' . $moduleName . '/config/routes.yml';
-        if (!$this->filesystem->exists($routingFile)) {
-            return [];
-        }
-
-        $routingControllers = [];
-        $moduleRoutes = $this->routingConfigLoader->import($routingFile, 'yaml');
-        foreach ($moduleRoutes->getIterator() as $route) {
-            $legacyController = $route->getDefault('_legacy_controller');
-            if (!empty($legacyController)) {
-                $routingControllers[] = $legacyController;
-            }
-        }
-
-        return $routingControllers;
     }
 
     /**
@@ -320,7 +243,7 @@ class ModuleTabRegister
      */
     protected function getTabNames($names)
     {
-        $translatedNames = [];
+        $translatedNames = array();
 
         foreach ($this->languages as $lang) {
             // In case we just receive a string, we apply it to all languages
@@ -360,18 +283,20 @@ class ModuleTabRegister
          */
         $tab = new Tab();
         $tab->active = $tabDetails->getBoolean('visible', true);
-        $tab->enabled = true;
         $tab->class_name = $tabDetails->get('class_name');
-        $tab->route_name = $tabDetails->get('route_name');
         $tab->module = $module->get('name');
         $tab->name = $this->getTabNames($tabDetails->get('name', $tab->class_name));
         $tab->icon = $tabDetails->get('icon');
         $tab->id_parent = $this->findParentId($tabDetails);
-        $tab->wording = $tabDetails->get('wording');
-        $tab->wording_domain = $tabDetails->get('wording_domain');
 
         if (!$tab->save()) {
-            throw new Exception($this->translator->trans('Failed to install admin tab "%name%".', ['%name%' => $tab->name], 'Admin.Modules.Notification'));
+            throw new Exception(
+                $this->translator->trans(
+                    'Failed to install admin tab "%name%".',
+                    array('%name%' => $tab->name),
+                    'Admin.Modules.Notification'
+                )
+            );
         }
     }
 

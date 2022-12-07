@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,31 +16,29 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Tools\Setup;
-use Exception;
 use LegacyCompilerPass;
 use PrestaShop\PrestaShop\Adapter\Container\ContainerBuilderExtensionInterface;
 use PrestaShop\PrestaShop\Adapter\Container\ContainerParametersExtension;
 use PrestaShop\PrestaShop\Adapter\Container\DoctrineBuilderExtension;
-use PrestaShop\PrestaShop\Adapter\Container\LegacyContainer;
-use PrestaShop\PrestaShop\Adapter\Container\LegacyContainerBuilder;
 use PrestaShop\PrestaShop\Core\EnvironmentInterface;
 use PrestaShopBundle\DependencyInjection\Compiler\LoadServicesFromModulesPass;
-use PrestaShopBundle\Exception\ServiceContainerException;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
+use Symfony\Component\DependencyInjection\ContainerBuilder as SfContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -57,7 +54,7 @@ class ContainerBuilder
     private static $containers;
 
     /**
-     * @var EnvironmentInterface
+     * @var string
      */
     private $environment;
 
@@ -85,17 +82,12 @@ class ContainerBuilder
      * @param string $containerName
      * @param bool $isDebug
      *
-     * @return LegacyContainerBuilder
+     * @return SfContainerBuilder
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public static function getContainer($containerName, $isDebug)
     {
-        if ($containerName === 'admin') {
-            throw new ServiceContainerException(
-                'You should use `SymfonyContainer::getInstance()` instead of `ContainerBuilder::getContainer(\'admin\')`'
-            );
-        }
         if (!isset(self::$containers[$containerName])) {
             $builder = new ContainerBuilder(new Environment($isDebug));
             self::$containers[$containerName] = $builder->buildContainer($containerName);
@@ -115,9 +107,9 @@ class ContainerBuilder
     /**
      * @param string $containerName
      *
-     * @return ContainerInterface|LegacyContainerBuilder
+     * @return ContainerInterface|SfContainerBuilder
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function buildContainer($containerName)
     {
@@ -134,11 +126,6 @@ class ContainerBuilder
         if (null === $container) {
             $container = $this->compileContainer();
         }
-
-        // synthetic definitions can't be compiled
-        $container->set('shop', $container->get('context')->shop);
-        $container->set('employee', $container->get('context')->employee);
-
         $this->loadModulesAutoloader($container);
 
         return $container;
@@ -159,13 +146,13 @@ class ContainerBuilder
     }
 
     /**
-     * @return LegacyContainerBuilder
+     * @return SfContainerBuilder
      *
-     * @throws Exception
+     * @throws \Exception
      */
     private function compileContainer()
     {
-        $container = new LegacyContainerBuilder();
+        $container = new SfContainerBuilder();
         //If the container builder is modified the container logically should be rebuilt
         $container->addResource(new FileResource(__FILE__));
 
@@ -175,7 +162,7 @@ class ContainerBuilder
         //Build extensions
         $builderExtensions = [
             new ContainerParametersExtension($this->environment),
-            new DoctrineBuilderExtension($this->environment),
+            new DoctrineBuilderExtension($this->environment->getCacheDir()),
         ];
         /** @var ContainerBuilderExtensionInterface $builderExtension */
         foreach ($builderExtensions as $builderExtension) {
@@ -188,10 +175,7 @@ class ContainerBuilder
         //Dump the container file
         $dumper = new PhpDumper($container);
         $this->containerConfigCache->write(
-            $dumper->dump([
-                'class' => $this->containerClassName,
-                'base_class' => LegacyContainer::class,
-            ]),
+            $dumper->dump(['class' => $this->containerClassName]),
             $container->getResources()
         );
 
@@ -211,11 +195,11 @@ class ContainerBuilder
     }
 
     /**
-     * @param LegacyContainerBuilder $container
+     * @param SfContainerBuilder $container
      *
-     * @throws Exception
+     * @throws \Exception
      */
-    private function loadServicesFromConfig(LegacyContainerBuilder $container)
+    private function loadServicesFromConfig(SfContainerBuilder $container)
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__));
         $servicesPath = sprintf(
@@ -232,10 +216,11 @@ class ContainerBuilder
      * Needs to be done as earlier as possible in application lifecycle. Unfortunately this can't
      * be done in a compiler pass because they are only executed on compilation and this needs to
      * be done at each container instanciation.
+
      *
      * @param ContainerInterface $container
      *
-     * @throws Exception
+     * @throws \Exception
      */
     private function loadModulesAutoloader(ContainerInterface $container)
     {

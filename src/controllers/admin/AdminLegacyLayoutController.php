@@ -1,13 +1,11 @@
 <?php
-
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -18,96 +16,39 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 class AdminLegacyLayoutControllerCore extends AdminController
 {
-    /** @var string */
     public $outPutHtml = '';
-    /** @var string[] */
-    public $jsRouterMetadata;
-    /** @var array */
-    protected $headerToolbarBtn = [];
-    /** @var string */
+    protected $headerToolbarBtn = array();
     protected $title;
-    /** @var bool */
     protected $showContentHeader = true;
-    /** @var string */
     protected $headerTabContent = '';
-    /**
-     * See the $helpLink phpDoc below
-     *
-     * @var bool
-     */
     protected $enableSidebar = false;
-    /**
-     * The Help Link is used for the 'Help' button in the top right of Back Office pages
-     *
-     * If $enableSidebar is true, the 'Help' button will download the content available at $helpLink
-     * and inject it into the sidebar window
-     *
-     * If $enableSidebar is false, the 'Help' button is a link that redirects to $helpLink
-     *
-     * @var string
-     */
     protected $helpLink;
-    /** @var bool */
-    protected $useRegularH1Structure;
-    /** @var bool */
-    protected $lockedToAllShopContext = false;
 
-    /**
-     * @param string $controllerName
-     * @param string $title
-     * @param array $headerToolbarBtn
-     * @param string $displayType
-     * @param bool $showContentHeader
-     * @param string $headerTabContent
-     * @param bool $enableSidebar
-     * @param string $helpLink
-     * @param string[] $jsRouterMetadata array to provide base_url and security token for JS Router
-     * @param string $metaTitle
-     * @param bool $useRegularH1Structure allows complex <h1> structure if set to false
-     */
-    public function __construct(
-        $controllerName = '',
-        $title = '',
-        $headerToolbarBtn = [],
-        $displayType = '',
-        $showContentHeader = true,
-        $headerTabContent = '',
-        $enableSidebar = false,
-        $helpLink = '',
-        $jsRouterMetadata = [],
-        $metaTitle = '',
-        $useRegularH1Structure = true
-    ) {
+    public function __construct($controllerName = '', $title = '', $headerToolbarBtn = array(), $displayType = '', $showContentHeader = true, $headerTabContent = '', $enableSidebar = false, $helpLink = '')
+    {
         // Compatibility with legacy behavior.
         // Some controllers can only be used in "All shops" context.
         // This makes sure that user cannot switch shop contexts
         // when in one of pages (controller) below.
-        $controllers = [
-            'AdminFeatureFlag',
-            'AdminLanguages',
-            'AdminProfiles',
-            'AdminSpecificPriceRule',
-            'AdminStatuses',
-            'AdminTranslations',
-        ];
+        $controllers = ['AdminLanguages', 'AdminProfiles'];
 
         if (in_array($controllerName, $controllers)) {
             $this->multishop_context = Shop::CONTEXT_ALL;
-            $this->lockedToAllShopContext = true;
         }
 
         parent::__construct($controllerName, 'new-theme');
 
         $this->title = $title;
-        $this->meta_title = ($metaTitle !== '') ? $metaTitle : $title;
+        $this->meta_title = $title;
         $this->display = $displayType;
         $this->bootstrap = true;
         $this->controller_name = $_GET['controller'] = $controllerName;
@@ -119,41 +60,19 @@ class AdminLegacyLayoutControllerCore extends AdminController
         $this->helpLink = $helpLink;
         $this->php_self = $controllerName;
         $this->className = 'LegacyLayout';
-        $this->jsRouterMetadata = $jsRouterMetadata;
-        $this->useRegularH1Structure = $useRegularH1Structure;
     }
 
-    /**
-     * This helps avoiding handling legacy processes when in Symfony Controllers.
-     * Otherwise when using POST action to render form you sometimes get an exception.
-     */
-    public function initProcess()
-    {
-    }
-
-    /**
-     * @param bool $isNewTheme
-     */
     public function setMedia($isNewTheme = false)
     {
         parent::setMedia(true);
     }
 
-    /**
-     * @param bool $disable
-     *
-     * @return bool
-     */
     public function viewAccess($disable = false)
     {
         return true;
     }
 
-    /**
-     * Always return true, cause of legacy redirect in layout
-     *
-     * @return bool
-     */
+    //always return true, cause of legacy redirect in layout
     public function checkAccess()
     {
         return true;
@@ -173,7 +92,8 @@ class AdminLegacyLayoutControllerCore extends AdminController
         // @todo remove once the product page has been made responsive
         $isProductPage = ('AdminProducts' === $this->controller_name);
 
-        $vars = [
+        $vars = array(
+            'viewport_scale' => $isProductPage ? '0.75' : '1',
             'maintenance_mode' => !(bool) Configuration::get('PS_SHOP_ENABLE'),
             'debug_mode' => (bool) _PS_MODE_DEV_,
             'headerTabContent' => $this->headerTabContent,
@@ -189,13 +109,7 @@ class AdminLegacyLayoutControllerCore extends AdminController
             'toggle_navigation_url' => $this->context->link->getAdminLink('AdminEmployees', true, [], [
                 'action' => 'toggleMenu',
             ]),
-            /* base_url and security token for js router. @since 1.7.7 */
-            'js_router_metadata' => $this->jsRouterMetadata,
-            /* allow complex <h1> structure. @since 1.7.7 */
-            'use_regular_h1_structure' => $this->useRegularH1Structure,
-            // legacy context selector is hidden on migrated pages when multistore feature is used
-            'hideLegacyStoreContextSelector' => $this->container->get('prestashop.adapter.multistore_feature')->isUsed(),
-        ];
+        );
 
         if ($this->helpLink === false || !empty($this->helpLink)) {
             $vars['help_link'] = $this->helpLink;
@@ -221,5 +135,16 @@ class AdminLegacyLayoutControllerCore extends AdminController
         parent::display();
         $this->outPutHtml = ob_get_contents();
         ob_end_clean();
+
+        $this->outPutHtml;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addJquery($version = null, $folder = null, $minifier = true)
+    {
+        // jQuery is already included, so do nothing
+        @trigger_error(__FUNCTION__ . 'is deprecated and has no effect in the New Theme since version 1.7.6.0.', E_USER_DEPRECATED);
     }
 }

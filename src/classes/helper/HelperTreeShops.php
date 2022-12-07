@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 class HelperTreeShopsCore extends TreeCore
 {
@@ -100,7 +100,7 @@ class HelperTreeShopsCore extends TreeCore
     public function getSelectedShops()
     {
         if (!isset($this->_selected_shops)) {
-            $this->_selected_shops = [];
+            $this->_selected_shops = array();
         }
 
         return $this->_selected_shops;
@@ -122,32 +122,32 @@ class HelperTreeShopsCore extends TreeCore
         }
 
         if ($use_default_actions) {
-            $this->setActions([
+            $this->setActions(array(
                 new TreeToolbarLink(
-                    $this->translator->trans('Collapse all', [], 'Admin.Actions'),
+                    'Collapse All',
                     '#',
                     '$(\'#' . $this->getId() . '\').tree(\'collapseAll\'); return false;',
                     'icon-collapse-alt'
                 ),
                 new TreeToolbarLink(
-                    $this->translator->trans('Expand all', [], 'Admin.Actions'),
+                    'Expand All',
                     '#',
                     '$(\'#' . $this->getId() . '\').tree(\'expandAll\'); return false;',
                     'icon-expand-alt'
                 ),
                 new TreeToolbarLink(
-                    $this->translator->trans('Check all', [], 'Admin.Actions'),
+                    'Check All',
                     '#',
                     'checkAllAssociatedShops($(\'#' . $this->getId() . '\')); return false;',
                     'icon-check-sign'
                 ),
                 new TreeToolbarLink(
-                    $this->translator->trans('Uncheck all', [], 'Admin.Actions'),
+                    'Uncheck All',
                     '#',
                     'uncheckAllAssociatedShops($(\'#' . $this->getId() . '\')); return false;',
                     'icon-check-empty'
                 ),
-            ]);
+            ));
         }
 
         if ($use_selected_shop) {
@@ -175,17 +175,17 @@ class HelperTreeShopsCore extends TreeCore
                 $html .= $this->getContext()->smarty->createTemplate(
                     $this->getTemplateFile($this->getNodeFolderTemplate()),
                     $this->getContext()->smarty
-                )->assign($this->getAttributes())->assign([
+                )->assign($this->getAttributes())->assign(array(
                     'children' => $this->renderNodes($item['shops']),
                     'node' => $item,
-                ])->fetch();
+                ))->fetch();
             } else {
                 $html .= $this->getContext()->smarty->createTemplate(
                     $this->getTemplateFile($this->getNodeItemTemplate()),
                     $this->getContext()->smarty
-                )->assign($this->getAttributes())->assign([
+                )->assign($this->getAttributes())->assign(array(
                     'node' => $item,
-                ])->fetch();
+                ))->fetch();
             }
         }
 

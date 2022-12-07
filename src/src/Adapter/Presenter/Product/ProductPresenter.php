@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,20 +16,18 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Presenter\Product;
 
-use Hook;
 use Language;
 use Link;
-use PrestaShop\PrestaShop\Adapter\Configuration;
-use PrestaShop\PrestaShop\Adapter\HookManager;
 use PrestaShop\PrestaShop\Adapter\Image\ImageRetriever;
 use PrestaShop\PrestaShop\Adapter\Product\PriceFormatter;
 use PrestaShop\PrestaShop\Adapter\Product\ProductColorsRetriever;
@@ -39,16 +36,6 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class ProductPresenter
 {
-    /**
-     * @var Configuration
-     */
-    protected $configuration;
-
-    /**
-     * @var HookManager
-     */
-    protected $hookManager;
-
     /**
      * @var ImageRetriever
      */
@@ -79,17 +66,13 @@ class ProductPresenter
         Link $link,
         PriceFormatter $priceFormatter,
         ProductColorsRetriever $productColorsRetriever,
-        TranslatorInterface $translator,
-        HookManager $hookManager = null,
-        Configuration $configuration = null
+        TranslatorInterface $translator
     ) {
         $this->imageRetriever = $imageRetriever;
         $this->link = $link;
         $this->priceFormatter = $priceFormatter;
         $this->productColorsRetriever = $productColorsRetriever;
         $this->translator = $translator;
-        $this->hookManager = $hookManager ?? new HookManager();
-        $this->configuration = $configuration ?? new Configuration();
     }
 
     public function present(
@@ -97,7 +80,7 @@ class ProductPresenter
         array $product,
         Language $language
     ) {
-        $productLazyArray = new ProductLazyArray(
+        return new ProductLazyArray(
             $settings,
             $product,
             $language,
@@ -105,15 +88,7 @@ class ProductPresenter
             $this->link,
             $this->priceFormatter,
             $this->productColorsRetriever,
-            $this->translator,
-            $this->hookManager,
-            $this->configuration
+            $this->translator
         );
-
-        Hook::exec('actionPresentProduct',
-            ['presentedProduct' => &$productLazyArray]
-        );
-
-        return $productLazyArray;
     }
 }

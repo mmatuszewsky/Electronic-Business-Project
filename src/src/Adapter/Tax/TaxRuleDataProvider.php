@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Tax;
@@ -57,7 +57,7 @@ class TaxRuleDataProvider
      */
     public function getIdTaxRulesGroupMostUsed()
     {
-        return (int) Product::getIdTaxRulesGroupMostUsed();
+        return Product::getIdTaxRulesGroupMostUsed();
     }
 
     /**
@@ -70,22 +70,22 @@ class TaxRuleDataProvider
         $address = new Address();
         $address->id_country = (int) Context::getContext()->country->id;
         $tax_rules_groups = $this->getTaxRulesGroups();
-        $tax_rates = [
-            0 => [
+        $tax_rates = array(
+            0 => array(
                 'id_tax_rules_group' => 0,
-                'rates' => [0],
+                'rates' => array(0),
                 'computation_method' => 0,
-            ],
-        ];
+            ),
+        );
 
         foreach ($tax_rules_groups as $tax_rules_group) {
             $id_tax_rules_group = (int) $tax_rules_group['id_tax_rules_group'];
             $tax_calculator = TaxManagerFactory::getManager($address, $id_tax_rules_group)->getTaxCalculator();
-            $tax_rates[$id_tax_rules_group] = [
+            $tax_rates[$id_tax_rules_group] = array(
                 'id_tax_rules_group' => $id_tax_rules_group,
-                'rates' => [],
+                'rates' => array(),
                 'computation_method' => (int) $tax_calculator->computation_method,
-            ];
+            );
 
             if (isset($tax_calculator->taxes) && count($tax_calculator->taxes)) {
                 foreach ($tax_calculator->taxes as $tax) {

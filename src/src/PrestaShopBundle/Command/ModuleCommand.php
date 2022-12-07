@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,28 +16,26 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Command;
 
 use Employee;
 use PrestaShop\PrestaShop\Adapter\LegacyContext;
-use PrestaShop\PrestaShop\Core\Addon\Module\ModuleManager;
-use PrestaShopBundle\Translation\Translator;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Helper\FormatterHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ModuleCommand extends ContainerAwareCommand
 {
-    private $allowedActions = [
+    private $allowedActions = array(
         'install',
         'uninstall',
         'enable',
@@ -48,25 +45,25 @@ class ModuleCommand extends ContainerAwareCommand
         'reset',
         'upgrade',
         'configure',
-    ];
+    );
 
     /**
-     * @var FormatterHelper
+     * @var \Symfony\Component\Console\Helper\FormatterHelper
      */
     protected $formatter;
 
     /**
-     * @var Translator
+     * @var \PrestaShopBundle\Translation\Translator
      */
     protected $translator;
 
     /**
-     * @var InputInterface
+     * @var \Symfony\Component\Console\Input\Input
      */
     protected $input;
 
     /**
-     * @var OutputInterface
+     * @var \Symfony\Component\Console\Output\Output
      */
     protected $output;
 
@@ -108,13 +105,13 @@ class ModuleCommand extends ContainerAwareCommand
             $this->displayMessage(
                 $this->translator->trans(
                     'Unknown module action. It must be one of these values: %actions%',
-                    ['%actions%' => implode(' / ', $this->allowedActions)],
+                    array('%actions%' => implode(' / ', $this->allowedActions)),
                     'Admin.Modules.Notification'
                 ),
                 'error'
             );
 
-            return 1;
+            return;
         }
 
         if ($action === 'configure') {
@@ -122,8 +119,6 @@ class ModuleCommand extends ContainerAwareCommand
         } else {
             $this->executeGenericModuleAction($action, $moduleName);
         }
-
-        return 0;
     }
 
     protected function executeConfigureModuleAction($moduleName, $file = null)
@@ -142,7 +137,7 @@ class ModuleCommand extends ContainerAwareCommand
             // And add a default message at the top
             array_unshift($errors, $this->translator->trans(
                 'Validation of configuration details failed:',
-                [],
+                array(),
                 'Admin.Modules.Notification'
             ));
             $this->displayMessage($errors, 'error');
@@ -153,7 +148,7 @@ class ModuleCommand extends ContainerAwareCommand
         // Actual configuration
         $moduleSelfConfigurator->configure();
         $this->displayMessage(
-            $this->translator->trans('Configuration successfully applied.', [], 'Admin.Modules.Notification'),
+            $this->translator->trans('Configuration successfully applied.', array(), 'Admin.Modules.Notification'),
             'info'
         );
     }
@@ -161,16 +156,16 @@ class ModuleCommand extends ContainerAwareCommand
     protected function executeGenericModuleAction($action, $moduleName)
     {
         /**
-         * @var ModuleManager
+         * @var \PrestaShop\PrestaShop\Core\Addon\Module\ModuleManager
          */
         $moduleManager = $this->getContainer()->get('prestashop.module.manager');
         if ($moduleManager->{$action}($moduleName)) {
             $this->displayMessage(
                 $this->translator->trans(
                     '%action% action on module %module% succeeded.',
-                    [
+                    array(
                         '%action%' => ucfirst(str_replace('_', ' ', $action)),
-                        '%module%' => $moduleName, ],
+                        '%module%' => $moduleName, ),
                     'Admin.Modules.Notification'
                 )
             );
@@ -182,10 +177,10 @@ class ModuleCommand extends ContainerAwareCommand
         $this->displayMessage(
             $this->translator->trans(
                 'Cannot %action% module %module%. %error_details%',
-                [
+                array(
                     '%action%' => str_replace('_', ' ', $action),
                     '%module%' => $moduleName,
-                    '%error_details%' => $error, ],
+                    '%error_details%' => $error, ),
                 'Admin.Modules.Notification'
             ),
             'error'

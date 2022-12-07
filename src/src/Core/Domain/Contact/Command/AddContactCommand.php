@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Core\Domain\Contact\Command;
@@ -61,7 +61,7 @@ class AddContactCommand extends AbstractContactCommand
     private $shopAssociation;
 
     /**
-     * @param string[] $localisedTitles - sample: [$langId => $title]
+     * @param string[] $localisedTitles
      * @param bool $isMessageSavingEnabled
      *
      * @throws ContactConstraintException
@@ -150,7 +150,13 @@ class AddContactCommand extends AbstractContactCommand
     public function setShopAssociation(array $shopAssociation)
     {
         if (!$this->assertArrayContainsAllIntegerValues($shopAssociation)) {
-            throw new ContactConstraintException(sprintf('Given shop association %s must contain all integer values', var_export($shopAssociation, true)), ContactConstraintException::INVALID_SHOP_ASSOCIATION);
+            throw new ContactConstraintException(
+                sprintf(
+                    'Given shop association %s must contain all integer values',
+                    var_export($shopAssociation, true)
+                ),
+                ContactConstraintException::INVALID_SHOP_ASSOCIATION
+            );
         }
 
         $this->shopAssociation = $shopAssociation;
@@ -166,12 +172,24 @@ class AddContactCommand extends AbstractContactCommand
     private function assertIsLocalisedTitleValid(array $localisedTitles)
     {
         if (!$this->assertIsNotEmptyAndContainsAllNonEmptyStringValues($localisedTitles)) {
-            throw new ContactConstraintException(sprintf('Expected to have not empty titles array but received %s', var_export($localisedTitles, true)), ContactConstraintException::INVALID_TITLE);
+            throw new ContactConstraintException(
+                sprintf(
+                    'Expected to have not empty titles array but received %s',
+                    var_export($localisedTitles, true)
+                ),
+                ContactConstraintException::INVALID_TITLE
+            );
         }
 
         foreach ($localisedTitles as $title) {
             if (!$this->assertIsGenericName($title)) {
-                throw new ContactConstraintException(sprintf('Expected value %s to match given regex /^[^<>={}]*$/u but failed', var_export($title, true)), ContactConstraintException::INVALID_TITLE);
+                throw new ContactConstraintException(
+                    sprintf(
+                        'Expected value %s to match given regex /^[^<>={}]*$/u but failed',
+                        var_export($title, true)
+                    ),
+                    ContactConstraintException::INVALID_TITLE
+                );
             }
         }
     }

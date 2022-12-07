@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 class WebserviceKeyCore extends ObjectModel
 {
@@ -37,15 +37,15 @@ class WebserviceKeyCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = [
+    public static $definition = array(
         'table' => 'webservice_account',
         'primary' => 'id_webservice_account',
-        'fields' => [
-            'active' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'key' => ['type' => self::TYPE_STRING, 'required' => true, 'size' => 32],
-            'description' => ['type' => self::TYPE_STRING],
-        ],
-    ];
+        'fields' => array(
+            'active' => array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
+            'key' => array('type' => self::TYPE_STRING, 'required' => true, 'size' => 32),
+            'description' => array('type' => self::TYPE_STRING),
+        ),
+    );
 
     public function add($autodate = true, $nullValues = false)
     {
@@ -53,27 +53,7 @@ class WebserviceKeyCore extends ObjectModel
             return false;
         }
 
-        $result = parent::add($autodate = true, $nullValues = false);
-
-        if ($result) {
-            PrestaShopLogger::addLog(
-                Context::getContext()->getTranslator()->trans(
-                    'Webservice key created: %s',
-                    [
-                        $this->key,
-                    ],
-                    'Admin.Advparameters.Feature'
-                ),
-                1,
-                0,
-                'WebserviceKey',
-                (int) $this->id,
-                false,
-                (int) Context::getContext()->employee->id
-            );
-        }
-
-        return $result;
+        return parent::add($autodate = true, $nullValues = false);
     }
 
     public static function keyExists($key)
@@ -86,27 +66,7 @@ class WebserviceKeyCore extends ObjectModel
 
     public function delete()
     {
-        $result = parent::delete() && ($this->deleteAssociations() !== false);
-
-        if ($result) {
-            PrestaShopLogger::addLog(
-                Context::getContext()->getTranslator()->trans(
-                    'Webservice key %s has been deleted',
-                    [
-                        $this->key,
-                    ],
-                    'Admin.Advparameters.Feature'
-                ),
-                1,
-                0,
-                'WebserviceKey',
-                (int) $this->id,
-                false,
-                (int) Context::getContext()->employee->id
-            );
-        }
-
-        return $result;
+        return parent::delete() && ($this->deleteAssociations() !== false);
     }
 
     public function deleteAssociations()
@@ -122,7 +82,7 @@ class WebserviceKeyCore extends ObjectModel
 			LEFT JOIN `' . _DB_PREFIX_ . 'webservice_account` a ON (a.id_webservice_account = p.id_webservice_account)
 			WHERE a.key = \'' . pSQL($auth_key) . '\'
 		');
-        $permissions = [];
+        $permissions = array();
         if ($result) {
             foreach ($result as $row) {
                 $permissions[$row['resource']][] = $row['method'];
@@ -156,14 +116,14 @@ class WebserviceKeyCore extends ObjectModel
             $ok = false;
         }
         if (isset($permissions_to_set)) {
-            $permissions = [];
+            $permissions = array();
             $resources = WebserviceRequest::getResources();
-            $methods = ['GET', 'PUT', 'POST', 'DELETE', 'HEAD'];
+            $methods = array('GET', 'PUT', 'POST', 'DELETE', 'HEAD');
             foreach ($permissions_to_set as $resource_name => $resource_methods) {
                 if (in_array($resource_name, array_keys($resources))) {
                     foreach (array_keys($resource_methods) as $method_name) {
                         if (in_array($method_name, $methods)) {
-                            $permissions[] = [$method_name, $resource_name];
+                            $permissions[] = array($method_name, $resource_name);
                         }
                     }
                 }

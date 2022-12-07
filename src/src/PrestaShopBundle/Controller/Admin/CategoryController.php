@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Controller\Admin;
@@ -29,13 +29,9 @@ namespace PrestaShopBundle\Controller\Admin;
 use PrestaShop\PrestaShop\Core\Domain\Category\Command\AddCategoryCommand;
 use PrestaShop\PrestaShop\Core\Domain\Category\Exception\CategoryException;
 use PrestaShop\PrestaShop\Core\Domain\Category\ValueObject\CategoryId;
-use PrestaShop\PrestaShop\Core\Domain\Product\Command\AssignProductToCategoryCommand;
-use PrestaShop\PrestaShop\Core\Domain\Product\Exception\CannotAssignProductToCategoryException;
-use PrestaShop\PrestaShop\Core\Domain\Product\Exception\ProductException;
 use PrestaShopBundle\Form\Admin\Category\SimpleCategory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -96,25 +92,19 @@ class CategoryController extends FrameworkBundleAdminController
                             ],
                         ]
                     );
+
                     if ($request->query->has('id_product')) {
-                        $assignProductToCategoryCommand = new AssignProductToCategoryCommand(
-                            $categoryId->getValue(),
-                            $request->query->getInt('id_product')
-                        );
-                        $commandBus->handle($assignProductToCategoryCommand);
+                        $productAdapter = $this->get('prestashop.adapter.data_provider.product');
+                        $product = $productAdapter->getProduct($request->query->get('id_product'));
+                        $product->addToCategories($categoryId->getValue());
+                        $product->save();
                     }
                 }
             } catch (CategoryException $e) {
-                // TODO: do some frontend work to display this error message from ajax query
-                $response->setStatusCode(Response::HTTP_BAD_REQUEST);
-                $response->setData(['error' => $this->getErrorMessageForException($e, $this->getErrorMessages($data['category']['name']))]);
-            } catch (ProductException $e) {
-                // TODO: do some frontend work to display this error message from ajax query
-                $response->setStatusCode(Response::HTTP_BAD_REQUEST);
-                $response->setData(['error' => $this->getErrorMessageForException($e, $this->getErrorMessages($data['category']['name']))]);
+                // @todo error handling should be implemented.
             }
         } else {
-            $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+            $response->setStatusCode(400);
             $response->setData($this->getFormErrorsForJS($form));
         }
 
@@ -124,7 +114,7 @@ class CategoryController extends FrameworkBundleAdminController
     /**
      * Get Categories formatted like ajax_product_file.php.
      *
-     * @param int $limit
+     * @param $limit
      * @param Request $request
      *
      * @return JsonResponse
@@ -138,26 +128,5 @@ class CategoryController extends FrameworkBundleAdminController
         return new JsonResponse(
             $this->get('prestashop.adapter.data_provider.category')->getAjaxCategories($request->get('query'), $limit, true)
         );
-    }
-
-    /**
-     * @param string $categoryName
-     *
-     * @return array
-     */
-    private function getErrorMessages(string $categoryName): array
-    {
-        return [
-            CategoryException::class => $this->trans(
-                'Category "%s" could not be created.',
-                'Admin.Notifications.Error',
-                [$categoryName]
-            ),
-            CannotAssignProductToCategoryException::class => $this->trans(
-                'This product could not be assigned to category "%s".',
-                'Admin.Notifications.Error',
-                [$categoryName]
-            ),
-        ];
     }
 }

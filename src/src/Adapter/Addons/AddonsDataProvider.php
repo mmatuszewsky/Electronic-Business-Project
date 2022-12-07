@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Addons;
@@ -40,22 +40,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class AddonsDataProvider implements AddonsInterface
 {
-    /** @var string */
-    public const ADDONS_API_MODULE_CHANNEL_STABLE = 'stable';
-
-    /** @var string */
-    public const ADDONS_API_MODULE_CHANNEL_BETA = 'beta';
-
-    /** @var string */
-    public const ADDONS_API_MODULE_CHANNEL_ALPHA = 'alpha';
-
-    /** @var array<string> */
-    public const ADDONS_API_MODULE_CHANNELS = [
-        self::ADDONS_API_MODULE_CHANNEL_STABLE,
-        self::ADDONS_API_MODULE_CHANNEL_BETA,
-        self::ADDONS_API_MODULE_CHANNEL_ALPHA,
-    ];
-
     /**
      * @var bool
      */
@@ -81,40 +65,26 @@ class AddonsDataProvider implements AddonsInterface
      */
     public $cacheDir;
 
-    /**
-     * @var string
-     */
-    private $moduleChannel;
-
-    /**
-     * @param ApiClient $apiClient
-     * @param ModuleZipManager $zipManager
-     * @param string|null $moduleChannel
-     */
-    public function __construct(
-        ApiClient $apiClient,
-        ModuleZipManager $zipManager,
-        ?string $moduleChannel = null
-    ) {
+    public function __construct(ApiClient $apiClient, ModuleZipManager $zipManager)
+    {
         $this->marketplaceClient = $apiClient;
         $this->zipManager = $zipManager;
         $this->encryption = new PhpEncryption(_NEW_COOKIE_KEY_);
-        $this->moduleChannel = $moduleChannel ?? self::ADDONS_API_MODULE_CHANNEL_STABLE;
     }
 
     /**
-     * @param int $module_id
+     * @param $module_id
      *
      * @return bool
      *
      * @throws Exception
      */
-    public function downloadModule(int $module_id): bool
+    public function downloadModule($module_id)
     {
-        $params = [
+        $params = array(
             'id_module' => $module_id,
             'format' => 'json',
-        ];
+        );
 
         // Module downloading
         try {
@@ -142,7 +112,7 @@ class AddonsDataProvider implements AddonsInterface
      *
      * @todo Does this function should be in a User related class ?
      */
-    public function isAddonsAuthenticated(): bool
+    public function isAddonsAuthenticated()
     {
         $request = Request::createFromGlobals();
 
@@ -153,7 +123,7 @@ class AddonsDataProvider implements AddonsInterface
     /**
      * {@inheritdoc}
      */
-    public function request($action, $params = [])
+    public function request($action, $params = array())
     {
         if (!$this->isAddonsUp()) {
             throw new Exception('Previous call failed and disabled client.');
@@ -201,10 +171,10 @@ class AddonsDataProvider implements AddonsInterface
                         return $this->marketplaceClient
                             ->setUserMail($params['username_addons'])
                             ->setPassword($params['password_addons'])
-                            ->getModuleZip($params['id_module'], $this->moduleChannel);
+                            ->getModuleZip($params['id_module']);
                     }
 
-                    return $this->marketplaceClient->getModuleZip($params['id_module'], $this->moduleChannel);
+                    return $this->marketplaceClient->getModuleZip($params['id_module']);
                 case 'module':
                     return $this->marketplaceClient->getModule($params['id_module']);
                 case 'install-modules':
@@ -230,10 +200,10 @@ class AddonsDataProvider implements AddonsInterface
         $username = $this->encryption->decrypt($request->cookies->get('username_addons'));
         $password = $this->encryption->decrypt($request->cookies->get('password_addons'));
 
-        return [
+        return array(
             'username_addons' => $username,
             'password_addons' => $password,
-        ];
+        );
     }
 
     /** Does this function should be in a User related class ? **/
@@ -242,9 +212,9 @@ class AddonsDataProvider implements AddonsInterface
         $request = Request::createFromGlobals();
         $username = $this->encryption->decrypt($request->cookies->get('username_addons'));
 
-        return [
+        return array(
             'username_addons' => $username,
-        ];
+        );
     }
 
     /**
@@ -252,7 +222,7 @@ class AddonsDataProvider implements AddonsInterface
      *
      * @return bool
      */
-    public function isAddonsUp(): bool
+    public function isAddonsUp()
     {
         return self::$is_addons_up;
     }

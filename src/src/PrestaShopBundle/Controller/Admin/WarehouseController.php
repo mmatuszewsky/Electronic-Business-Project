@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Controller\Admin;
@@ -70,28 +70,28 @@ class WarehouseController extends FrameworkBundleAdminController
             $this->get('prestashop.adapter.data_provider.tax'),
             $this->get('router')
         );
-        $allFormData = $modelMapper->getFormData($product);
+        $allFormData = $modelMapper->getFormData();
 
         $form = $this->createFormBuilder($allFormData);
         $simpleSubForm = $form->create('step4', 'form');
 
         foreach ($warehouses as $warehouse) {
-            $simpleSubForm->add('warehouse_combination_' . $warehouse['id_warehouse'], 'Symfony\Component\Form\Extension\Core\Type\CollectionType', [
+            $simpleSubForm->add('warehouse_combination_' . $warehouse['id_warehouse'], 'Symfony\Component\Form\Extension\Core\Type\CollectionType', array(
                 'entry_type' => 'PrestaShopBundle\Form\Admin\Product\ProductWarehouseCombination',
-                'entry_options' => [
+                'entry_options' => array(
                     'id_warehouse' => $warehouse['id_warehouse'],
-                ],
+                ),
                 'allow_add' => true,
                 'required' => false,
                 'label' => $warehouse['name'],
-            ]);
+            ));
         }
 
         $form->add($simpleSubForm);
 
-        return $this->render('@Product/ProductPage/Forms/form_warehouse_combination.html.twig', [
+        return $this->render('@Product/ProductPage/Forms/form_warehouse_combination.html.twig', array(
             'warehouses' => $warehouses,
             'form' => $form->getForm()['step4']->createView(),
-        ]);
+        ));
     }
 }

@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Module;
@@ -43,7 +43,7 @@ class ModuleZipManager
     /*
      * Data
      */
-    private static $sources = [];
+    private static $sources = array();
 
     /*
      * Services
@@ -88,18 +88,32 @@ class ModuleZipManager
     {
         $this->initSource($source);
 
-        if ($this->getSource($source)->getName() !== null) {
-            return $this->getSource($source)->getName();
+        if ($this->getSource($source)->getName($source) !== null) {
+            return $this->getSource($source)->getName($source);
         }
 
         if (!file_exists($source)) {
-            throw new Exception($this->translator->trans('Unable to find uploaded module at the following path: %file%', ['%file%' => $source], 'Admin.Modules.Notification'));
+            throw new Exception(
+                $this->translator->trans(
+                    'Unable to find uploaded module at the following path: %file%',
+                    array('%file%' => $source),
+                    'Admin.Modules.Notification'
+                )
+            );
         }
 
         $sandboxPath = $this->getSandboxPath($source);
         $zip = new ZipArchive();
-        if ($zip->open($source) !== true || !$zip->extractTo($sandboxPath) || !$zip->close()) {
-            throw new Exception($this->translator->trans('Cannot extract module in %path% to get its name. %error%', ['%path%' => $sandboxPath, '%error%' => $zip->getStatusString()], 'Admin.Modules.Notification'));
+        if ($zip->open($source) === false || !$zip->extractTo($sandboxPath) || !$zip->close()) {
+            throw new Exception(
+                $this->translator->trans(
+                    'Cannot extract module in %path% to get its name. %error%',
+                    array(
+                        '%path%' => $sandboxPath,
+                        '%error%' => $zip->getStatusString(), ),
+                    'Admin.Modules.Notification'
+                )
+            );
         }
 
         // Check the structure and get the module name
@@ -111,7 +125,6 @@ class ModuleZipManager
             ->ignoreVCS(true);
 
         $validModuleStructure = false;
-        $moduleName = '';
         // We must have only one folder in the zip, which contains the module files
         if (iterator_count($directories->directories()) == 1) {
             $directories = iterator_to_array($directories);
@@ -119,11 +132,11 @@ class ModuleZipManager
 
             // Inside of this folder, we MUST have a file called <module name>.php
             $moduleFolder = Finder::create()
-                ->files()
-                ->in($sandboxPath . $moduleName)
-                ->depth('== 0')
-                ->exclude(['__MACOSX'])
-                ->ignoreVCS(true);
+                    ->files()
+                    ->in($sandboxPath . $moduleName)
+                    ->depth('== 0')
+                    ->exclude(['__MACOSX'])
+                    ->ignoreVCS(true);
             foreach (iterator_to_array($moduleFolder) as $file) {
                 if ($file->getFileName() === $moduleName . '.php') {
                     $validModuleStructure = true;
@@ -136,7 +149,11 @@ class ModuleZipManager
         if (!$validModuleStructure) {
             $this->filesystem->remove($sandboxPath);
 
-            throw new Exception($this->translator->trans('This file does not seem to be a valid module zip', [], 'Admin.Modules.Notification'));
+            throw new Exception($this->translator->trans(
+                    'This file does not seem to be a valid module zip',
+                    array(),
+                    'Admin.Modules.Notification'
+            ));
         }
 
         $this->getSource($source)->setName($moduleName);
@@ -160,7 +177,7 @@ class ModuleZipManager
             $sandboxPath . $name,
             $modulePath,
             null,
-            ['override' => true]
+            array('override' => true)
         );
         $this->eventDispatcher
             ->dispatch(
@@ -172,9 +189,9 @@ class ModuleZipManager
     }
 
     /**
-     * @param string $source
+     * @param $source
      *
-     * @return string
+     * @return string|null
      */
     private function getSandboxPath($source)
     {

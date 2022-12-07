@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -44,21 +44,21 @@ abstract class ControllerCore
      *
      * @var array
      */
-    public $css_files = [];
+    public $css_files = array();
 
     /**
      * List of JavaScript files.
      *
      * @var array
      */
-    public $js_files = [];
+    public $js_files = array();
 
     /**
      * List of PHP errors.
      *
      * @var array
      */
-    public static $php_errors = [];
+    public static $php_errors = array();
 
     /**
      * Set to true to display page header.
@@ -84,7 +84,7 @@ abstract class ControllerCore
     /**
      * Set to true to display page footer.
      *
-     * @var bool
+     * @var string
      */
     protected $display_footer;
 
@@ -168,15 +168,8 @@ abstract class ControllerCore
      */
     public function init()
     {
-        Hook::exec(
-            'actionControllerInitBefore',
-            [
-                'controller' => $this,
-            ]
-        );
-
         if (_PS_MODE_DEV_ && $this->controller_type == 'admin') {
-            set_error_handler([__CLASS__, 'myErrorHandler']);
+            set_error_handler(array(__CLASS__, 'myErrorHandler'));
         }
 
         if (!defined('_PS_BASE_URL_')) {
@@ -194,13 +187,6 @@ abstract class ControllerCore
         $localeRepo = $this->get(self::SERVICE_LOCALE_REPOSITORY);
         $this->context->currentLocale = $localeRepo->getLocale(
             $this->context->language->getLocale()
-        );
-
-        Hook::exec(
-            'actionControllerInitAfter',
-            [
-                'controller' => $this,
-            ]
         );
     }
 
@@ -305,7 +291,7 @@ abstract class ControllerCore
             if ($this->viewAccess()) {
                 $this->initContent();
             } else {
-                $this->errors[] = $this->trans('Access denied.', [], 'Admin.Notifications.Error');
+                $this->errors[] = $this->trans('Access denied.', array(), 'Admin.Notifications.Error');
             }
 
             if (!$this->content_only && ($this->display_footer || (isset($this->className) && $this->className))) {
@@ -331,7 +317,7 @@ abstract class ControllerCore
         }
     }
 
-    protected function trans($id, array $parameters = [], $domain = null, $locale = null)
+    protected function trans($id, array $parameters = array(), $domain = null, $locale = null)
     {
         $parameters['legacy'] = 'htmlspecialchars';
 
@@ -424,7 +410,7 @@ abstract class ControllerCore
     public function addCSS($css_uri, $css_media_type = 'all', $offset = null, $check_path = true)
     {
         if (!is_array($css_uri)) {
-            $css_uri = [$css_uri];
+            $css_uri = array($css_uri);
         }
 
         foreach ($css_uri as $css_file => $media) {
@@ -432,13 +418,13 @@ abstract class ControllerCore
                 if ($check_path) {
                     $css_path = Media::getCSSPath($css_file, $media);
                 } else {
-                    $css_path = [$css_file => $media];
+                    $css_path = array($css_file => $media);
                 }
             } else {
                 if ($check_path) {
                     $css_path = Media::getCSSPath($media, $css_media_type);
                 } else {
-                    $css_path = [$media => $css_media_type];
+                    $css_path = array($media => $css_media_type);
                 }
             }
 
@@ -464,7 +450,7 @@ abstract class ControllerCore
     public function removeCSS($css_uri, $css_media_type = 'all', $check_path = true)
     {
         if (!is_array($css_uri)) {
-            $css_uri = [$css_uri];
+            $css_uri = array($css_uri);
         }
 
         foreach ($css_uri as $css_file => $media) {
@@ -472,13 +458,13 @@ abstract class ControllerCore
                 if ($check_path) {
                     $css_path = Media::getCSSPath($css_file, $media);
                 } else {
-                    $css_path = [$css_file => $media];
+                    $css_path = array($css_file => $media);
                 }
             } else {
                 if ($check_path) {
                     $css_path = Media::getCSSPath($media, $css_media_type);
                 } else {
-                    $css_path = [$media => $css_media_type];
+                    $css_path = array($media => $css_media_type);
                 }
             }
 
@@ -501,7 +487,7 @@ abstract class ControllerCore
     public function addJS($js_uri, $check_path = true)
     {
         if (!is_array($js_uri)) {
-            $js_uri = [$js_uri];
+            $js_uri = array($js_uri);
         }
 
         foreach ($js_uri as $js_file) {
@@ -530,7 +516,7 @@ abstract class ControllerCore
     public function removeJS($js_uri, $check_path = true)
     {
         if (!is_array($js_uri)) {
-            $js_uri = [$js_uri];
+            $js_uri = array($js_uri);
         }
 
         foreach ($js_uri as $js_file) {
@@ -550,15 +536,10 @@ abstract class ControllerCore
      * @param string|null $version jQuery library version
      * @param string|null $folder jQuery file folder
      * @param bool $minifier if set tot true, a minified version will be included
-     *
-     * @deprecated 1.7.7 jQuery is always included, this method should no longer be used
      */
     public function addJquery($version = null, $folder = null, $minifier = true)
     {
-        @trigger_error(
-            'Controller->addJquery() is deprecated since version 1.7.7.0, jQuery is always included',
-            E_USER_DEPRECATED
-        );
+        $this->addJS(Media::getJqueryPath($version, $folder, $minifier), false);
     }
 
     /**
@@ -571,7 +552,7 @@ abstract class ControllerCore
     public function addJqueryUI($component, $theme = 'base', $check_dependencies = true)
     {
         if (!is_array($component)) {
-            $component = [$component];
+            $component = array($component);
         }
 
         foreach ($component as $ui) {
@@ -591,7 +572,7 @@ abstract class ControllerCore
     public function addJqueryPlugin($name, $folder = null, $css = true)
     {
         if (!is_array($name)) {
-            $name = [$name];
+            $name = array($name);
         }
 
         foreach ($name as $plugin) {
@@ -643,7 +624,7 @@ abstract class ControllerCore
         $this->context->smarty->assign($js_tag, $js_tag);
 
         if (!is_array($templates)) {
-            $templates = [$templates];
+            $templates = array($templates);
         }
 
         $html = '';
@@ -710,13 +691,13 @@ abstract class ControllerCore
                 break;
         }
 
-        Controller::$php_errors[] = [
+        Controller::$php_errors[] = array(
             'type' => $type,
             'errline' => (int) $errline,
             'errfile' => str_replace('\\', '\\\\', $errfile), // Hack for Windows paths
             'errno' => (int) $errno,
             'errstr' => $errstr,
-        ];
+        );
         Context::getContext()->smarty->assign('php_errors', Controller::$php_errors);
 
         return true;
@@ -739,9 +720,9 @@ abstract class ControllerCore
     }
 
     /**
-     * @param string|null $value
-     * @param string|null $controller
-     * @param string|null $method
+     * @param null $value
+     * @param null $controller
+     * @param null $method
      *
      * @throws PrestaShopException
      */
@@ -757,14 +738,14 @@ abstract class ControllerCore
         }
 
         /* @deprecated deprecated since 1.6.1.1 */
-        Hook::exec('actionAjaxDieBefore', ['controller' => $controller, 'method' => $method, 'value' => $value]);
+        Hook::exec('actionAjaxDieBefore', array('controller' => $controller, 'method' => $method, 'value' => $value));
 
         /*
          * @deprecated deprecated since 1.6.1.1
          * use 'actionAjaxDie'.$controller.$method.'Before' instead
          */
-        Hook::exec('actionBeforeAjaxDie' . $controller . $method, ['value' => $value]);
-        Hook::exec('actionAjaxDie' . $controller . $method . 'Before', ['value' => $value]);
+        Hook::exec('actionBeforeAjaxDie' . $controller . $method, array('value' => $value));
+        Hook::exec('actionAjaxDie' . $controller . $method . 'Before', array('value' => $value));
         header('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
 
         echo $value;
@@ -808,7 +789,7 @@ abstract class ControllerCore
     /**
      * Gets the dependency container.
      *
-     * @return ContainerBuilder|null
+     * @return ContainerBuilder
      */
     public function getContainer()
     {

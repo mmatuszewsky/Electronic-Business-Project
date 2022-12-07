@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,17 +16,17 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Language\CommandHandler;
 
 use Language;
-use PrestaShop\PrestaShop\Adapter\Image\ImageValidator;
 use PrestaShop\PrestaShop\Core\Domain\Language\Command\AddLanguageCommand;
 use PrestaShop\PrestaShop\Core\Domain\Language\CommandHandler\AddLanguageHandlerInterface;
 use PrestaShop\PrestaShop\Core\Domain\Language\Exception\LanguageConstraintException;
@@ -43,37 +42,19 @@ use PrestaShop\PrestaShop\Core\Domain\Language\ValueObject\LanguageId;
 final class AddLanguageHandler extends AbstractLanguageHandler implements AddLanguageHandlerInterface
 {
     /**
-     * @var ImageValidator
-     */
-    private $imageValidator;
-
-    public function __construct(ImageValidator $imageValidator)
-    {
-        $this->imageValidator = $imageValidator;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function handle(AddLanguageCommand $command)
     {
         $this->assertLanguageWithIsoCodeDoesNotExist($command->getIsoCode());
-        if ($command->getNoPictureImagePath()) {
-            $this->imageValidator->assertFileUploadLimits($command->getNoPictureImagePath());
-            $this->imageValidator->assertIsValidImageType($command->getNoPictureImagePath());
-        }
-
-        if ($command->getFlagImagePath()) {
-            $this->imageValidator->assertFileUploadLimits($command->getFlagImagePath());
-            $this->imageValidator->assertIsValidImageType($command->getFlagImagePath());
-        }
-
-        $language = $this->createLegacyLanguageObjectFromCommand($command);
 
         $this->copyNoPictureImage(
             $command->getIsoCode(),
             $command->getNoPictureImagePath()
         );
+
+        $language = $this->createLegacyLanguageObjectFromCommand($command);
+
         $this->uploadFlagImage($language, $command);
         $this->addShopAssociation($language, $command);
 
@@ -88,7 +69,10 @@ final class AddLanguageHandler extends AbstractLanguageHandler implements AddLan
     private function assertLanguageWithIsoCodeDoesNotExist(IsoCode $isoCode)
     {
         if (Language::getIdByIso($isoCode->getValue())) {
-            throw new LanguageConstraintException(sprintf('Language with ISO code "%s" already exists', $isoCode->getValue()), LanguageConstraintException::DUPLICATE_ISO_CODE);
+            throw new LanguageConstraintException(
+                sprintf('Language with ISO code "%s" already exists', $isoCode->getValue()),
+                LanguageConstraintException::DUPLICATE_ISO_CODE
+            );
         }
     }
 
@@ -130,7 +114,9 @@ final class AddLanguageHandler extends AbstractLanguageHandler implements AddLan
         }
 
         if (false === $language->add()) {
-            throw new LanguageException(sprintf('Failed to add new language "%s"', $command->getName()));
+            throw new LanguageException(
+                sprintf('Failed to add new language "%s"', $command->getName())
+            );
         }
 
         return $language;

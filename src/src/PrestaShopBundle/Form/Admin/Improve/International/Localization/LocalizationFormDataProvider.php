@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,36 +16,55 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Form\Admin\Improve\International\Localization;
 
-use PrestaShop\PrestaShop\Core\Configuration\DataConfigurationInterface;
+use PrestaShop\PrestaShop\Adapter\Localization\AdvancedConfiguration;
+use PrestaShop\PrestaShop\Adapter\Localization\LocalizationConfiguration;
+use PrestaShop\PrestaShop\Adapter\Localization\LocalUnitsConfiguration;
 use PrestaShop\PrestaShop\Core\Form\FormDataProviderInterface;
 
 /**
  * Class LocalizationFormDataProvider is responsible for handling
- * 'Improve > International > Localization' page forms data.
+ * 'Improve > International > Localization' page form data.
  */
 class LocalizationFormDataProvider implements FormDataProviderInterface
 {
     /**
-     * @var DataConfigurationInterface
+     * @var LocalizationConfiguration
      */
-    private $dataConfiguration;
+    private $localizationConfiguration;
 
     /**
-     * @param DataConfigurationInterface $dataConfiguration
+     * @var LocalUnitsConfiguration
+     */
+    private $localUnitsConfiguration;
+
+    /**
+     * @var AdvancedConfiguration
+     */
+    private $advancedConfiguration;
+
+    /**
+     * @param LocalizationConfiguration $localizationConfiguration
+     * @param LocalUnitsConfiguration $localUnitsConfiguration
+     * @param AdvancedConfiguration $advancedConfiguration
      */
     public function __construct(
-        DataConfigurationInterface $dataConfiguration
+        LocalizationConfiguration $localizationConfiguration,
+        LocalUnitsConfiguration $localUnitsConfiguration,
+        AdvancedConfiguration $advancedConfiguration
     ) {
-        $this->dataConfiguration = $dataConfiguration;
+        $this->localizationConfiguration = $localizationConfiguration;
+        $this->localUnitsConfiguration = $localUnitsConfiguration;
+        $this->advancedConfiguration = $advancedConfiguration;
     }
 
     /**
@@ -54,7 +72,11 @@ class LocalizationFormDataProvider implements FormDataProviderInterface
      */
     public function getData()
     {
-        return $this->dataConfiguration->getConfiguration();
+        return [
+            'configuration' => $this->localizationConfiguration->getConfiguration(),
+            'local_units' => $this->localUnitsConfiguration->getConfiguration(),
+            'advanced' => $this->advancedConfiguration->getConfiguration(),
+        ];
     }
 
     /**
@@ -62,6 +84,8 @@ class LocalizationFormDataProvider implements FormDataProviderInterface
      */
     public function setData(array $data)
     {
-        return $this->dataConfiguration->updateConfiguration($data);
+        return $this->localizationConfiguration->updateConfiguration($data['configuration']) +
+            $this->localUnitsConfiguration->updateConfiguration($data['local_units']) +
+            $this->advancedConfiguration->updateConfiguration($data['advanced']);
     }
 }

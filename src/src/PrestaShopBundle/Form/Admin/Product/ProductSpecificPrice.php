@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,32 +16,24 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Form\Admin\Product;
 
-use Currency;
-use PrestaShop\PrestaShop\Adapter\Country\CountryDataProvider;
-use PrestaShop\PrestaShop\Adapter\Customer\CustomerDataProvider;
-use PrestaShop\PrestaShop\Adapter\Group\GroupDataProvider;
-use PrestaShop\PrestaShop\Adapter\LegacyContext;
-use PrestaShop\PrestaShop\Adapter\Shop\Context;
-use PrestaShop\PrestaShop\Core\Currency\CurrencyDataProviderInterface;
 use PrestaShopBundle\Form\Admin\Type\CommonAbstractType;
 use PrestaShopBundle\Form\Admin\Type\DatePickerType;
 use PrestaShopBundle\Form\Admin\Type\TypeaheadCustomerCollectionType;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Form\Extension\Core\Type as FormType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -50,58 +41,24 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ProductSpecificPrice extends CommonAbstractType
 {
-    /**
-     * @var LegacyContext
-     */
-    public $context;
-    /**
-     * @var array
-     */
+    private $translator;
+    private $locales;
+    private $shops;
     private $countries;
-    /**
-     * @var array
-     */
     private $currencies;
-    /**
-     * @var Currency
-     */
-    public $currency;
-    /**
-     * @var CustomerDataProvider
-     */
-    public $customerDataProvider;
-    /**
-     * @var array
-     */
     private $groups;
-    /**
-     * @var array<int|array>
-     */
-    public $locales;
-    /**
-     * @var Router
-     */
-    public $router;
-    /**
-     * @var array
-     */
-    public $shops;
-    /**
-     * @var TranslatorInterface
-     */
-    public $translator;
+    private $customerDataprovider;
 
     /**
      * Constructor.
      *
-     * @param Router $router
-     * @param TranslatorInterface $translator
-     * @param Context $shopContextAdapter
-     * @param CountryDataProvider $countryDataprovider
-     * @param CurrencyDataProviderInterface $currencyDataprovider
-     * @param GroupDataProvider $groupDataprovider
-     * @param LegacyContext $legacyContext
-     * @param CustomerDataProvider $customerDataProvider
+     * @param object $router
+     * @param object $translator
+     * @param object $shopContextAdapter
+     * @param object $countryDataprovider
+     * @param object $currencyDataprovider
+     * @param object $groupDataprovider
+     * @param object $legacyContext
      */
     public function __construct(
         $router,
@@ -111,7 +68,7 @@ class ProductSpecificPrice extends CommonAbstractType
         $currencyDataprovider,
         $groupDataprovider,
         $legacyContext,
-        $customerDataProvider
+        $customerDataprovider
     ) {
         $this->router = $router;
         $this->translator = $translator;
@@ -122,16 +79,13 @@ class ProductSpecificPrice extends CommonAbstractType
             $countryDataprovider->getCountries($this->locales[0]['id_lang']),
             'id_country'
         );
-        $this->currencies = $this->formatDataChoicesList(
-            $currencyDataprovider->getCurrencies(),
-            'id_currency'
-        );
+        $this->currencies = $this->formatDataChoicesList($currencyDataprovider->getCurrencies(), 'id_currency');
         $this->groups = $this->formatDataChoicesList(
             $groupDataprovider->getGroups($this->locales[0]['id_lang']),
             'id_group'
         );
         $this->currency = $legacyContext->getContext()->currency;
-        $this->customerDataProvider = $customerDataProvider;
+        $this->customerDataprovider = $customerDataprovider;
     }
 
     /**
@@ -287,10 +241,11 @@ class ProductSpecificPrice extends CommonAbstractType
             )
             ->add(
                 'sp_reduction',
-                FormType\NumberType::class,
+                FormType\MoneyType::class,
                 [
                     'label' => $this->translator->trans('Reduction', [], 'Admin.Catalog.Feature'),
                     'required' => false,
+                    'currency' => $this->currency->iso_code,
                 ]
             )
             ->add(

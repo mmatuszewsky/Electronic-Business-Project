@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Core\Addon\Theme;
@@ -30,7 +30,7 @@ use ArrayAccess;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use PrestaShop\PrestaShop\Core\Addon\Theme\Theme as AddonTheme;
+use PrestaShop\PrestaShop\Core\Addon\Theme as Addon;
 
 /**
  * An ArrayCollection is a Collection implementation that wraps a regular PHP array.
@@ -144,11 +144,11 @@ class ThemeCollection implements ArrayAccess, Countable, IteratorAggregate
     /**
      * Returns true if the addon is found in the collection.
      *
-     * @param AddonTheme $addon the addon
+     * @param Addon $addon the addon
      *
      * @return bool
      */
-    public function contains(AddonTheme $addon)
+    public function contains(Addon $addon)
     {
         return in_array($addon, $this->addons, true);
     }
@@ -156,7 +156,7 @@ class ThemeCollection implements ArrayAccess, Countable, IteratorAggregate
     /**
      * {@inheritdoc}
      */
-    public function indexOf(AddonTheme $addon)
+    public function indexOf(Addon $addon)
     {
         return array_search($addon, $this->addons, true);
     }
@@ -189,9 +189,9 @@ class ThemeCollection implements ArrayAccess, Countable, IteratorAggregate
      * Add an Addon with a specified key in the collection.
      *
      * @param mixed $key the key
-     * @param AddonTheme $addon the specified addon
+     * @param Addon $addon the specified addon
      */
-    public function set($key, AddonTheme $addon)
+    public function set($key, Addon $addon)
     {
         $this->addons[$key] = $addon;
     }
@@ -199,11 +199,11 @@ class ThemeCollection implements ArrayAccess, Countable, IteratorAggregate
     /**
      * Add an Addon in the collection.
      *
-     * @param AddonTheme $addon the specified addon
+     * @param Addon $addon the specified addon
      *
      * @return bool
      */
-    public function add(AddonTheme $addon)
+    public function add(Addon $addon)
     {
         $this->addons[] = $addon;
 
@@ -213,9 +213,9 @@ class ThemeCollection implements ArrayAccess, Countable, IteratorAggregate
     /**
      * Remove an addon from the collection by key.
      *
-     * @param int|string $key
+     * @param mixed the key (can be int or string)
      *
-     * @return bool|null true if the addon has been found and removed
+     * @return bool true if the addon has been found and removed
      */
     public function removeByKey($key)
     {
@@ -232,11 +232,11 @@ class ThemeCollection implements ArrayAccess, Countable, IteratorAggregate
     /**
      * Remove an addon from the collection by key.
      *
-     * @param AddonTheme $addon the addon to be removed
+     * @param Addon $addon the addon to be removed
      *
      * @return bool true if the addon has been found and removed
      */
-    public function remove(AddonTheme $addon)
+    public function remove(Addon $addon)
     {
         $key = array_search($addon, $this->addons, true);
 

@@ -8,6 +8,7 @@ services:
     class: 'PrestaShop\PrestaShop\Adapter\Manufacturer\ManufacturerLogoThumbnailProvider'
     arguments:
       - '@prestashop.core.image.parser.image_tag_source_parser'
+      - "@=service('prestashop.adapter.legacy.context').getContext().shop.id"
 
   prestashop.adapter.manufacturer.command_handler.toggle_manufacturer_status_handler:
     class: 'PrestaShop\PrestaShop\Adapter\Manufacturer\CommandHandler\ToggleManufacturerStatusHandler'
@@ -33,6 +34,7 @@ services:
     class: 'PrestaShop\PrestaShop\Adapter\Manufacturer\QueryHandler\GetManufacturerForEditingHandler'
     arguments:
       - '@prestashop.core.image.parser.image_tag_source_parser'
+      - '@=service("prestashop.adapter.legacy.context").getContext().shop.id'
     tags:
       - name: tactician.handler
         command: 'PrestaShop\PrestaShop\Core\Domain\Manufacturer\Query\GetManufacturerForEditing'
@@ -54,6 +56,3 @@ services:
     tags:
       - name: tactician.handler
         command: PrestaShop\PrestaShop\Core\Domain\Manufacturer\Query\GetManufacturerForViewing
-
-  prestashop.adapter.manufacturer.repository.manufacturer_repository:
-      class: 'PrestaShop\PrestaShop\Adapter\Manufacturer\Repository\ManufacturerRepository'

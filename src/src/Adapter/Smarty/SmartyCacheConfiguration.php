@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Smarty;
@@ -49,7 +49,7 @@ class SmartyCacheConfiguration implements DataConfigurationInterface
      */
     public function getConfiguration()
     {
-        return [
+        return array(
             'template_compilation' => $this->configuration->get('PS_SMARTY_FORCE_COMPILE'),
             'cache' => $this->configuration->getBoolean('PS_SMARTY_CACHE'),
             'multi_front_optimization' => $this->configuration->getBoolean('PS_SMARTY_LOCAL'),
@@ -57,7 +57,7 @@ class SmartyCacheConfiguration implements DataConfigurationInterface
             'clear_cache' => $this->configuration->get('PS_SMARTY_CLEAR_CACHE'),
             'smarty_console' => $this->configuration->get('PS_SMARTY_CONSOLE'),
             'smarty_console_key' => $this->configuration->get('PS_SMARTY_CONSOLE_KEY'),
-        ];
+        );
     }
 
     /**
@@ -75,7 +75,7 @@ class SmartyCacheConfiguration implements DataConfigurationInterface
             $this->configuration->set('PS_SMARTY_CLEAR_CACHE', $configuration['clear_cache']);
         }
 
-        return [];
+        return array();
     }
 
     /**

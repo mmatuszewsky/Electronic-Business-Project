@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,46 +16,25 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- */
-
-/**
- * Data structure to store curves
+ * International Registered Trademark & Property of PrestaShop SA
  */
 class CurveCore
 {
-    /**
-     * @var float[] indexed by string
-     */
-    protected $values = [];
-    /**
-     * @var string
-     */
+    protected $values = array();
     protected $label;
-    /**
-     * Can be: bars, steps
-     *
-     * @var string
-     */
     protected $type;
 
-    /**
-     * @param array $values
-     */
+    /** @prototype void public function setValues($values) */
     public function setValues($values)
     {
         $this->values = $values;
     }
 
-    /**
-     * @param bool $time_mode
-     *
-     * @return string
-     */
     public function getValues($time_mode = false)
     {
         ksort($this->values);
@@ -65,31 +43,20 @@ class CurveCore
             $string .= '[' . addslashes((string) $key) . ($time_mode ? '000' : '') . ',' . (float) $value . '],';
         }
 
-        return '{data:[' . rtrim($string, ',') . ']'
-            . (!empty($this->label) ? ',label:"' . $this->label . '"' : '') . ''
-            . (!empty($this->type) ? ',' . $this->type : '') . '}';
+        return '{data:[' . rtrim($string, ',') . ']' . (!empty($this->label) ? ',label:"' . $this->label . '"' : '') . '' . (!empty($this->type) ? ',' . $this->type : '') . '}';
     }
 
-    /**
-     * @param string $x
-     * @param float $y
-     */
+    /** @prototype void public function setPoint(float $x, float $y) */
     public function setPoint($x, $y)
     {
         $this->values[(string) $x] = (float) $y;
     }
 
-    /**
-     * @param string $label
-     */
     public function setLabel($label)
     {
         $this->label = $label;
     }
 
-    /**
-     * @param string $type accepts only 'bars' or 'steps'
-     */
     public function setType($type)
     {
         $this->type = '';
@@ -101,11 +68,6 @@ class CurveCore
         }
     }
 
-    /**
-     * @param string $x
-     *
-     * @return float|null return point if found, null else
-     */
     public function getPoint($x)
     {
         if (array_key_exists((string) $x, $this->values)) {

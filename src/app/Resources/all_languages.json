@@ -87,8 +87,7 @@
     "date_format_full": "Y-m-d H:i:s",
     "is_rtl": "0",
     "language_code": "ca-es",
-    "locale": "ca-ES",
-    "flag": "catalonia"
+    "locale": "ca-ES"
   },
   "cb": {
     "name": "Español CO ( Spanish)",
@@ -102,8 +101,8 @@
   "cs": {
     "name": "Čeština (Czech)",
     "iso_code": "cs",
-    "date_format_lite": "d.m.Y",
-    "date_format_full": "d.m.Y H:i:s",
+    "date_format_lite": "Y-m-d",
+    "date_format_full": "Y-m-d H:i:s",
     "is_rtl": "0",
     "language_code": "cs-cz",
     "locale": "cs-CZ"
@@ -351,15 +350,6 @@
     "language_code": "ka-ge",
     "locale": "ka-GE"
   },
-  "km": {
-    "name": "ភាសាខ្មែរ (Khmer)",
-    "iso_code": "km",
-    "date_format_lite": "Y-m-d",
-    "date_format_full": "Y-m-d H:i:s",
-    "is_rtl": "0",
-    "language_code": "km-kh",
-    "locale": "km-KH"
-  },
   "ko": {
     "name": "한국어 (Korean)",
     "iso_code": "ko",
@@ -395,15 +385,6 @@
     "is_rtl": "0",
     "language_code": "lv-lv",
     "locale": "lv-LV"
-  },
-  "mg": {
-    "name": "Malagasy",
-    "iso_code": "mg",
-    "date_format_lite": "d-m-Y",
-    "date_format_full": "d-m-Y H:i:s",
-    "is_rtl": "0",
-    "language_code": "mg-mg",
-    "locale": "mg-MG"
   },
   "mk": {
     "name": "македонски (Macedonian)",
@@ -543,8 +524,8 @@
   "sk": {
     "name": "Slovenčina (Slovak)",
     "iso_code": "sk",
-    "date_format_lite": "d.m.Y",
-    "date_format_full": "d.m.Y H:i:s",
+    "date_format_lite": "Y-m-d",
+    "date_format_full": "Y-m-d H:i:s",
     "is_rtl": "0",
     "language_code": "sk-sk",
     "locale": "sk-SK"
@@ -575,15 +556,6 @@
     "is_rtl": "0",
     "language_code": "sv-se",
     "locale": "sv-SE"
-  },
-  "sw": {
-    "name": "Kiswahili (Swahili)",
-    "iso_code": "sw",
-    "date_format_lite": "n/d/Y",
-    "date_format_full": "n/d/Y H:i:s",
-    "is_rtl": "0",
-    "language_code": "sw-ke",
-    "locale": "sw-KE"
   },
   "ta": {
     "name": "தமிழ் (Tamil)",
@@ -628,8 +600,7 @@
     "date_format_full": "m/d/Y H:i:s",
     "is_rtl": "0",
     "language_code": "en-ud",
-    "locale": "en-UD",
-    "flag": "gb"
+    "locale": "en-UD"
   },
   "ug": {
     "name": "ئۇيغۇر (Uyghur)",
@@ -693,14 +664,5 @@
     "is_rtl": "0",
     "language_code": "zh-cn",
     "locale": "zh-CN"
-  },
-  "ku": {
-    "name": "کوردی (Kurdish)",
-    "iso_code": "ku",
-    "date_format_lite": "Y-m-d",
-    "date_format_full": "Y-m-d H:i:s",
-    "is_rtl": "1",
-    "language_code": "ku-iq",
-    "locale": "ku-IQ"
   }
 }

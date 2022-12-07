@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Core\Localization;
@@ -70,7 +70,7 @@ class Currency implements CurrencyInterface
      *
      * @see https://www.iso.org/iso-4217-currency-codes.html
      *
-     * @var int
+     * @var string
      */
     protected $numericIsoCode;
 
@@ -101,26 +101,13 @@ class Currency implements CurrencyInterface
     protected $names;
 
     /**
-     * Currency's patterns, by locale code.
-     *
-     * eg.: $patternsUSD = [
-     *     'fr-FR' => '#,##0.00 ¤',
-     *     'en-EN' => '¤#,##0.00',
-     * ]
-     *
-     * @var string[]
-     */
-    protected $patterns;
-
-    /**
      * @param bool $isActive Is this currency active ?
      * @param float $conversionRate Conversion rate of this currency against the default shop's currency
      * @param string $isoCode Currency's alphabetic ISO code (ISO 4217)
      * @param int $numericIsoCode Currency's numeric ISO code (ISO 4217)
      * @param string[] $symbols Currency's symbols, by locale code
      * @param int $precision Number of decimal digits to use with this currency
-     * @param string[] $names the currency's name, by locale code
-     * @param string[] $patterns the currency's pattern, by locale code
+     * @param string [] $names the currency's name, by locale code
      */
     public function __construct(
         $isActive,
@@ -129,17 +116,15 @@ class Currency implements CurrencyInterface
         $numericIsoCode,
         $symbols,
         $precision,
-        $names,
-        $patterns = []
+        $names
     ) {
         $this->isActive = $isActive;
         $this->conversionRate = $conversionRate;
         $this->isoCode = $isoCode;
         $this->numericIsoCode = $numericIsoCode;
         $this->symbols = $symbols;
-        $this->precision = (int) $precision;
+        $this->precision = $precision;
         $this->names = $names;
-        $this->patterns = $patterns;
     }
 
     /**
@@ -181,7 +166,7 @@ class Currency implements CurrencyInterface
      */
     public function getSymbol($localeCode)
     {
-        if (!isset($this->symbols[$localeCode])) {
+        if (!array_key_exists($localeCode, $this->symbols)) {
             throw new LocalizationException('Unknown locale code: ' . $localeCode);
         }
 
@@ -208,15 +193,5 @@ class Currency implements CurrencyInterface
         }
 
         return $this->names[$localeCode];
-    }
-
-    /**
-     * @param string $localeCode
-     *
-     * @return string
-     */
-    public function getPattern($localeCode)
-    {
-        return $this->patterns[$localeCode] ?? '';
     }
 }

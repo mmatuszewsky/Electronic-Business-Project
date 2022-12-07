@@ -25,7 +25,7 @@
       <trans-unit id="85cf8b897040b0bc24d97db52d0922ee" approved="yes">
         <source>Select "No" only if your server timed out and you need to resume the regeneration.</source>
         <target state="final">Wybierz "Nie" tylko wtedy, gdy skończył się czas serwera i musisz powtórzyć generowanie.</target>
-        <note>Line: 121</note>
+        <note>Line: 122</note>
       </trans-unit>
     </body>
   </file>
@@ -209,36 +209,17 @@
       </trans-unit>
     </body>
   </file>
-  <file original="src/PrestaShopBundle/Form/Admin/Improve/Design/Pages/CmsPageType.php" source-language="en" target-language="pl" datatype="plaintext">
+  <file original="src/PrestaShopBundle/Resources/views/Admin/Improve/Design/Cms/Blocks/form.html.twig" source-language="en" target-language="pl" datatype="plaintext">
     <body>
       <trans-unit id="2acc315907b6b57c444b1885666f5bdd" approved="yes">
         <source>Used in the h1 page tag, and as the default title tag value.</source>
         <target state="final">Używane w tagu h1 strony i jako domyślna wartość tagu tytułu.</target>
-        <note>Line: 103</note>
+        <note>Line: 45</note>
       </trans-unit>
       <trans-unit id="27043bc0eeca71692edf6c51fef16ee0" approved="yes">
         <source>Used to override the title tag value. If left blank, the default title value is used.</source>
         <target state="final">Używane do nadpisania tagu tytułowego. Jeśli pozostanie puste, zostanie użyta domyślna wartość tytułu.</target>
-        <note>Line: 150</note>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/PrestaShopBundle/Form/Admin/Improve/Design/Theme/ImportThemeType.php" source-language="en" target-language="pl" datatype="plaintext">
-    <body>
-      <trans-unit id="0d03fc8cc7c22c4ff80c5cda6f56ce8e" approved="yes">
-        <source>Browse your computer files and select the Zip file for your new theme.</source>
-        <target state="final">Przeglądaj pliki swojego komputera i wybierz plik Zip z nowym szablonem.</target>
-        <note>Line: 71</note>
-      </trans-unit>
-      <trans-unit id="f545e8220cd6f37617c495e59695f7f3" approved="yes">
-        <source>Indicate the complete URL to an online Zip file that contains your new theme. For instance, "http://example.com/files/theme.zip".</source>
-        <target state="final">Podaj pełny adres URL do pliku Zip z nowym szablonem w sieci. Na przykład "http://example.com/pliki/nowy-szablon.zip".</target>
-        <note>Line: 83</note>
-      </trans-unit>
-      <trans-unit id="87c309a4d1deb851c8522127c1aeae54" approved="yes">
-        <source>This selector lists the Zip files that you uploaded in the '/themes' folder.</source>
-        <target state="final">To pole wyboru wyświetla listę wszystkich plików Zip przesłanych do katalogu "themes".</target>
-        <note>Line: 91</note>
+        <note>Line: 65</note>
       </trans-unit>
     </body>
   </file>
@@ -289,12 +270,12 @@
       <trans-unit id="0705d2ffde737b9365c1f84715f6f66f" approved="yes">
         <source>By default, existing email template files are not modified to avoid deleting any modification you may have done. Enable this option to force the overwrite.</source>
         <target state="final">Domyślnie istniejące pliki szablonów wiadomości e-mail nie są modyfikowane, aby uniknąć usunięcia wszelkich dokonanych modyfikacji. Włącz tę opcję, aby wymusić zastąpienie.</target>
-        <note>Line: 76</note>
+        <note>Line: 77</note>
       </trans-unit>
       <trans-unit id="d8533de1b9f083f6a42b644fea80a6a0" approved="yes">
         <source>No emails were detected in any theme folder so this field is disabled.</source>
         <target state="final">Nie wykryto żadnych wiadomości e-mail w żadnym folderze motywu, więc to pole jest wyłączone.</target>
-        <note>Line: 68</note>
+        <note>Line: 69</note>
       </trans-unit>
     </body>
   </file>
@@ -318,17 +299,17 @@
       <trans-unit id="3fb044d8f9136df5b2f0087f8a8fb0c9" approved="yes">
         <source>Use our [1]favicon generator on PrestaShop Marketplace[/1] to boost your brand image!</source>
         <target state="final">Użyj [1]favicon generator on PrestaShop Marketplace[/1] aby polepszyć widoczność znaku sklepu!</target>
-        <note>Line: 147</note>
+        <note>Line: 146</note>
       </trans-unit>
       <trans-unit id="04f1f93771bf12b0b80ae6a86ceb5cae" approved="yes">
         <source>Will appear on your main page. Recommended size for the default theme: height %height% and width %width%.</source>
         <target state="final">Pojawi się na stronie głównej. Zalecana wielkość dla domyślnego szablonu: wysokość %height% i szerokość %width%.</target>
-        <note>Line: 34</note>
+        <note>Line: 35</note>
       </trans-unit>
       <trans-unit id="e91d6b1f1f3836b0126eb26760a0eb49" approved="yes">
         <source>It is the small icon that appears in browser tabs, next to the title.</source>
         <target state="final">Jest to mała ikona pojawiająca się na kartach przeglądarki obok tytułu.</target>
-        <note>Line: 131</note>
+        <note>Line: 130</note>
       </trans-unit>
     </body>
   </file>
@@ -341,12 +322,24 @@ Once you click on "Adapt to RTL", any RTL-specific file that you might have adde
 Po kliknięciu na "Dostosuj do RTL", dowolny plik RTL, który mógł zostać dodany do twojego szablonu, może zostać usunięty przez utworzony arkusz stylów.</target>
         <note>Line: 37</note>
       </trans-unit>
-      <trans-unit id="46b1aed6e580d075f9d45d67f8a65164" approved="yes">
-        <source>Be careful! Please check your theme in an RTL language before generating the RTL stylesheet: your theme could be already adapted to RTL.
-Once you enable the "%generate_rtl_label%" option, any RTL-specific file that you might have added to your theme might be deleted by the created stylesheet.</source>
-        <target state="final">Bądź ostrożny! Przed wygenerowaniem stylów RTL sprawdź swój szablon w języku RTL: Twój szablon może być już dostosowany do RTL.
-Po kliknięciu na "%generate_rtl_label%", dowolny plik RTL, który mógł zostać dodany do twojego szablonu, może zostać usunięty przez utworzony arkusz stylów.</target>
-        <note>Line: 37</note>
+    </body>
+  </file>
+  <file original="src/PrestaShopBundle/Resources/views/Admin/Improve/Design/Theme/import.html.twig" source-language="en" target-language="pl" datatype="plaintext">
+    <body>
+      <trans-unit id="0d03fc8cc7c22c4ff80c5cda6f56ce8e" approved="yes">
+        <source>Browse your computer files and select the Zip file for your new theme.</source>
+        <target state="final">Przeglądaj pliki swojego komputera i wybierz plik Zip z nowym szablonem.</target>
+        <note>Line: 59</note>
+      </trans-unit>
+      <trans-unit id="f545e8220cd6f37617c495e59695f7f3" approved="yes">
+        <source>Indicate the complete URL to an online Zip file that contains your new theme. For instance, "http://example.com/files/theme.zip".</source>
+        <target state="final">Podaj pełny adres URL do pliku Zip z nowym szablonem w sieci. Na przykład "http://example.com/pliki/nowy-szablon.zip".</target>
+        <note>Line: 84</note>
+      </trans-unit>
+      <trans-unit id="87c309a4d1deb851c8522127c1aeae54" approved="yes">
+        <source>This selector lists the Zip files that you uploaded in the '/themes' folder.</source>
+        <target state="final">To pole wyboru wyświetla listę wszystkich plików Zip przesłanych do katalogu "themes".</target>
+        <note>Line: 109</note>
       </trans-unit>
     </body>
   </file>
@@ -364,17 +357,12 @@ Po kliknięciu na "%generate_rtl_label%", dowolny plik RTL, który mógł zosta�
       <trans-unit id="ff8ff5e54a1832486773ec48b8f8175d" approved="yes">
         <source>You are editing this page for a specific shop or group. Click "Yes" to check all fields, "No" to uncheck all.</source>
         <target state="final">Edytujesz tą stronę dla określonego sklepu lub grupy. Kliknij "Tak" aby zaznaczyć wszystkie pola, "Nie" aby wszystkie odznaczyć.</target>
-        <note>Line: 298</note>
+        <note>Line: 286</note>
       </trans-unit>
       <trans-unit id="d97ccb3e617d930d52ffd95e5db2c101" approved="yes">
         <source>If you check a field, change its value, and save, the multistore behavior will not apply to this shop (or group), for this particular parameter.</source>
         <target state="final">Jeżeli zaznaczysz pole, zmienisz jego wartość i zapiszesz, nie będzie miało ono zastosowania do tego sklepu (lub grupy), w przypadku tego określonego parametru.</target>
-        <note>Line: 295</note>
-      </trans-unit>
-      <trans-unit id="a1db50531c5baec8c2b17b2c58790c09" approved="yes">
-        <source>You are editing this page for a specific shop or group. Click "%yes_label%" to check all fields, "%no_label%" to uncheck all.</source>
-        <target state="final">Edytujesz tą stronę dla określonego sklepu lub grupy. Kliknij "%yes_label%" aby zaznaczyć wszystkie pola, "%no_label%" aby wszystkie odznaczyć.</target>
-        <note>Line: 294</note>
+        <note>Line: 287</note>
       </trans-unit>
     </body>
   </file>

@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 /**
@@ -29,22 +29,15 @@
  */
 class HTMLTemplateDeliverySlipCore extends HTMLTemplate
 {
-    /**
-     * @var Order
-     */
     public $order;
-
-    /** @var OrderInvoice Order invoice */
-    public $order_invoice;
 
     /**
      * @param OrderInvoice $order_invoice
-     * @param Smarty $smarty
-     * @param bool $bulk_mode
+     * @param $smarty
      *
      * @throws PrestaShopException
      */
-    public function __construct(OrderInvoice $order_invoice, Smarty $smarty, $bulk_mode = false)
+    public function __construct(OrderInvoice $order_invoice, $smarty, $bulk_mode = false)
     {
         $this->order_invoice = $order_invoice;
         $this->order = new Order($this->order_invoice->id_order);
@@ -77,7 +70,7 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
     public function getHeader()
     {
         $this->assignCommonHeaderData();
-        $this->smarty->assign(['header' => Context::getContext()->getTranslator()->trans('Delivery', [], 'Shop.Pdf')]);
+        $this->smarty->assign(array('header' => Context::getContext()->getTranslator()->trans('Delivery', array(), 'Shop.Pdf')));
 
         return $this->smarty->fetch($this->getTemplate('header'));
     }
@@ -90,12 +83,12 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
     public function getContent()
     {
         $delivery_address = new Address((int) $this->order->id_address_delivery);
-        $formatted_delivery_address = AddressFormat::generateAddress($delivery_address, [], '<br />', ' ');
+        $formatted_delivery_address = AddressFormat::generateAddress($delivery_address, array(), '<br />', ' ');
         $formatted_invoice_address = '';
 
         if ($this->order->id_address_delivery != $this->order->id_address_invoice) {
             $invoice_address = new Address((int) $this->order->id_address_invoice);
-            $formatted_invoice_address = AddressFormat::generateAddress($invoice_address, [], '<br />', ' ');
+            $formatted_invoice_address = AddressFormat::generateAddress($invoice_address, array(), '<br />', ' ');
         }
 
         $carrier = new Carrier($this->order->id_carrier);
@@ -124,7 +117,7 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
             }
         }
 
-        $this->smarty->assign([
+        $this->smarty->assign(array(
             'order' => $this->order,
             'order_details' => $order_details,
             'delivery_address' => $formatted_delivery_address,
@@ -132,15 +125,15 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
             'order_invoice' => $this->order_invoice,
             'carrier' => $carrier,
             'display_product_images' => Configuration::get('PS_PDF_IMG_DELIVERY'),
-        ]);
+        ));
 
-        $tpls = [
+        $tpls = array(
             'style_tab' => $this->smarty->fetch($this->getTemplate('delivery-slip.style-tab')),
             'addresses_tab' => $this->smarty->fetch($this->getTemplate('delivery-slip.addresses-tab')),
             'summary_tab' => $this->smarty->fetch($this->getTemplate('delivery-slip.summary-tab')),
             'product_tab' => $this->smarty->fetch($this->getTemplate('delivery-slip.product-tab')),
             'payment_tab' => $this->smarty->fetch($this->getTemplate('delivery-slip.payment-tab')),
-        ];
+        );
         $this->smarty->assign($tpls);
 
         return $this->smarty->fetch($this->getTemplate('delivery-slip'));
@@ -163,6 +156,6 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
      */
     public function getFilename()
     {
-        return Configuration::get('PS_DELIVERY_PREFIX', Context::getContext()->language->id, null, $this->order->id_shop) . sprintf('%06d', $this->order_invoice->delivery_number) . '.pdf';
+        return Configuration::get('PS_DELIVERY_PREFIX', Context::getContext()->language->id, null, $this->order->id_shop) . sprintf('%06d', $this->order->delivery_number) . '.pdf';
     }
 }

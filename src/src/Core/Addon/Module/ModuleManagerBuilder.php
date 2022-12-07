@@ -1,13 +1,12 @@
 <?php
 
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -18,11 +17,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Core\Addon\Module;
@@ -77,11 +77,6 @@ class ModuleManagerBuilder
     public static $categoriesProvider = null;
     public static $instance = null;
     public static $cacheProvider = null;
-
-    /**
-     * @var bool
-     */
-    private $isDebug;
 
     /**
      * @return ModuleManagerBuilder|null
@@ -150,12 +145,8 @@ class ModuleManagerBuilder
         return self::$modulesRepository;
     }
 
-    /**
-     * @param bool $isDebug
-     */
-    private function __construct(bool $isDebug = _PS_MODE_DEV_)
+    private function __construct()
     {
-        $this->isDebug = $isDebug;
         /**
          * If the Symfony container is available, it will be used for the other methods
          * build & buildRepository. No need to init manually all the dependancies.
@@ -196,7 +187,10 @@ class ModuleManagerBuilder
         self::$addonsDataProvider = new AddonsDataProvider($marketPlaceClient, self::$moduleZipManager);
 
         $kernelDir = realpath($this->getConfigDir() . '/../../var');
-        self::$addonsDataProvider->cacheDir = $kernelDir . ($this->isDebug ? '/cache/dev' : '/cache/prod');
+        self::$addonsDataProvider->cacheDir = $kernelDir . '/cache/prod';
+        if (_PS_MODE_DEV_) {
+            self::$addonsDataProvider->cacheDir = $kernelDir . '/cache/dev';
+        }
 
         self::$cacheProvider = new FilesystemCache(self::$addonsDataProvider->cacheDir . '/doctrine');
 
@@ -208,6 +202,8 @@ class ModuleManagerBuilder
 
         self::$legacyLogger = new LegacyLogger();
         self::$categoriesProvider = new CategoriesProvider(
+            $marketPlaceClient,
+            self::$legacyLogger,
             $prestashopAddonsConfig['prestashop']['addons']['categories'],
             $themeModules
         );
@@ -239,9 +235,9 @@ class ModuleManagerBuilder
     private function getSymfonyRouter()
     {
         // get the environment to load the good routing file
-        $routeFileName = $this->isDebug === true ? 'routing_dev.yml' : 'routing.yml';
+        $routeFileName = _PS_MODE_DEV_ === true ? 'routing_dev.yml' : 'routing.yml';
         $routesDirectory = $this->getConfigDir();
-        $locator = new FileLocator([$routesDirectory]);
+        $locator = new FileLocator(array($routesDirectory));
         $loader = new YamlFileLoader($locator);
 
         return new Router($loader, $routeFileName);

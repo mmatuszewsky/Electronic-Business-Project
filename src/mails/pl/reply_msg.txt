@@ -1,5 +1,3 @@
- 
-
 {shop_url}
 
 Witaj {firstname} {lastname},
@@ -10,4 +8,4 @@ Prosimy nie odpowiadać na tą wiadomość, nie otrzymamy takiej odpowiedzi. Aby
 
 [{shop_name}]({shop_url})
 
-Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail=utm_campaign=footer_1-7)

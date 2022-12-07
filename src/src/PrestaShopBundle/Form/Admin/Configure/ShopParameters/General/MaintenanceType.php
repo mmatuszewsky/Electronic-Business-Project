@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,24 +16,23 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Form\Admin\Configure\ShopParameters\General;
 
 use PrestaShopBundle\Form\Admin\Type\FormattedTextareaType;
 use PrestaShopBundle\Form\Admin\Type\IpAddressType;
-use PrestaShopBundle\Form\Admin\Type\MultistoreConfigurationType;
 use PrestaShopBundle\Form\Admin\Type\SwitchType;
 use PrestaShopBundle\Form\Admin\Type\TranslateType;
 use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class returning the content of the form in the maintenance page.
@@ -42,27 +40,6 @@ use Symfony\Component\Translation\TranslatorInterface;
  */
 class MaintenanceType extends TranslatorAwareType
 {
-    /**
-     * @var string
-     */
-    private $currentIp;
-
-    /**
-     * MaintenanceType constructor.
-     *
-     * @param TranslatorInterface $translator
-     * @param array<int, string> $locales
-     * @param string $currentIp
-     */
-    public function __construct(
-        TranslatorInterface $translator,
-        array $locales,
-        string $currentIp
-    ) {
-        parent::__construct($translator, $locales);
-        $this->currentIp = $currentIp;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -74,12 +51,6 @@ class MaintenanceType extends TranslatorAwareType
                 SwitchType::class,
                 [
                     'required' => true,
-                    'multistore_configuration_key' => 'PS_SHOP_ENABLE',
-                    'label' => $this->trans('Enable store', 'Admin.Shopparameters.Feature'),
-                    'help' => $this->trans(
-                        'We recommend that you deactivate your store while performing maintenance. Note that it will not disable the webservice.',
-                        'Admin.Shopparameters.Help'
-                    ),
                 ]
             )
             ->add(
@@ -87,17 +58,10 @@ class MaintenanceType extends TranslatorAwareType
                 IpAddressType::class,
                 [
                     'required' => false,
-                    'multistore_configuration_key' => 'PS_MAINTENANCE_IP',
                     'empty_data' => '',
                     'attr' => [
                         'class' => 'col-md-5',
                     ],
-                    'label' => $this->trans('Maintenance IP', 'Admin.Shopparameters.Feature'),
-                    'help' => $this->trans(
-                        'Allow IP addresses to access the store, even in maintenance mode. Use a comma to separate them (e.g. 42.24.4.2,127.0.0.1,99.98.97.96).',
-                        'Admin.Shopparameters.Help'
-                    ),
-                    'current_ip' => $this->currentIp,
                 ]
             )
             ->add(
@@ -111,12 +75,6 @@ class MaintenanceType extends TranslatorAwareType
                     'locales' => $this->locales,
                     'hideTabs' => false,
                     'required' => true,
-                    'multistore_configuration_key' => 'PS_MAINTENANCE_TEXT',
-                    'label' => $this->trans('Custom maintenance text', 'Admin.Shopparameters.Feature'),
-                    'help' => $this->trans(
-                        'Display a customized message when the store is disabled.',
-                        'Admin.Shopparameters.Help'
-                    ),
                 ]
             );
     }
@@ -137,15 +95,5 @@ class MaintenanceType extends TranslatorAwareType
     public function getBlockPrefix()
     {
         return 'maintenance_general_block';
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @see MultistoreConfigurationTypeExtension
-     */
-    public function getParent(): string
-    {
-        return MultistoreConfigurationType::class;
     }
 }

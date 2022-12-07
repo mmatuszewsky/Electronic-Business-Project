@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 /**
@@ -36,61 +36,61 @@ class CustomerMessageCore extends ObjectModel
     /** @var   */
     public $id_employee;
 
-    /** @var string */
+    /** @var string $message */
     public $message;
 
-    /** @var string */
+    /** @var string $file_name */
     public $file_name;
 
-    /** @var string */
+    /** @var string $ip_address */
     public $ip_address;
 
-    /** @var string */
+    /** @var string $user_agent */
     public $user_agent;
 
-    /** @var bool */
+    /** @var int $private */
     public $private;
 
-    /** @var string */
+    /** @var string $date_add */
     public $date_add;
 
-    /** @var string */
+    /** @var string $date_upd */
     public $date_upd;
 
-    /** @var bool */
+    /** @var bool $read */
     public $read;
 
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = [
+    public static $definition = array(
         'table' => 'customer_message',
         'primary' => 'id_customer_message',
-        'fields' => [
-            'id_employee' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'id_customer_thread' => ['type' => self::TYPE_INT],
-            'ip_address' => ['type' => self::TYPE_STRING, 'validate' => 'isIp2Long', 'size' => 15],
-            'message' => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'required' => true, 'size' => 16777216],
-            'file_name' => ['type' => self::TYPE_STRING],
-            'user_agent' => ['type' => self::TYPE_STRING],
-            'private' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-            'date_upd' => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-            'read' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-        ],
-    ];
+        'fields' => array(
+            'id_employee' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
+            'id_customer_thread' => array('type' => self::TYPE_INT),
+            'ip_address' => array('type' => self::TYPE_STRING, 'validate' => 'isIp2Long', 'size' => 15),
+            'message' => array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'required' => true, 'size' => 16777216),
+            'file_name' => array('type' => self::TYPE_STRING),
+            'user_agent' => array('type' => self::TYPE_STRING),
+            'private' => array('type' => self::TYPE_INT),
+            'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
+            'date_upd' => array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
+            'read' => array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
+        ),
+    );
 
-    /** @var array */
-    protected $webserviceParameters = [
-        'fields' => [
-            'id_employee' => [
+    /** @var array $webserviceParameters */
+    protected $webserviceParameters = array(
+        'fields' => array(
+            'id_employee' => array(
                 'xlink_resource' => 'employees',
-            ],
-            'id_customer_thread' => [
+            ),
+            'id_customer_thread' => array(
                 'xlink_resource' => 'customer_threads',
-            ],
-        ],
-    ];
+            ),
+        ),
+    );
 
     /**
      * Get CustomerMessages by Order ID.

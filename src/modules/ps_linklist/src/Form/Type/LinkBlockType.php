@@ -1,27 +1,31 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2018 PrestaShop.
  *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the Academic Free License version 3.0
- * that is bundled with this package in the file LICENSE.md.
+ * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2018 PrestaShop SA
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\Module\LinkList\Form\Type;
 
-use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\DefaultLanguage;
-use PrestaShopBundle\Form\Admin\Type\ShopChoiceTreeType;
 use PrestaShopBundle\Form\Admin\Type\TranslateTextType;
 use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -30,16 +34,9 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Translation\TranslatorInterface;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 class LinkBlockType extends TranslatorAwareType
 {
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
     /**
      * @var array
      */
@@ -61,16 +58,6 @@ class LinkBlockType extends TranslatorAwareType
     private $staticPageChoices;
 
     /**
-     * @var array
-     */
-    private $categoryChoices;
-
-    /**
-     * @var bool
-     */
-    private $isMultiStoreUsed;
-
-    /**
      * LinkBlockType constructor.
      *
      * @param TranslatorInterface $translator
@@ -79,7 +66,6 @@ class LinkBlockType extends TranslatorAwareType
      * @param array $cmsPageChoices
      * @param array $productPageChoices
      * @param array $staticPageChoices
-     * @param array $categoryChoices
      */
     public function __construct(
         TranslatorInterface $translator,
@@ -87,18 +73,13 @@ class LinkBlockType extends TranslatorAwareType
         array $hookChoices,
         array $cmsPageChoices,
         array $productPageChoices,
-        array $staticPageChoices,
-        array $categoryChoices,
-        bool $isMultiStoreUsed
+        array $staticPageChoices
     ) {
         parent::__construct($translator, $locales);
         $this->hookChoices = $hookChoices;
         $this->cmsPageChoices = $cmsPageChoices;
         $this->productPageChoices = $productPageChoices;
         $this->staticPageChoices = $staticPageChoices;
-        $this->categoryChoices = $categoryChoices;
-        $this->translator = $translator;
-        $this->isMultiStoreUsed = $isMultiStoreUsed;
     }
 
     /**
@@ -112,23 +93,6 @@ class LinkBlockType extends TranslatorAwareType
                 'locales' => $this->locales,
                 'required' => true,
                 'label' => $this->trans('Name of the block', 'Modules.Linklist.Admin'),
-                'constraints' => [
-                    new DefaultLanguage(),
-                ],
-                'options' => [
-                    'constraints' => [
-                        new Length([
-                            'max' => 40,
-                            'maxMessage' => $this->translator->trans(
-                                'Name of the block cannot be longer than %limit% characters',
-                                [
-                                    '%limit%' => 40,
-                                ],
-                                'Modules.Linklist.Admin'
-                            ),
-                        ]),
-                    ],
-                ],
             ])
             ->add('id_hook', ChoiceType::class, [
                 'choices' => $this->hookChoices,
@@ -147,12 +111,6 @@ class LinkBlockType extends TranslatorAwareType
             ->add('product', ChoiceType::class, [
                 'choices' => $this->productPageChoices,
                 'label' => $this->trans('Product pages', 'Modules.Linklist.Admin'),
-                'multiple' => true,
-                'expanded' => true,
-            ])
-            ->add('category', ChoiceType::class, [
-                'choices' => $this->categoryChoices,
-                'label' => $this->trans('Categories', 'Modules.Linklist.Admin'),
                 'multiple' => true,
                 'expanded' => true,
             ])
@@ -177,21 +135,6 @@ class LinkBlockType extends TranslatorAwareType
                 'label' => $this->trans('Custom content', 'Modules.Linklist.Admin'),
             ])
         ;
-
-        if ($this->isMultiStoreUsed) {
-            $builder->add('shop_association', ShopChoiceTreeType::class, [
-                'label' => $this->trans('Shop association', 'Admin.Global'),
-                'required' => false,
-                'constraints' => [
-                    new NotBlank([
-                        'message' => $this->trans(
-                            'You have to select at least one shop to associate this item with',
-                            'Admin.Notifications.Error'
-                        ),
-                    ]),
-                ],
-            ]);
-        }
     }
 
     /**

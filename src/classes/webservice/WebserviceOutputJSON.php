@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,16 +16,17 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 class WebserviceOutputJSONCore implements WebserviceOutputInterface
 {
     public $docUrl = '';
-    public $languages = [];
+    public $languages = array();
     protected $wsUrl;
     protected $schemaToDisplay;
 
@@ -38,14 +38,14 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
     /**
      * Current association.
      */
-    protected $currentAssociatedEntity = [];
+    protected $currentAssociatedEntity = array();
 
     /**
      * Json content.
      */
-    protected $content = [];
+    protected $content = array();
 
-    public function __construct($languages = [])
+    public function __construct($languages = array())
     {
         $this->languages = $languages;
     }
@@ -83,7 +83,7 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
 
     public function renderErrors($message, $code = null)
     {
-        $this->content['errors'][] = ['code' => $code, 'message' => $message];
+        $this->content['errors'][] = array('code' => $code, 'message' => $message);
 
         return '';
     }
@@ -93,9 +93,9 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
         $is_association = (isset($field['is_association']) && $field['is_association'] == true);
 
         if (is_array($field['value'])) {
-            $tmp = [];
+            $tmp = array();
             foreach ($this->languages as $id_lang) {
-                $tmp[] = ['id' => $id_lang, 'value' => $field['value'][$id_lang]];
+                $tmp[] = array('id' => $id_lang, 'value' => $field['value'][$id_lang]);
             }
             if (count($tmp) == 1) {
                 $field['value'] = $tmp[0]['value'];
@@ -107,7 +107,7 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
         if (!$is_association) {
             $this->currentEntity[$field['sqlId']] = $field['value'];
         } else { // Case 2 : fields of an associated entity to the current one
-            $this->currentAssociatedEntity[] = ['name' => $field['entities_name'], 'key' => $field['sqlId'], 'value' => $field['value']];
+            $this->currentAssociatedEntity[] = array('name' => $field['entities_name'], 'key' => $field['sqlId'], 'value' => $field['value']);
         }
 
         return '';
@@ -120,11 +120,11 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
         if ($node_name == 'api' && ($isAPICall == false)) {
             $isAPICall = true;
         }
-        if ($isAPICall && !in_array($node_name, ['description', 'schema', 'api'])) {
+        if ($isAPICall && !in_array($node_name, array('description', 'schema', 'api'))) {
             $this->content[] = $node_name;
         }
         if (isset($more_attr, $more_attr['id'])) {
-            $this->content[$params['objectsNodeName']][] = ['id' => $more_attr['id']];
+            $this->content[$params['objectsNodeName']][] = array('id' => $more_attr['id']);
         }
 
         return '';
@@ -148,16 +148,16 @@ class WebserviceOutputJSONCore implements WebserviceOutputInterface
             } else {
                 $this->content[$params['objectNodeName']] = $this->currentEntity;
             }
-            $this->currentEntity = [];
+            $this->currentEntity = array();
         }
         if (is_countable($this->currentAssociatedEntity) && count($this->currentAssociatedEntity)) {
-            $current = [];
+            $current = array();
             foreach ($this->currentAssociatedEntity as $element) {
                 $current[$element['key']] = $element['value'];
             }
             //$this->currentEntity['associations'][$element['name']][][$element['key']] = $element['value'];
             $this->currentEntity['associations'][$element['name']][] = $current;
-            $this->currentAssociatedEntity = [];
+            $this->currentAssociatedEntity = array();
         }
     }
 

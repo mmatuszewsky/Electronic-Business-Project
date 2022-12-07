@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 /**
@@ -38,14 +38,14 @@ class AccessCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = [
+    public static $definition = array(
         'table' => 'access',
         'primary' => 'id_profile',
-        'fields' => [
-            'id_profile' => ['type' => self::TYPE_INT, 'validate' => 'isNullOrUnsignedId', 'copy_post' => false],
-            'id_authorization_role' => ['type' => self::TYPE_INT, 'validate' => 'isNullOrUnsignedId', 'copy_post' => false],
-        ],
-    ];
+        'fields' => array(
+            'id_profile' => array('type' => self::TYPE_INT, 'validate' => 'isNullOrUnsignedId', 'copy_post' => false),
+            'id_authorization_role' => array('type' => self::TYPE_INT, 'validate' => 'isNullOrUnsignedId', 'copy_post' => false),
+        ),
+    );
 
     /**
      * Is access granted to this Role?
@@ -239,16 +239,16 @@ class AccessCore extends ObjectModel
      */
     public static function getAuthorizationFromLegacy($legacyAuth)
     {
-        $auth = [
+        $auth = array(
             'add' => 'CREATE',
             'view' => 'READ',
             'edit' => 'UPDATE',
             'configure' => 'UPDATE',
             'delete' => 'DELETE',
             'uninstall' => 'DELETE',
-            'duplicate' => ['CREATE', 'UPDATE'],
-            'all' => ['CREATE', 'READ', 'UPDATE', 'DELETE'],
-        ];
+            'duplicate' => array('CREATE', 'UPDATE'),
+            'all' => array('CREATE', 'READ', 'UPDATE', 'DELETE'),
+        );
 
         return isset($auth[$legacyAuth]) ? $auth[$legacyAuth] : false;
     }
@@ -349,7 +349,7 @@ class AccessCore extends ObjectModel
             $slug = self::findSlugByIdTab($idTab);
         }
 
-        $whereClauses = [];
+        $whereClauses = array();
 
         foreach ((array) self::getAuthorizationFromLegacy($lgcAuth) as $auth) {
             $slugLike = Db::getInstance()->escape($slug . $auth);
@@ -376,7 +376,7 @@ class AccessCore extends ObjectModel
             throw new \Exception('Cannot find role slug');
         }
 
-        $res = [];
+        $res = array();
         foreach ($roles as $role) {
             if ($enabled) {
                 $res[] = $this->addAccess($idProfile, $role['id_authorization_role']);
@@ -409,7 +409,7 @@ class AccessCore extends ObjectModel
             $slug = self::findSlugByIdModule($idModule);
         }
 
-        $whereClauses = [];
+        $whereClauses = array();
 
         foreach ((array) self::getAuthorizationFromLegacy($lgcAuth) as $auth) {
             $slugLike = Db::getInstance()->escape($slug . $auth);
@@ -422,7 +422,7 @@ class AccessCore extends ObjectModel
             WHERE ' . implode(' OR ', $whereClauses) . '
         ');
 
-        $res = [];
+        $res = array();
         foreach ($roles as $role) {
             if ($enabled) {
                 $res[] = $this->addModuleAccess($idProfile, $role['id_authorization_role']);

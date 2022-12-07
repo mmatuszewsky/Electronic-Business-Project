@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,19 +16,20 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Core\ConstraintValidator;
 
 use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\CleanHtml;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
  * Class CleanHtmlValidator is responsible for validating the html content to prevent from having javascript events
@@ -37,18 +37,6 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
  */
 final class CleanHtmlValidator extends ConstraintValidator
 {
-    private const EMBEDDABLE_HTML_PATTERN = '/<[\s]*(i?frame|form|input|embed|object)/ims';
-
-    /**
-     * @var bool
-     */
-    private $allowEmbeddableHtml;
-
-    public function __construct(bool $allowEmbeddableHtml)
-    {
-        $this->allowEmbeddableHtml = $allowEmbeddableHtml;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -69,8 +57,7 @@ final class CleanHtmlValidator extends ConstraintValidator
         $containsScriptTags = preg_match('/<[\s]*script/ims', $value) || preg_match('/.*script\:/ims', $value);
         $containsJavascriptEvents = preg_match('/(' . $this->getJavascriptEvents() . ')[\s]*=/ims', $value);
 
-        $iframe = !$this->allowEmbeddableHtml && preg_match(self::EMBEDDABLE_HTML_PATTERN, $value);
-        if ($containsScriptTags || $containsJavascriptEvents || $iframe) {
+        if ($containsScriptTags || $containsJavascriptEvents) {
             $this->context->buildViolation($constraint->message)
                 ->setTranslationDomain('Admin.Notifications.Error')
                 ->setParameter('%s', $this->formatValue($value))

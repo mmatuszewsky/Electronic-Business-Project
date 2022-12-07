@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Core\Stock;
@@ -127,7 +127,7 @@ class StockManager
 
             // How many packs can be made with the remaining product stocks
             $quantity_by_pack = $pack->pack_item_quantity;
-            $max_pack_quantity = max([0, floor($stock_available->quantity / $quantity_by_pack)]);
+            $max_pack_quantity = max(array(0, floor($stock_available->quantity / $quantity_by_pack)));
 
             $stock_available_pack = $stockManager->getStockAvailableByProduct($pack, null, $id_shop);
             if ($stock_available_pack->quantity > $max_pack_quantity) {
@@ -150,7 +150,7 @@ class StockManager
      * @param bool $add_movement Optional
      * @param array $params Optional
      */
-    public function updateQuantity($product, $id_product_attribute, $delta_quantity, $id_shop = null, $add_movement = false, $params = [])
+    public function updateQuantity($product, $id_product_attribute, $delta_quantity, $id_shop = null, $add_movement = false, $params = array())
     {
         /** @TODO We should call the needed classes with the Symfony dependency injection instead of the Homemade Service Locator */
         $serviceLocator = new ServiceLocator();
@@ -186,12 +186,11 @@ class StockManager
 
         $hookManager->exec(
             'actionUpdateQuantity',
-            [
+            array(
                 'id_product' => $product->id,
                 'id_product_attribute' => $id_product_attribute,
                 'quantity' => $stockAvailable->quantity,
-                'delta_quantity' => $delta_quantity,
-            ]
+            )
         );
 
         if ($this->checkIfMustSendLowStockAlert($product, $id_product_attribute, $stockAvailable->quantity)) {
@@ -285,12 +284,12 @@ class StockManager
         $idShop = (int) $context->shop->id;
         $idLang = (int) $context->language->id;
         $configuration = Configuration::getMultiple(
-            [
+            array(
                 'MA_LAST_QTIES',
                 'PS_STOCK_MANAGEMENT',
                 'PS_SHOP_EMAIL',
                 'PS_SHOP_NAME',
-            ],
+            ),
             null,
             null,
             $idShop
@@ -302,81 +301,79 @@ class StockManager
         } else {
             $lowStockThreshold = $product->low_stock_threshold;
         }
-        $templateVars = [
+        $templateVars = array(
             '{qty}' => $newQuantity,
             '{last_qty}' => $lowStockThreshold,
             '{product}' => $productName,
-        ];
-
-        // send email to every employee who have permission for this
-        foreach (Employee::getEmployees() as $employeeData) {
+        );
+        // get emails on employees who have right to run stock page
+        $emails = array();
+        $employees = Employee::getEmployees();
+        foreach ($employees as $employeeData) {
             $employee = new Employee($employeeData['id_employee']);
-
             if (Access::isGranted('ROLE_MOD_TAB_ADMINSTOCKMANAGEMENT_READ', $employee->id_profile)) {
-                $templateVars['{firstname}'] = $employee->firstname;
-                $templateVars['{lastname}'] = $employee->lastname;
-
-                Mail::Send(
-                    $idLang,
-                    'productoutofstock',
-                    Mail::l('Product out of stock', $idLang),
-                    $templateVars,
-                    $employee->email,
-                    null,
-                    (string) $configuration['PS_SHOP_EMAIL'],
-                    (string) $configuration['PS_SHOP_NAME'],
-                    null,
-                    null,
-                    __DIR__ . '/mails/',
-                    false,
-                    $idShop
-                );
+                $emails[] = $employee->email;
             }
+        }
+        // Send 1 email by merchant mail, because Mail::Send doesn't work with an array of recipients
+        foreach ($emails as $email) {
+            Mail::Send(
+                $idLang,
+                'productoutofstock',
+                Mail::l('Product out of stock', $idLang),
+                $templateVars,
+                $email,
+                null,
+                (string) $configuration['PS_SHOP_EMAIL'],
+                (string) $configuration['PS_SHOP_NAME'],
+                null,
+                null,
+                dirname(__FILE__) . '/mails/',
+                false,
+                $idShop
+            );
         }
     }
 
     /**
      * Public method to save a Movement.
      *
-     * @param int $productId
-     * @param int $productAttributeId
-     * @param int $deltaQuantity
+     * @param $productId
+     * @param $productAttributeId
+     * @param $deltaQuantity
      * @param array $params
      *
      * @return bool
      */
-    public function saveMovement($productId, $productAttributeId, $deltaQuantity, $params = [])
+    public function saveMovement($productId, $productAttributeId, $deltaQuantity, $params = array())
     {
-        if ($deltaQuantity == 0) {
-            return false;
+        if ($deltaQuantity != 0) {
+            $stockMvt = $this->prepareMovement($productId, $productAttributeId, $deltaQuantity, $params);
+
+            if ($stockMvt) {
+                $sfContainer = SymfonyContainer::getInstance();
+                if (null !== $sfContainer) {
+                    $stockMvtRepository = $sfContainer->get('prestashop.core.api.stock_movement.repository');
+
+                    return $stockMvtRepository->saveStockMvt($stockMvt);
+                }
+            }
         }
 
-        $stockMvt = $this->prepareMovement($productId, $productAttributeId, $deltaQuantity, $params);
-        if (!$stockMvt) {
-            return false;
-        }
-
-        $sfContainer = SymfonyContainer::getInstance();
-        if (null === $sfContainer) {
-            return false;
-        }
-
-        $stockMvtRepository = $sfContainer->get('prestashop.core.api.stock_movement.repository');
-
-        return $stockMvtRepository->saveStockMvt($stockMvt);
+        return false;
     }
 
     /**
      * Prepare a Movement for registration.
      *
-     * @param int $productId
-     * @param int $productAttributeId
-     * @param int $deltaQuantity
+     * @param $productId
+     * @param $productAttributeId
+     * @param $deltaQuantity
      * @param array $params
      *
      * @return bool|StockMvt
      */
-    private function prepareMovement($productId, $productAttributeId, $deltaQuantity, $params = [])
+    private function prepareMovement($productId, $productAttributeId, $deltaQuantity, $params = array())
     {
         $product = (new ProductDataProvider())->getProductInstance($productId);
 

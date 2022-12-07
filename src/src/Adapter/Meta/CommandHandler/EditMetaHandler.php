@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,17 +16,17 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Meta\CommandHandler;
 
 use Meta;
-use PrestaShop\PrestaShop\Adapter\Meta\MetaDataProvider;
 use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\DefaultLanguage;
 use PrestaShop\PrestaShop\Core\ConstraintValidator\Constraints\IsUrlRewrite;
 use PrestaShop\PrestaShop\Core\Domain\Meta\Command\EditMetaCommand;
@@ -52,20 +51,11 @@ final class EditMetaHandler implements EditMetaHandlerInterface
     private $validator;
 
     /**
-     * @var MetaDataProvider
-     */
-    private $metaDataProvider;
-
-    /**
      * @param ValidatorInterface $validator
-     * @param MetaDataProvider $metaDataProvider
      */
-    public function __construct(
-        ValidatorInterface $validator,
-        MetaDataProvider $metaDataProvider
-    ) {
+    public function __construct(ValidatorInterface $validator)
+    {
         $this->validator = $validator;
-        $this->metaDataProvider = $metaDataProvider;
     }
 
     /**
@@ -79,11 +69,12 @@ final class EditMetaHandler implements EditMetaHandlerInterface
             $entity = new Meta($command->getMetaId()->getValue());
 
             if (0 >= $entity->id) {
-                throw new MetaNotFoundException(sprintf('Meta with id "%s" was not found for edit', $command->getMetaId()->getValue()));
+                throw new MetaNotFoundException(
+                    sprintf('Meta with id "%s" was not found for edit', $command->getMetaId()->getValue())
+                );
             }
 
             if (null !== $command->getPageName()) {
-                $this->assertIsValidPageName($entity->page, $command);
                 $entity->page = $command->getPageName()->getValue();
             }
 
@@ -107,10 +98,22 @@ final class EditMetaHandler implements EditMetaHandlerInterface
             $this->assertIsUrlRewriteValid($entity);
 
             if (false === $entity->update()) {
-                throw new CannotEditMetaException(sprintf('Error occurred when updating Meta with id "%s"', $command->getMetaId()->getValue()));
+                throw new CannotEditMetaException(
+                    sprintf(
+                        'Error occurred when updating Meta with id "%s"',
+                        $command->getMetaId()->getValue()
+                    )
+                );
             }
         } catch (PrestaShopException $exception) {
-            throw new CannotEditMetaException(sprintf('Error occurred when updating Meta with id "%s"', $command->getMetaId()->getValue()), 0, $exception);
+            throw new CannotEditMetaException(
+                sprintf(
+                    'Error occurred when updating Meta with id "%s"',
+                    $command->getMetaId()->getValue()
+                ),
+                0,
+                $exception
+            );
         }
     }
 
@@ -127,7 +130,10 @@ final class EditMetaHandler implements EditMetaHandlerInterface
         );
 
         if ('index' !== $entity->page && 0 !== count($urlRewriteErrors)) {
-            throw new MetaConstraintException('The url rewrite is missing for the default language when editing meta record', MetaConstraintException::INVALID_URL_REWRITE);
+            throw new MetaConstraintException(
+                'The url rewrite is missing for the default language when editing meta record',
+                MetaConstraintException::INVALID_URL_REWRITE
+            );
         }
     }
 
@@ -142,27 +148,15 @@ final class EditMetaHandler implements EditMetaHandlerInterface
             $errors = $this->validator->validate($rewriteUrl, new IsUrlRewrite());
 
             if (0 !== count($errors)) {
-                throw new MetaConstraintException(sprintf('Url rewrite %s for language with id %s is not valid', $rewriteUrl, $idLang), MetaConstraintException::INVALID_URL_REWRITE);
+                throw new MetaConstraintException(
+                    sprintf(
+                        'Url rewrite %s for language with id %s is not valid',
+                        $rewriteUrl,
+                        $idLang
+                    ),
+                    MetaConstraintException::INVALID_URL_REWRITE
+                );
             }
-        }
-    }
-
-    /**
-     * @param string $alreadyExistingPage
-     * @param EditMetaCommand $command
-     *
-     * @throws MetaConstraintException
-     */
-    private function assertIsValidPageName($alreadyExistingPage, EditMetaCommand $command)
-    {
-        if ($command->getPageName()->getValue() === $alreadyExistingPage) {
-            return;
-        }
-
-        $availablePages = $this->metaDataProvider->getAvailablePages();
-
-        if (!in_array($command->getPageName()->getValue(), $availablePages, true)) {
-            throw new MetaConstraintException(sprintf('Given page name %s is not available. Available values are %s', $command->getPageName()->getValue(), var_export($availablePages, true)), MetaConstraintException::INVALID_PAGE_NAME);
         }
     }
 }

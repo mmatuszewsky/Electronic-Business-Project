@@ -15,5 +15,5 @@ _payment:
     prefix: /payment/
 
 _shipping:
-    resource: "shipping/_shipping.yml"
+    resource: "shipping/*.yml"
     prefix: /shipping/

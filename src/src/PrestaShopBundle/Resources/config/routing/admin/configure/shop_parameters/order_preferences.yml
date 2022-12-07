@@ -6,17 +6,10 @@ admin_order_preferences:
         _legacy_controller: AdminOrderPreferences
         _legacy_link: AdminOrderPreferences
 
-admin_order_preferences_general_save:
-    path: /general
+admin_order_preferences_save:
+    path: /
     methods: [POST]
     defaults:
-        _controller: 'PrestaShopBundle:Admin\Configure\ShopParameters\OrderPreferences:processGeneralForm'
+        _controller: 'PrestaShopBundle:Admin\Configure\ShopParameters\OrderPreferences:process'
         _legacy_controller: AdminOrderPreferences
         _legacy_link: AdminOrderPreferences:update
-
-admin_order_preferences_gift_options_save:
-    path: /gift-options
-    methods: [POST]
-    defaults:
-        _controller: 'PrestaShopBundle:Admin\Configure\ShopParameters\OrderPreferences:processGiftOptionsForm'
-        _legacy_controller: AdminOrderPreferences

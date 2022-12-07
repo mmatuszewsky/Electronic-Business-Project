@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Media;
@@ -49,11 +49,11 @@ class MediaServerConfiguration implements DataConfigurationInterface
      */
     public function getConfiguration()
     {
-        return [
+        return array(
             'media_server_one' => $this->configuration->get('PS_MEDIA_SERVER_1'),
             'media_server_two' => $this->configuration->get('PS_MEDIA_SERVER_2'),
             'media_server_three' => $this->configuration->get('PS_MEDIA_SERVER_3'),
-        ];
+        );
     }
 
     /**
@@ -61,7 +61,7 @@ class MediaServerConfiguration implements DataConfigurationInterface
      */
     public function updateConfiguration(array $configuration)
     {
-        $errors = [];
+        $errors = array();
         $isValid = $this->validateConfiguration($configuration);
         if (true === $isValid) {
             $serverOne = $configuration['media_server_one'];
@@ -85,39 +85,39 @@ class MediaServerConfiguration implements DataConfigurationInterface
     }
 
     /**
-     * @param array $configuration
+     * {@inheritdoc}
      *
-     * @return array<int, array<string, array|string>>|bool
+     * @todo: when PHP minimum version will be 7.1, use "FILTER_VALIDATE_DOMAIN" constraint.
      */
     public function validateConfiguration(array $configuration)
     {
-        $errors = [];
+        $errors = array();
         $serverOne = $configuration['media_server_one'];
         $serverTwo = $configuration['media_server_two'];
         $serverThree = $configuration['media_server_three'];
 
         if (!empty($serverOne) && !$this->isValidDomain($serverOne)) {
-            $errors[] = [
+            $errors[] = array(
                 'key' => 'Media server #1 is invalid',
                 'domain' => 'Admin.Advparameters.Notification',
-                'parameters' => [],
-            ];
+                'parameters' => array(),
+            );
         }
 
         if (!empty($serverTwo) && !$this->isValidDomain($serverTwo)) {
-            $errors[] = [
+            $errors[] = array(
                 'key' => 'Media server #2 is invalid',
                 'domain' => 'Admin.Advparameters.Notification',
-                'parameters' => [],
-            ];
+                'parameters' => array(),
+            );
         }
 
         if (!empty($serverThree) && !$this->isValidDomain($serverThree)) {
-            $errors[] = [
+            $errors[] = array(
                 'key' => 'Media server #3 is invalid',
                 'domain' => 'Admin.Advparameters.Notification',
-                'parameters' => [],
-            ];
+                'parameters' => array(),
+            );
         }
 
         if (count($errors) > 0) {
@@ -128,16 +128,16 @@ class MediaServerConfiguration implements DataConfigurationInterface
     }
 
     /**
-     * @param string $domainName
+     * To be removed once the minimum version is PHP 7.1.
+     *
+     * @param $domainName
      *
      * @return bool
      */
     private function isValidDomain($domainName)
     {
-        if (false !== filter_var($domainName, FILTER_VALIDATE_DOMAIN)) {
-            return false !== filter_var(gethostbyname($domainName), FILTER_VALIDATE_IP);
-        }
+        $ip = gethostbyname($domainName);
 
-        return false;
+        return false !== filter_var($ip, FILTER_VALIDATE_IP);
     }
 }

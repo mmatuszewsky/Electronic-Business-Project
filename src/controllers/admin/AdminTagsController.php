@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 /**
@@ -38,45 +38,45 @@ class AdminTagsControllerCore extends AdminController
 
         parent::__construct();
 
-        $this->fields_list = [
-            'id_tag' => [
-                'title' => $this->trans('ID', [], 'Admin.Global'),
+        $this->fields_list = array(
+            'id_tag' => array(
+                'title' => $this->trans('ID', array(), 'Admin.Global'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs',
-            ],
-            'lang' => [
-                'title' => $this->trans('Language', [], 'Admin.Global'),
+            ),
+            'lang' => array(
+                'title' => $this->trans('Language', array(), 'Admin.Global'),
                 'filter_key' => 'l!name',
-            ],
-            'name' => [
-                'title' => $this->trans('Name', [], 'Admin.Global'),
+            ),
+            'name' => array(
+                'title' => $this->trans('Name', array(), 'Admin.Global'),
                 'filter_key' => 'a!name',
-            ],
-            'products' => [
-                'title' => $this->trans('Products', [], 'Admin.Global'),
+            ),
+            'products' => array(
+                'title' => $this->trans('Products', array(), 'Admin.Global'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs',
                 'havingFilter' => true,
-            ],
-        ];
+            ),
+        );
 
-        $this->bulk_actions = [
-            'delete' => [
-                'text' => $this->trans('Delete selected', [], 'Admin.Actions'),
+        $this->bulk_actions = array(
+            'delete' => array(
+                'text' => $this->trans('Delete selected', array(), 'Admin.Actions'),
                 'icon' => 'icon-trash',
-                'confirm' => $this->trans('Delete selected items?', [], 'Admin.Notifications.Warning'),
-            ],
-        ];
+                'confirm' => $this->trans('Delete selected items?', array(), 'Admin.Notifications.Warning'),
+            ),
+        );
     }
 
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_tag'] = [
+            $this->page_header_toolbar_btn['new_tag'] = array(
                 'href' => self::$currentIndex . '&addtag&token=' . $this->token,
-                'desc' => $this->trans('Add new tag', [], 'Admin.Shopparameters.Feature'),
+                'desc' => $this->trans('Add new tag', array(), 'Admin.Shopparameters.Feature'),
                 'icon' => 'process-icon-new',
-            ];
+            );
         }
 
         parent::initPageHeaderToolbar();
@@ -104,7 +104,7 @@ class AdminTagsControllerCore extends AdminController
             if (($id = (int) Tools::getValue($this->identifier)) && ($obj = new $this->className($id)) && Validate::isLoadedObject($obj)) {
                 /** @var Tag $obj */
                 $previous_products = $obj->getProducts();
-                $removed_products = [];
+                $removed_products = array();
 
                 foreach ($previous_products as $product) {
                     if (!in_array($product['id_product'], $_POST['products'])) {
@@ -130,38 +130,38 @@ class AdminTagsControllerCore extends AdminController
             return;
         }
 
-        $this->fields_form = [
-            'legend' => [
-                'title' => $this->trans('Tag', [], 'Admin.Shopparameters.Feature'),
+        $this->fields_form = array(
+            'legend' => array(
+                'title' => $this->trans('Tag', array(), 'Admin.Shopparameters.Feature'),
                 'icon' => 'icon-tag',
-            ],
-            'input' => [
-                [
+            ),
+            'input' => array(
+                array(
                     'type' => 'text',
-                    'label' => $this->trans('Name', [], 'Admin.Global'),
+                    'label' => $this->trans('Name', array(), 'Admin.Global'),
                     'name' => 'name',
                     'required' => true,
-                ],
-                [
+                ),
+                array(
                     'type' => 'select',
-                    'label' => $this->trans('Language', [], 'Admin.Global'),
+                    'label' => $this->trans('Language', array(), 'Admin.Global'),
                     'name' => 'id_lang',
                     'required' => true,
-                    'options' => [
+                    'options' => array(
                         'query' => Language::getLanguages(false),
                         'id' => 'id_lang',
                         'name' => 'name',
-                    ],
-                ],
-            ],
-            'selects' => [
+                    ),
+                ),
+            ),
+            'selects' => array(
                 'products' => $obj->getProducts(true),
                 'products_unselected' => $obj->getProducts(false),
-            ],
-            'submit' => [
-                'title' => $this->trans('Save', [], 'Admin.Actions'),
-            ],
-        ];
+            ),
+            'submit' => array(
+                'title' => $this->trans('Save', array(), 'Admin.Actions'),
+            ),
+        );
 
         return parent::renderForm();
     }

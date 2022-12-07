@@ -1,63 +1,52 @@
 <?php
 /**
- * 2007-2020 PrestaShop and Contributors
+ * 2007-2016 PrestaShop
  *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
+ * This source file is subject to the Academic Free License (AFL 3.0)
  * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/AFL-3.0
+ * http://opensource.org/licenses/afl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
  *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2020 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
+ * @copyright 2007-2015 PrestaShop SA
+ * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace OnBoarding;
 
 use Configuration as LegacyConfiguration;
-use Module;
 use PrestaShopBundle\Service\Routing\Router;
-use PrestaShopBundle\Translation\TranslatorComponent as Translator;
-use Smarty_Data;
 
 /**
  * OnBoarding main class.
  */
 class OnBoarding
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private $configuration;
 
-    /**
-     * @var Module
-     */
-    private $module;
-
-    /**
-     * @var Translator
-     */
+    /** @var Translator */
     private $translator;
 
-    /**
-     * @var Smarty_Data
-     */
     private $smarty;
+    private $module;
 
     /**
      * OnBoarding constructor.
      *
      * @param Translator $translator Twig environment needed to manage the templates
-     * @param Smarty_Data $smarty
-     * @param Module $module
-     * @param Router $router
      */
     public function __construct($translator, $smarty, $module, Router $router)
     {
@@ -73,37 +62,38 @@ class OnBoarding
      */
     public function showModuleContent()
     {
-        $templates = [];
+        $templates = array();
         foreach ($this->configuration['templates'] as $template) {
-            $templates[] = [
-                'name' => $template,
-                'content' => str_replace(["\n", "\r", "\t"], '', $this->getTemplateContent("templates/$template")),
-            ];
+            $templates[] = array(
+                'name'    => $template,
+                'content' => str_replace(array("\n", "\r", "\t"), "", $this->getTemplateContent("templates/$template")),
+            );
         }
 
-        echo $this->getTemplateContent('content', [
+        echo $this->getTemplateContent('content', array(
             'currentStep' => $this->getCurrentStep(),
-            'totalSteps' => $this->getTotalSteps(),
+            'totalSteps'  => $this->getTotalSteps(),
             'percent_real' => ($this->getCurrentStep() / $this->getTotalSteps()) * 100,
-            'percent_rounded' => round(($this->getCurrentStep() / $this->getTotalSteps()) * 100),
-            'isShutDown' => $this->isShutDown(),
-            'steps' => $this->configuration['steps'],
-            'jsonSteps' => json_encode($this->configuration['steps']),
-            'templates' => $templates,
-        ]);
+            'percent_rounded' => round(($this->getCurrentStep() / $this->getTotalSteps())*100),
+            'isShutDown'  => $this->isShutDown(),
+            'steps'       => $this->configuration['steps'],
+            'jsonSteps'   => json_encode($this->configuration['steps']),
+            'templates'   => $templates,
+        ));
     }
 
     /**
      * Show the OnBoarding content for the nav bar.
      */
-    public function showModuleContentForNavBar()
+    public function showModuleContentForNavBar($link)
     {
-        echo $this->getTemplateContent('navbar', [
+        echo $this->getTemplateContent('navbar', array(
             'currentStep' => $this->getCurrentStep(),
-            'totalSteps' => $this->getTotalSteps(),
+            'totalSteps'  => $this->getTotalSteps(),
             'percent_real' => ($this->getCurrentStep() / $this->getTotalSteps()) * 100,
-            'percent_rounded' => round(($this->getCurrentStep() / $this->getTotalSteps()) * 100),
-        ]);
+            'percent_rounded' => round(($this->getCurrentStep() / $this->getTotalSteps())*100),
+            'link' => $link->getAdminLink('AdminWelcome'),
+        ));
     }
 
     /**
@@ -143,7 +133,7 @@ class OnBoarding
     /**
      * Load all the steps with the localized texts.
      *
-     * @param Router $router
+     * @param string $configPath Path where the configuration can be loaded
      */
     private function loadConfiguration(Router $router)
     {
@@ -172,14 +162,14 @@ class OnBoarding
      *
      * @param array $text Step text configuration
      *
-     * @return array|mixed|string|null
+     * @return string|null Text if it exists
      */
     private function getTextFromSettings($text)
     {
         if (is_array($text)) {
             switch ($text['type']) {
                 case 'template':
-                    return $this->getTemplateContent('contents/' . $text['src']);
+                    return $this->getTemplateContent('contents/'.$text['src']);
             }
         }
 
@@ -199,16 +189,15 @@ class OnBoarding
     /**
      * Return a template.
      *
-     * @param string $templateName Template name
-     * @param array $additionnalParameters Additionnal parameters to inject on the Twig template
+     * @param string $templateName          Template name
+     * @param array  $additionnalParameters Additionnal parameters to inject on the Twig template
      *
-     * @return string
+     * @return string Parsed template
      */
-    private function getTemplateContent($templateName, $additionnalParameters = [])
+    private function getTemplateContent($templateName, $additionnalParameters = array())
     {
         $this->smarty->assign($additionnalParameters);
-
-        return $this->module->fetch(__DIR__ . '/../views/' . $templateName . '.tpl');
+        return $this->module->fetch(__DIR__.'/../views/'.$templateName.'.tpl');
     }
 
     /**
@@ -218,7 +207,7 @@ class OnBoarding
      */
     private function getCurrentStep()
     {
-        return (int) LegacyConfiguration::get('ONBOARDINGV2_CURRENT_STEP');
+        return (int)LegacyConfiguration::get('ONBOARDINGV2_CURRENT_STEP');
     }
 
     /**
@@ -242,10 +231,10 @@ class OnBoarding
     /**
      * Return the shut down status.
      *
-     * @return int
+     * @return bool Shut down status
      */
     private function isShutDown()
     {
-        return (int) LegacyConfiguration::get('ONBOARDINGV2_SHUT_DOWN');
+        return (int)LegacyConfiguration::get('ONBOARDINGV2_SHUT_DOWN');
     }
 }

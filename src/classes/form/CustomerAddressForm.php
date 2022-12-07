@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -68,7 +68,7 @@ class CustomerAddressFormCore extends AbstractForm
         $this->address = new Address($id_address, $this->language->id);
 
         if ($this->address->id === null) {
-            return Tools::redirect('pagenotfound');
+            return Tools::redirect('index.php?controller=404');
         }
 
         if (!$context->customer->isLogged() && !$context->customer->isGuest()) {
@@ -76,7 +76,7 @@ class CustomerAddressFormCore extends AbstractForm
         }
 
         if ($this->address->id_customer != $context->customer->id) {
-            return Tools::redirect('pagenotfound');
+            return Tools::redirect('index.php?controller=404');
         }
 
         $params = get_object_vars($this->address);
@@ -106,20 +106,21 @@ class CustomerAddressFormCore extends AbstractForm
     {
         $is_valid = true;
 
-        $postcode = $this->getField('postcode');
-        if ($postcode && $postcode->isRequired()) {
-            $country = $this->formatter->getCountry();
-            if (!$country->checkZipCode($postcode->getValue())) {
-                $postcode->addError($this->translator->trans(
-                    'Invalid postcode - should look like "%zipcode%"',
-                    ['%zipcode%' => $country->zip_code_format],
-                    'Shop.Forms.Errors'
-               ));
-                $is_valid = false;
+        if (($postcode = $this->getField('postcode'))) {
+            if ($postcode->isRequired()) {
+                $country = $this->formatter->getCountry();
+                if (!$country->checkZipCode($postcode->getValue())) {
+                    $postcode->addError($this->translator->trans(
+                        'Invalid postcode - should look like "%zipcode%"',
+                        array('%zipcode%' => $country->zip_code_format),
+                        'Shop.Forms.Errors'
+                    ));
+                    $is_valid = false;
+                }
             }
         }
 
-        if (($hookReturn = Hook::exec('actionValidateCustomerAddressForm', ['form' => $this])) !== '') {
+        if (($hookReturn = Hook::exec('actionValidateCustomerAddressForm', array('form' => $this))) !== '') {
             $is_valid &= (bool) $hookReturn;
         }
 
@@ -149,7 +150,7 @@ class CustomerAddressFormCore extends AbstractForm
             $address->alias = $this->translator->trans('My Address', [], 'Shop.Theme.Checkout');
         }
 
-        Hook::exec('actionSubmitCustomerAddressForm', ['address' => &$address]);
+        Hook::exec('actionSubmitCustomerAddressForm', array('address' => &$address));
 
         $this->setAddress($address);
 
@@ -209,11 +210,11 @@ class CustomerAddressFormCore extends AbstractForm
             $formFields['lastname']['value'] = $context->customer->lastname;
         }
 
-        return [
+        return array(
             'id_address' => (isset($this->address->id)) ? $this->address->id : 0,
             'action' => $this->action,
             'errors' => $this->getErrors(),
             'formFields' => $formFields,
-        ];
+        );
     }
 }

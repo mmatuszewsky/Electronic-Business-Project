@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,18 +16,18 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Category;
 
 use Category;
 use Context;
-use LogicException;
 use ObjectModel;
 use PrestaShop\PrestaShop\Adapter\LegacyContext;
 use Shop;
@@ -43,9 +42,7 @@ class CategoryDataProvider
      */
     private $languageId;
 
-    /**
-     * @var array the list of existing active categories until root
-     */
+    /** @var array the list of existing active categories until root */
     private $categoryList;
 
     public function __construct(LegacyContext $context)
@@ -61,22 +58,25 @@ class CategoryDataProvider
     /**
      * Get a category.
      *
-     * @param int|null $idCategory
-     * @param int|null $idLang
-     * @param int|null $idShop
+     * @param null $idCategory
+     * @param null $idLang
+     * @param null $idShop
      *
-     * @throws LogicException If the category id is not set
+     * @throws \LogicException If the category id is not set
      *
      * @return Category
      */
     public function getCategory($idCategory = null, $idLang = null, $idShop = null)
     {
         if (!$idCategory) {
-            throw new LogicException('You need to provide a category id', 5002);
+            throw new \LogicException('You need to provide a category id', 5002);
         }
 
         $category = new Category($idCategory, $idLang, $idShop);
-        $category->image = Context::getContext()->link->getCatImageLink($category->name, $category->id);
+
+        if ($category) {
+            $category->image = Context::getContext()->link->getCatImageLink($category->name, $category->id);
+        }
 
         return $category;
     }
@@ -110,7 +110,7 @@ class CategoryDataProvider
      * @param int|null $root_category
      * @param bool|int $id_lang
      * @param bool $active return only active categories
-     * @param array|null $groups
+     * @param $groups
      * @param bool $use_shop_restriction
      * @param string $sql_filter
      * @param string $sql_sort
@@ -213,8 +213,8 @@ class CategoryDataProvider
     /**
      * Get Categories formatted like ajax_product_file.php using Category::getNestedCategories.
      *
-     * @param string $query
-     * @param int $limit
+     * @param $query
+     * @param $limit
      * @param bool $nameAsBreadCrumb
      *
      * @return array
@@ -227,9 +227,10 @@ class CategoryDataProvider
             $query = "AND cl.name LIKE '%" . pSQL($query) . "%'";
         }
 
-        $limitParam = '';
         if (is_int($limit)) {
-            $limitParam = 'LIMIT ' . $limit;
+            $limit = 'LIMIT ' . $limit;
+        } else {
+            $limit = '';
         }
 
         $searchCategories = Category::getAllCategoriesName(
@@ -240,7 +241,7 @@ class CategoryDataProvider
             true,
             $query,
             '',
-            $limitParam
+            $limit
         );
 
         $results = [];

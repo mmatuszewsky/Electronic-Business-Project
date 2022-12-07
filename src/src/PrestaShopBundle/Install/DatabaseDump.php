@@ -1,13 +1,12 @@
 <?php
 
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -18,16 +17,16 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Install;
 
-use AppKernel;
 use Exception;
 
 class DatabaseDump
@@ -58,7 +57,7 @@ class DatabaseDump
         }
 
         if ($dumpFile === null) {
-            $this->dumpFile = sprintf('%s/ps_dump_%s.sql', sys_get_temp_dir(), AppKernel::VERSION);
+            $this->dumpFile = sys_get_temp_dir() . '/' . 'ps_dump.sql';
         } else {
             $this->dumpFile = $dumpFile;
         }
@@ -75,14 +74,14 @@ class DatabaseDump
      *
      * @return string
      */
-    private function buildMySQLCommand($executable, array $arguments = [])
+    private function buildMySQLCommand($executable, array $arguments = array())
     {
-        $parts = [
+        $parts = array(
             escapeshellarg($executable),
             '-u', escapeshellarg($this->user),
             '-P', escapeshellarg($this->port),
             '-h', escapeshellarg($this->host),
-        ];
+        );
 
         if ($this->password) {
             $parts[] = '-p' . escapeshellarg($this->password);
@@ -104,7 +103,7 @@ class DatabaseDump
      */
     private function exec($command)
     {
-        $output = [];
+        $output = array();
         $ret = 1;
         exec($command, $output, $ret);
 
@@ -120,7 +119,7 @@ class DatabaseDump
      */
     private function dump()
     {
-        $dumpCommand = $this->buildMySQLCommand('mysqldump', [$this->databaseName]);
+        $dumpCommand = $this->buildMySQLCommand('mysqldump', array($this->databaseName));
         $dumpCommand .= ' > ' . escapeshellarg($this->dumpFile) . ' 2> /dev/null';
         $this->exec($dumpCommand);
     }
@@ -130,7 +129,7 @@ class DatabaseDump
      */
     public function restore()
     {
-        $restoreCommand = $this->buildMySQLCommand('mysql', [$this->databaseName]);
+        $restoreCommand = $this->buildMySQLCommand('mysql', array($this->databaseName));
         $restoreCommand .= ' < ' . escapeshellarg($this->dumpFile) . ' 2> /dev/null';
         $this->exec($restoreCommand);
     }

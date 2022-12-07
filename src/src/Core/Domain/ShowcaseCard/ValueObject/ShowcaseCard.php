@@ -1,13 +1,12 @@
 <?php
 
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -18,11 +17,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Core\Domain\ShowcaseCard\ValueObject;
@@ -37,55 +37,37 @@ class ShowcaseCard
     /**
      * Card shown in SEO & URLs
      */
-    public const SEO_URLS_CARD = 'seo-urls_card';
+    const SEO_URLS_CARD = 'seo-urls_card';
 
     /**
      * Card shown in Categories
      */
-    public const CATEGORIES_CARD = 'categories_card';
+    const CATEGORIES_CARD = 'categories_card';
 
     /**
      * Card shown in Customers
      */
-    public const CUSTOMERS_CARD = 'customers_card';
+    const CUSTOMERS_CARD = 'customers_card';
 
     /**
      * Card shown in Employees
      */
-    public const EMPLOYEES_CARD = 'employees_card';
+    const EMPLOYEES_CARD = 'employees_card';
 
     /**
      * Card shown in Improve -> Design -> Pages
      */
-    public const CMS_PAGES_CARD = 'cms-pages_card';
-
-    /**
-     * Card shown in Sell -> Catalog -> Attributes & features -> Attributes
-     */
-    public const ATTRIBUTES_CARD = 'attributes_card';
-
-    /**
-     * Card shown in Sell -> Catalog -> Monitoring
-     */
-    public const MONITORING_CARD = 'monitoring_card';
-
-    /**
-     * Card shown in Improve -> Shipping -> Carriers
-     */
-    const CARRIERS_CARD = 'carriers_card';
+    const CMS_PAGES_CARD = 'cms-pages_card';
 
     /**
      * List of supported card names
      */
-    public const SUPPORTED_NAMES = [
+    const SUPPORTED_NAMES = [
         self::SEO_URLS_CARD => true,
         self::CATEGORIES_CARD => true,
         self::CUSTOMERS_CARD => true,
         self::EMPLOYEES_CARD => true,
         self::CMS_PAGES_CARD => true,
-        self::ATTRIBUTES_CARD => true,
-        self::MONITORING_CARD => true,
-        self::CARRIERS_CARD => true,
     ];
 
     /**
@@ -103,7 +85,9 @@ class ShowcaseCard
     public function __construct($name)
     {
         if (!$this->isSupported($name)) {
-            throw new InvalidShowcaseCardNameException(sprintf('Unsupported showcase card name: %s', print_r($name, true)));
+            throw new InvalidShowcaseCardNameException(
+                sprintf('Unsupported showcase card name: %s', print_r($name, true))
+            );
         }
 
         $this->name = $name;

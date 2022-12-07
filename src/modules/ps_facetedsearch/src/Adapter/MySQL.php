@@ -1,31 +1,37 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop.
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
  *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @copyright 2007-2019 PrestaShop SA
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\Module\FacetedSearch\Adapter;
 
-use Configuration;
-use Context;
 use Db;
-use Doctrine\Common\Collections\ArrayCollection;
 use Product;
+use Context;
+use Configuration;
 use StockAvailable;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class MySQL extends AbstractAdapter
 {
@@ -128,9 +134,6 @@ class MySQL extends AbstractAdapter
 
         if ($orderField) {
             $query .= ' ORDER BY ' . $orderField . ' ' . strtoupper($this->getOrderDirection());
-            if ($orderField !== 'p.id_product') {
-                $query .= ', p.id_product DESC';
-            }
         }
 
         if ($this->limit !== null) {
@@ -293,40 +296,9 @@ class MySQL extends AbstractAdapter
                 'joinType' => self::LEFT_JOIN,
                 'dependencyField' => 'nleft',
             ],
-            'sales' => [
-                'tableName' => 'product_sale',
-                'tableAlias' => 'psales',
-                'fieldName' => 'quantity',
-                'fieldAlias' => 'sales',
-                'joinCondition' => '(psales.id_product = p.id_product)',
-                'joinType' => self::LEFT_JOIN,
-            ],
         ];
 
         return $filterToTableMapping;
-    }
-
-    /**
-     * Get the joined and escaped value from an multi-dimensional array
-     *
-     * @param string $separator
-     * @param array $values
-     *
-     * @return string Escaped string value
-     */
-    protected function getJoinedEscapedValue($separator, array $values)
-    {
-        foreach ($values as $key => $value) {
-            if (is_array($value)) {
-                $values[$key] = $this->getJoinedEscapedValue($separator, $value);
-            } elseif (is_numeric($value)) {
-                $values[$key] = pSQL($value);
-            } else {
-                $values[$key] = "'" . pSQL($value) . "'";
-            }
-        }
-
-        return implode($separator, $values);
     }
 
     /**
@@ -336,7 +308,7 @@ class MySQL extends AbstractAdapter
      *
      * @return string
      */
-    protected function computeOrderByField(array $filterToTableMapping)
+    private function computeOrderByField(array $filterToTableMapping)
     {
         $orderField = $this->getOrderField();
 
@@ -354,7 +326,7 @@ class MySQL extends AbstractAdapter
             $orderField = $this->getOrderDirection() === 'asc' ? 'price_min' : 'price_max';
         }
 
-        $orderField = $this->computeFieldName($orderField, $filterToTableMapping, true);
+        $orderField = $this->computeFieldName($orderField, $filterToTableMapping);
 
         // put some products at the end of the list
         $orderField = $this->computeShowLast($orderField, $filterToTableMapping);
@@ -370,7 +342,7 @@ class MySQL extends AbstractAdapter
      *
      * @return string
      */
-    protected function computeShowLast($orderField, $filterToTableMapping)
+    private function computeShowLast($orderField, $filterToTableMapping)
     {
         // allow only if feature is enabled & it is main product list query
         if ($this->getInitialPopulation() === null
@@ -422,7 +394,7 @@ class MySQL extends AbstractAdapter
      *
      * @return string Table Field name with an alias
      */
-    protected function computeFieldName($fieldName, $filterToTableMapping, $sortByField = false)
+    private function computeFieldName($fieldName, $filterToTableMapping)
     {
         if (array_key_exists($fieldName, $filterToTableMapping)
             && (
@@ -435,9 +407,6 @@ class MySQL extends AbstractAdapter
         ) {
             $joinMapping = $filterToTableMapping[$fieldName];
             $fieldName = $joinMapping['tableAlias'] . '.' . (isset($joinMapping['fieldName']) ? $joinMapping['fieldName'] : $fieldName);
-            if ($sortByField === false) {
-                $fieldName .= isset($joinMapping['fieldAlias']) ? ' as ' . $joinMapping['fieldAlias'] : '';
-            }
 
             if (isset($joinMapping['aggregateFunction'], $joinMapping['aggregateFieldName'])) {
                 $fieldName = $joinMapping['aggregateFunction'] . '(' . $fieldName . ') as ' . $joinMapping['aggregateFieldName'];
@@ -458,7 +427,7 @@ class MySQL extends AbstractAdapter
      *
      * @return array
      */
-    protected function computeSelectFields(array $filterToTableMapping)
+    private function computeSelectFields(array $filterToTableMapping)
     {
         $selectFields = [];
         foreach ($this->getSelectFields() as $key => $selectField) {
@@ -475,7 +444,7 @@ class MySQL extends AbstractAdapter
      *
      * @return array
      */
-    protected function computeWhereConditions(array $filterToTableMapping)
+    private function computeWhereConditions(array $filterToTableMapping)
     {
         $whereConditions = [];
         $operationIdx = 0;
@@ -500,7 +469,9 @@ class MySQL extends AbstractAdapter
                         $operator = !empty($operation[2]) ? $operation[2] : '=';
                         $conditions[] = $selectAlias . '.' . $operation[0] . $operator . current($values);
                     } else {
-                        $conditions[] = $selectAlias . '.' . $operation[0] . ' IN (' . $this->getJoinedEscapedValue(', ', $values) . ')';
+                        $conditions[] = $selectAlias . '.' . $operation[0] . ' IN (' . implode(', ', array_map(function ($value) {
+                            return is_numeric($value) ? pSQL($value) : "'" . pSQL($value) . "'";
+                        }, $values)) . ')';
                     }
                 }
 
@@ -531,7 +502,9 @@ class MySQL extends AbstractAdapter
                                 $selectAlias . '.' . $filterName . $operator . "'" . current($values) . "'";
                         } else {
                             $whereConditions[] =
-                                $selectAlias . '.' . $filterName . ' IN (' . $this->getJoinedEscapedValue(', ', $values) . ')';
+                                $selectAlias . '.' . $filterName . ' IN (' . implode(', ', array_map(function ($value) {
+                                    return is_numeric($value) ? pSQL($value) : "'" . pSQL($value) . "'";
+                                }, $values)) . ')';
                         }
                     } else {
                         $orConditions = [];
@@ -590,7 +563,7 @@ class MySQL extends AbstractAdapter
      *
      * @return ArrayCollection
      */
-    protected function computeJoinConditions(array $filterToTableMapping)
+    private function computeJoinConditions(array $filterToTableMapping)
     {
         $joinList = new ArrayCollection();
 
@@ -769,7 +742,6 @@ class MySQL extends AbstractAdapter
                 'condition',
                 'weight',
                 'price',
-                'sales',
             ]
         );
         $this->initialPopulation = clone $this;

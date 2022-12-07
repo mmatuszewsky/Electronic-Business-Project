@@ -1,34 +1,39 @@
 <?php
-/**
- * 2007-2020 PrestaShop SA and Contributors
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/AFL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://www.prestashop.com for more information.
- *
- * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2020 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
- * International Registered Trademark & Property of PrestaShop SA
- */
+/*
+* 2007-2015 PrestaShop
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Academic Free License (AFL 3.0)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/afl-3.0.php
+* If you did not receive a copy of the license and are unable to
+* obtain it through the world-wide-web, please send an email
+* to license@prestashop.com so we can send you a copy immediately.
+*
+* DISCLAIMER
+*
+* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+* versions in the future. If you wish to customize PrestaShop for your
+* needs please refer to http://www.prestashop.com for more information.
+*
+*  @author PrestaShop SA <contact@prestashop.com>
+*  @copyright  2007-2015 PrestaShop SA
+*  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+*  International Registered Trademark & Property of PrestaShop SA
+*/
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-use PrestaShop\PrestaShop\Adapter\Category\CategoryProductSearchProvider;
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
+use PrestaShop\PrestaShop\Adapter\Category\CategoryProductSearchProvider;
+use PrestaShop\PrestaShop\Adapter\Image\ImageRetriever;
+use PrestaShop\PrestaShop\Adapter\Product\PriceFormatter;
+use PrestaShop\PrestaShop\Core\Product\ProductListingPresenter;
+use PrestaShop\PrestaShop\Adapter\Product\ProductColorsRetriever;
 use PrestaShop\PrestaShop\Core\Product\Search\ProductSearchContext;
 use PrestaShop\PrestaShop\Core\Product\Search\ProductSearchQuery;
 use PrestaShop\PrestaShop\Core\Product\Search\SortOrder;
@@ -41,7 +46,7 @@ class Ps_FeaturedProducts extends Module implements WidgetInterface
     {
         $this->name = 'ps_featuredproducts';
         $this->author = 'PrestaShop';
-        $this->version = '2.1.2';
+        $this->version = '2.0.0';
         $this->need_instance = 0;
 
         $this->ps_versions_compliancy = [
@@ -52,8 +57,8 @@ class Ps_FeaturedProducts extends Module implements WidgetInterface
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->displayName = $this->trans('Featured products', [], 'Modules.Featuredproducts.Admin');
-        $this->description = $this->trans('Pick a category and highlight its items, enhance customer experience with a lively homepage.', [], 'Modules.Featuredproducts.Admin');
+        $this->displayName = $this->trans('Featured products', array(), 'Modules.Featuredproducts.Admin');
+        $this->description = $this->trans('Displays featured products in the central column of your homepage.', array(), 'Modules.Featuredproducts.Admin');
 
         $this->templateFile = 'module:ps_featuredproducts/views/templates/hook/ps_featuredproducts.tpl';
     }
@@ -67,13 +72,13 @@ class Ps_FeaturedProducts extends Module implements WidgetInterface
         Configuration::updateValue('HOME_FEATURED_RANDOMIZE', false);
 
         return parent::install()
-            && $this->registerHook('actionProductAdd')
-            && $this->registerHook('actionProductUpdate')
-            && $this->registerHook('actionProductDelete')
+            && $this->registerHook('addproduct')
+            && $this->registerHook('updateproduct')
+            && $this->registerHook('deleteproduct')
+            && $this->registerHook('categoryUpdate')
             && $this->registerHook('displayHome')
             && $this->registerHook('displayOrderConfirmation2')
             && $this->registerHook('displayCrossSellingShoppingCart')
-            && $this->registerHook('actionCategoryUpdate')
             && $this->registerHook('actionAdminGroupsControllerSaveAfter')
         ;
     }
@@ -85,22 +90,22 @@ class Ps_FeaturedProducts extends Module implements WidgetInterface
         return parent::uninstall();
     }
 
-    public function hookActionProductAdd($params)
+    public function hookAddProduct($params)
     {
         $this->_clearCache('*');
     }
 
-    public function hookActionProductUpdate($params)
+    public function hookUpdateProduct($params)
     {
         $this->_clearCache('*');
     }
 
-    public function hookActionProductDelete($params)
+    public function hookDeleteProduct($params)
     {
         $this->_clearCache('*');
     }
 
-    public function hookActionCategoryUpdate($params)
+    public function hookCategoryUpdate($params)
     {
         $this->_clearCache('*');
     }
@@ -118,24 +123,24 @@ class Ps_FeaturedProducts extends Module implements WidgetInterface
     public function getContent()
     {
         $output = '';
-        $errors = [];
+        $errors = array();
 
         if (Tools::isSubmit('submitHomeFeatured')) {
             $nbr = Tools::getValue('HOME_FEATURED_NBR');
             if (!Validate::isInt($nbr) || $nbr <= 0) {
-                $errors[] = $this->trans('The number of products is invalid. Please enter a positive number.', [], 'Modules.Featuredproducts.Admin');
+                $errors[] = $this->trans('The number of products is invalid. Please enter a positive number.', array(), 'Modules.Featuredproducts.Admin');
             }
 
             $cat = Tools::getValue('HOME_FEATURED_CAT');
             if (!Validate::isInt($cat) || $cat <= 0) {
-                $errors[] = $this->trans('The category ID is invalid. Please choose an existing category ID.', [], 'Modules.Featuredproducts.Admin');
+                $errors[] = $this->trans('The category ID is invalid. Please choose an existing category ID.', array(), 'Modules.Featuredproducts.Admin');
             }
 
             $rand = Tools::getValue('HOME_FEATURED_RANDOMIZE');
             if (!Validate::isBool($rand)) {
-                $errors[] = $this->trans('Invalid value for the "randomize" flag.', [], 'Modules.Featuredproducts.Admin');
+                $errors[] = $this->trans('Invalid value for the "randomize" flag.', array(), 'Modules.Featuredproducts.Admin');
             }
-            if (count($errors)) {
+            if (isset($errors) && count($errors)) {
                 $output = $this->displayError(implode('<br />', $errors));
             } else {
                 Configuration::updateValue('HOME_FEATURED_NBR', (int) $nbr);
@@ -144,65 +149,63 @@ class Ps_FeaturedProducts extends Module implements WidgetInterface
 
                 $this->_clearCache('*');
 
-                $output = $this->displayConfirmation($this->trans('The settings have been updated.', [], 'Admin.Notifications.Success'));
+                $output = $this->displayConfirmation($this->trans('The settings have been updated.', array(), 'Admin.Notifications.Success'));
             }
         }
 
-        return $output . $this->renderForm();
+        return $output.$this->renderForm();
     }
 
     public function renderForm()
     {
-        $fields_form = [
-            'form' => [
-                'legend' => [
-                    'title' => $this->trans('Settings', [], 'Admin.Global'),
+        $fields_form = array(
+            'form' => array(
+                'legend' => array(
+                    'title' => $this->trans('Settings', array(), 'Admin.Global'),
                     'icon' => 'icon-cogs',
-                ],
+                ),
 
-                'description' => $this->trans('To add products to your homepage, simply add them to the corresponding product category (default: "Home").', [], 'Modules.Featuredproducts.Admin'),
-                'input' => [
-                    [
+                'description' => $this->trans('To add products to your homepage, simply add them to the corresponding product category (default: "Home").', array(), 'Modules.Featuredproducts.Admin'),
+                'input' => array(
+                    array(
                         'type' => 'text',
-                        'label' => $this->trans('Number of products to be displayed', [], 'Modules.Featuredproducts.Admin'),
+                        'label' => $this->trans('Number of products to be displayed', array(), 'Modules.Featuredproducts.Admin'),
                         'name' => 'HOME_FEATURED_NBR',
                         'class' => 'fixed-width-xs',
-                        'desc' => $this->trans('Set the number of products that you would like to display on homepage (default: 8).', [], 'Modules.Featuredproducts.Admin'),
-                    ],
-                    [
-                        'type' => 'categories',
-                        'tree' => [
-                          'id' => 'home_featured_category',
-                          'selected_categories' => [Configuration::get('HOME_FEATURED_CAT')],
-                        ],
-                        'label' => $this->trans('Category from which to pick products to be displayed', [], 'Modules.Featuredproducts.Admin'),
+                        'desc' => $this->trans('Set the number of products that you would like to display on homepage (default: 8).', array(), 'Modules.Featuredproducts.Admin'),
+                    ),
+                    array(
+                        'type' => 'text',
+                        'label' => $this->trans('Category from which to pick products to be displayed', array(), 'Modules.Featuredproducts.Admin'),
                         'name' => 'HOME_FEATURED_CAT',
-                    ],
-                    [
+                        'class' => 'fixed-width-xs',
+                        'desc' => $this->trans('Choose the category ID of the products that you would like to display on homepage (default: 2 for "Home").', array(), 'Modules.Featuredproducts.Admin'),
+                    ),
+                    array(
                         'type' => 'switch',
-                        'label' => $this->trans('Randomly display featured products', [], 'Modules.Featuredproducts.Admin'),
+                        'label' => $this->trans('Randomly display featured products', array(), 'Modules.Featuredproducts.Admin'),
                         'name' => 'HOME_FEATURED_RANDOMIZE',
                         'class' => 'fixed-width-xs',
-                        'desc' => $this->trans('Enable if you wish the products to be displayed randomly (default: no).', [], 'Modules.Featuredproducts.Admin'),
-                        'values' => [
-                            [
+                        'desc' => $this->trans('Enable if you wish the products to be displayed randomly (default: no).', array(), 'Modules.Featuredproducts.Admin'),
+                        'values' => array(
+                            array(
                                 'id' => 'active_on',
                                 'value' => 1,
-                                'label' => $this->trans('Yes', [], 'Admin.Global'),
-                            ],
-                            [
+                                'label' => $this->trans('Yes', array(), 'Admin.Global'),
+                            ),
+                            array(
                                 'id' => 'active_off',
                                 'value' => 0,
-                                'label' => $this->trans('No', [], 'Admin.Global'),
-                            ],
-                        ],
-                    ],
-                ],
-                'submit' => [
-                    'title' => $this->trans('Save', [], 'Admin.Actions'),
-                ],
-            ],
-        ];
+                                'label' => $this->trans('No', array(), 'Admin.Global'),
+                            ),
+                        ),
+                    ),
+                ),
+                'submit' => array(
+                    'title' => $this->trans('Save', array(), 'Admin.Actions'),
+                ),
+            ),
+        );
 
         $lang = new Language((int) Configuration::get('PS_LANG_DEFAULT'));
 
@@ -211,26 +214,27 @@ class Ps_FeaturedProducts extends Module implements WidgetInterface
         $helper->table = $this->table;
         $helper->default_form_language = $lang->id;
         $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') ? Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG') : 0;
+        $helper->id = (int) Tools::getValue('id_carrier');
         $helper->identifier = $this->identifier;
         $helper->submit_action = 'submitHomeFeatured';
-        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false) . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false).'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
-        $helper->tpl_vars = [
+        $helper->tpl_vars = array(
             'fields_value' => $this->getConfigFieldsValues(),
             'languages' => $this->context->controller->getLanguages(),
             'id_language' => $this->context->language->id,
-        ];
+        );
 
-        return $helper->generateForm([$fields_form]);
+        return $helper->generateForm(array($fields_form));
     }
 
     public function getConfigFieldsValues()
     {
-        return [
+        return array(
             'HOME_FEATURED_NBR' => Tools::getValue('HOME_FEATURED_NBR', (int) Configuration::get('HOME_FEATURED_NBR')),
             'HOME_FEATURED_CAT' => Tools::getValue('HOME_FEATURED_CAT', (int) Configuration::get('HOME_FEATURED_CAT')),
             'HOME_FEATURED_RANDOMIZE' => Tools::getValue('HOME_FEATURED_RANDOMIZE', (bool) Configuration::get('HOME_FEATURED_RANDOMIZE')),
-        ];
+        );
     }
 
     public function renderWidget($hookName = null, array $configuration = [])
@@ -253,12 +257,11 @@ class Ps_FeaturedProducts extends Module implements WidgetInterface
         $products = $this->getProducts();
 
         if (!empty($products)) {
-            return [
+            return array(
                 'products' => $products,
                 'allProductsLink' => Context::getContext()->link->getCategoryLink($this->getConfigFieldsValues()['HOME_FEATURED_CAT']),
-            ];
+            );
         }
-
         return false;
     }
 
@@ -300,7 +303,15 @@ class Ps_FeaturedProducts extends Module implements WidgetInterface
 
         $presenterFactory = new ProductPresenterFactory($this->context);
         $presentationSettings = $presenterFactory->getPresentationSettings();
-        $presenter = $presenterFactory->getPresenter();
+        $presenter = new ProductListingPresenter(
+            new ImageRetriever(
+                $this->context->link
+            ),
+            $this->context->link,
+            new PriceFormatter(),
+            new ProductColorsRetriever(),
+            $this->context->getTranslator()
+        );
 
         $products_for_template = [];
 
@@ -313,15 +324,5 @@ class Ps_FeaturedProducts extends Module implements WidgetInterface
         }
 
         return $products_for_template;
-    }
-
-    protected function getCacheId($name = null)
-    {
-        $cacheId = parent::getCacheId($name);
-        if (!empty($this->context->customer->id)) {
-            $cacheId .= '|' . $this->context->customer->id;
-        }
-
-        return $cacheId;
     }
 }

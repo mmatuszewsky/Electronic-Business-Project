@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Core\Domain\Employee\Command;
@@ -50,6 +50,11 @@ class AddEmployeeCommand
      * @var Email
      */
     private $email;
+
+    /**
+     * @var bool
+     */
+    private $isSubscribedToNewsletter;
 
     /**
      * @var int
@@ -82,44 +87,39 @@ class AddEmployeeCommand
     private $plainPassword;
 
     /**
-     * @var bool
-     */
-    private $hasEnabledGravatar;
-
-    /**
      * @param string $firstName
      * @param string $lastName
      * @param string $email
      * @param string $plainPassword
+     * @param bool $isSubscribedToNewsletter
      * @param int $defaultPageId
      * @param int $languageId
      * @param bool $active
      * @param int $profileId
      * @param array $shopAssociation
-     * @param bool $hasEnabledGravatar
      */
     public function __construct(
         $firstName,
         $lastName,
         $email,
         $plainPassword,
+        $isSubscribedToNewsletter,
         $defaultPageId,
         $languageId,
         $active,
         $profileId,
-        array $shopAssociation,
-        bool $hasEnabledGravatar = false
+        array $shopAssociation
     ) {
         $this->firstName = new FirstName($firstName);
         $this->lastName = new LastName($lastName);
         $this->email = new Email($email);
+        $this->isSubscribedToNewsletter = $isSubscribedToNewsletter;
         $this->defaultPageId = $defaultPageId;
         $this->languageId = $languageId;
         $this->active = $active;
         $this->profileId = $profileId;
         $this->shopAssociation = $shopAssociation;
         $this->plainPassword = new Password($plainPassword);
-        $this->hasEnabledGravatar = $hasEnabledGravatar;
     }
 
     /**
@@ -144,6 +144,14 @@ class AddEmployeeCommand
     public function getEmail()
     {
         return $this->email;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSubscribedToNewsletter()
+    {
+        return $this->isSubscribedToNewsletter;
     }
 
     /**
@@ -192,13 +200,5 @@ class AddEmployeeCommand
     public function getPlainPassword()
     {
         return $this->plainPassword;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasEnabledGravatar()
-    {
-        return $this->hasEnabledGravatar;
     }
 }

@@ -6,11 +6,11 @@ admin_international_translation_overview:
         _legacy_controller: AdminTranslations
         _legacy_link: AdminTranslationSf
 
-admin_international_translations_export_catalogues:
+admin_international_translations_export_theme:
     path: /export
-    methods: [ POST ]
+    methods:  [POST]
     defaults:
-        _controller: PrestaShopBundle:Admin/Translations:exportCatalogues
+        _controller: PrestaShopBundle:Admin/Translations:exportThemeLanguage
         _legacy_controller: AdminTranslations
         _legacy_link: AdminTranslations:submitExport
 
@@ -22,7 +22,7 @@ admin_international_translations_show_settings:
         _legacy_controller: AdminTranslations
         _legacy_link: AdminTranslations:settings
 
-admin_international_translations_modify:
+_admin_international_translations_modify:
     path: /modify
     methods: [GET]
     defaults:

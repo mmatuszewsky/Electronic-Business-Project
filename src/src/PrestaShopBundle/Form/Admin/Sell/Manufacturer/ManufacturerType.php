@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Form\Admin\Sell\Manufacturer;
@@ -32,6 +32,7 @@ use PrestaShopBundle\Form\Admin\Type\FormattedTextareaType;
 use PrestaShopBundle\Form\Admin\Type\ShopChoiceTreeType;
 use PrestaShopBundle\Form\Admin\Type\SwitchType;
 use PrestaShopBundle\Form\Admin\Type\TranslatableType;
+use PrestaShopBundle\Form\Admin\Type\TranslateType;
 use PrestaShopBundle\Form\Admin\Type\TranslatorAwareType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -71,17 +72,12 @@ class ManufacturerType extends TranslatorAwareType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $invalidCharactersForCatalogLabel = $this->trans('Invalid characters:', 'Admin.Global') . '<>;=#{}';
-        $invalidCharactersForNameLabel = $this->trans('Invalid characters:', 'Admin.Global') . '<>={}';
-
         $builder
             ->add('name', TextType::class, [
-                'label' => $this->trans('Name', 'Admin.Global'),
-                'help' => $invalidCharactersForCatalogLabel,
                 'constraints' => [
                     new NotBlank([
                         'message' => $this->trans(
-                            'This field cannot be empty.', 'Admin.Notifications.Error'
+                            'This field cannot be empty', 'Admin.Notifications.Error'
                         ),
                     ]),
                     new Length([
@@ -97,9 +93,10 @@ class ManufacturerType extends TranslatorAwareType
                     ]),
                 ],
             ])
-            ->add('short_description', TranslatableType::class, [
-                'label' => $this->trans('Short description', 'Admin.Catalog.Feature'),
+            ->add('short_description', TranslateType::class, [
                 'type' => FormattedTextareaType::class,
+                'locales' => $this->locales,
+                'hideTabs' => false,
                 'required' => false,
                 'options' => [
                     'constraints' => [
@@ -112,9 +109,10 @@ class ManufacturerType extends TranslatorAwareType
                     ],
                 ],
             ])
-            ->add('description', TranslatableType::class, [
-                'label' => $this->trans('Description', 'Admin.Global'),
+            ->add('description', TranslateType::class, [
                 'type' => FormattedTextareaType::class,
+                'locales' => $this->locales,
+                'hideTabs' => false,
                 'required' => false,
                 'options' => [
                     'constraints' => [
@@ -128,13 +126,9 @@ class ManufacturerType extends TranslatorAwareType
                 ],
             ])
             ->add('logo', FileType::class, [
-                'label' => $this->trans('Logo', 'Admin.Global'),
-                'help' => $this->trans('Upload a brand logo from your computer.', 'Admin.Catalog.Help'),
                 'required' => false,
             ])
             ->add('meta_title', TranslatableType::class, [
-                'label' => $this->trans('Meta title', 'Admin.Catalog.Feature'),
-                'help' => $invalidCharactersForNameLabel,
                 'type' => TextType::class,
                 'required' => false,
                 'options' => [
@@ -154,8 +148,6 @@ class ManufacturerType extends TranslatorAwareType
                 ],
             ])
             ->add('meta_description', TranslatableType::class, [
-                'label' => $this->trans('Meta description', 'Admin.Catalog.Feature'),
-                'help' => $invalidCharactersForNameLabel,
                 'type' => TextareaType::class,
                 'required' => false,
                 'options' => [
@@ -175,9 +167,6 @@ class ManufacturerType extends TranslatorAwareType
                 ],
             ])
             ->add('meta_keyword', TranslatableType::class, [
-                'label' => $this->trans('Meta keywords', 'Admin.Global'),
-                'help' => $this->trans('To add tags, click in the field, write something, and then press the "Enter" key.', 'Admin.Shopparameters.Help')
-                 . '<br>' . $invalidCharactersForNameLabel,
                 'type' => TextType::class,
                 'required' => false,
                 'options' => [
@@ -193,18 +182,16 @@ class ManufacturerType extends TranslatorAwareType
                 ],
             ])
             ->add('is_enabled', SwitchType::class, [
-                'label' => $this->trans('Enabled', 'Admin.Global'),
                 'required' => false,
             ]);
 
         if ($this->isMultistoreEnabled) {
             $builder->add('shop_association', ShopChoiceTreeType::class, [
-                'label' => $this->trans('Shop association', 'Admin.Global'),
                 'required' => false,
                 'constraints' => [
                     new NotBlank([
                         'message' => $this->trans(
-                            'This field cannot be empty.', 'Admin.Notifications.Error'
+                            'This field cannot be empty', 'Admin.Notifications.Error'
                         ),
                     ]),
                 ],

@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,19 +16,17 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Form\Admin\Product;
 
-use Language;
 use Pack;
-use PrestaShop\PrestaShop\Adapter\Configuration;
-use PrestaShop\PrestaShop\Adapter\LegacyContext;
 use PrestaShopBundle\Form\Admin\Type\CommonAbstractType;
 use PrestaShopBundle\Form\Admin\Type\DatePickerType;
 use PrestaShopBundle\Form\Admin\Type\TranslateType;
@@ -38,8 +35,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Routing\Router;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -47,33 +42,16 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ProductQuantity extends CommonAbstractType
 {
-    /**
-     * @var Configuration
-     */
-    public $configuration;
-    /**
-     * @var LegacyContext
-     */
-    public $legacyContext;
-    /**
-     * @var array<int|Language>
-     */
-    public $locales;
-    /**
-     * @var Router
-     */
     private $router;
-    /**
-     * @var TranslatorInterface
-     */
     private $translator;
+    private $configuration;
 
     /**
      * Constructor.
      *
-     * @param TranslatorInterface $translator
-     * @param Router $router
-     * @param LegacyContext $legacyContext
+     * @param object $translator
+     * @param object $router
+     * @param object $legacyContext
      */
     public function __construct($translator, $router, $legacyContext)
     {

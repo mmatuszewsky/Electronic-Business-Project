@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,11 +16,12 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Form\Admin\Configure\AdvancedParameters\Email;
@@ -41,12 +41,20 @@ final class EmailConfigurationFormDataProvider implements FormDataProviderInterf
     private $emailDataConfigurator;
 
     /**
+     * @var DataConfigurationInterface
+     */
+    private $smtpDataConfigurator;
+
+    /**
      * @param DataConfigurationInterface $emailDataConfigurator
+     * @param DataConfigurationInterface $smtpDataConfigurator
      */
     public function __construct(
-        DataConfigurationInterface $emailDataConfigurator
+        DataConfigurationInterface $emailDataConfigurator,
+        DataConfigurationInterface $smtpDataConfigurator
     ) {
         $this->emailDataConfigurator = $emailDataConfigurator;
+        $this->smtpDataConfigurator = $smtpDataConfigurator;
     }
 
     /**
@@ -54,7 +62,10 @@ final class EmailConfigurationFormDataProvider implements FormDataProviderInterf
      */
     public function getData()
     {
-        return $this->emailDataConfigurator->getConfiguration();
+        return [
+            'email_config' => $this->emailDataConfigurator->getConfiguration(),
+            'smtp_config' => $this->smtpDataConfigurator->getConfiguration(),
+        ];
     }
 
     /**
@@ -67,7 +78,10 @@ final class EmailConfigurationFormDataProvider implements FormDataProviderInterf
             return $errors;
         }
 
-        return $this->emailDataConfigurator->updateConfiguration($data);
+        return array_merge(
+            $this->emailDataConfigurator->updateConfiguration($data['email_config']),
+            $this->smtpDataConfigurator->updateConfiguration($data['smtp_config'])
+        );
     }
 
     /**
@@ -82,7 +96,7 @@ final class EmailConfigurationFormDataProvider implements FormDataProviderInterf
         $errors = [];
         $isSmtpNotConfigured = empty($config['smtp_config']['server']) || empty($config['smtp_config']['port']);
 
-        if (MailOption::METHOD_SMTP === $config['mail_method'] && $isSmtpNotConfigured) {
+        if (MailOption::METHOD_SMTP === $config['email_config']['mail_method'] && $isSmtpNotConfigured) {
             $errors[] = [
                 'key' => 'You must define an SMTP server and an SMTP port. If you do not know it, use the PHP mail() function instead.',
                 'parameters' => [],

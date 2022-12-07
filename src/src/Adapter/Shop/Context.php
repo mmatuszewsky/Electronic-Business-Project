@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,17 +16,17 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Shop;
 
 use Context as LegacyContext;
-use PrestaShop\PrestaShop\Core\Domain\Shop\ValueObject\ShopConstraint;
 use PrestaShop\PrestaShop\Core\Multistore\MultistoreContextCheckerInterface;
 use PrestaShop\PrestaShop\Core\Shop\ShopContextInterface;
 use Shop;
@@ -83,7 +82,7 @@ class Context implements MultistoreContextCheckerInterface, ShopContextInterface
     {
         $groupSettings = Shop::getGroupFromShop(Shop::getContextShopID(), false);
 
-        if (!empty($groupSettings['share_customer'])) {
+        if ($groupSettings['share_customer']) {
             return Shop::getContextListShopID(Shop::SHARE_CUSTOMER);
         } else {
             return Shop::getContextListShopID();
@@ -176,7 +175,7 @@ class Context implements MultistoreContextCheckerInterface, ShopContextInterface
     /**
      * Retrieve group ID of a shop.
      *
-     * @param int $shopId
+     * @param $shopId
      * @param bool $asId
      *
      * @return int
@@ -187,7 +186,7 @@ class Context implements MultistoreContextCheckerInterface, ShopContextInterface
     }
 
     /**
-     * @param int $shopGroupId
+     * @param $shopGroupId
      *
      * @return ShopGroup
      */
@@ -228,21 +227,5 @@ class Context implements MultistoreContextCheckerInterface, ShopContextInterface
     public function getShopName()
     {
         return LegacyContext::getContext()->shop->name;
-    }
-
-    /**
-     * @param bool $strict
-     *
-     * @return ShopConstraint
-     */
-    public function getShopConstraint(bool $strict = false): ShopConstraint
-    {
-        if ($this->isShopContext()) {
-            return ShopConstraint::shop((int) $this->getContextShopID(), $strict);
-        } elseif ($this->isGroupShopContext()) {
-            return ShopConstraint::shopGroup((int) $this->getContextShopGroup()->id, $strict);
-        }
-
-        return ShopConstraint::allShops();
     }
 }
