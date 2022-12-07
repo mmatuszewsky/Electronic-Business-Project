@@ -12,3 +12,4 @@ Helpful links:
  - Configure prestashop (not tested)
  - If you are on WSL you have to give permission to edit files: `sudo chown -R <username>:<group> <directory_name>`
  (check username: whoami, check group: groups)
+ - sudo chmod -R 777 src/
