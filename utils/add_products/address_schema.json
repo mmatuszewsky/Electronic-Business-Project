@@ -1,0 +1,27 @@
+{
+    "address": {
+        "id": "",
+        "id_customer": "",
+        "id_manufacturer": "",
+        "id_supplier": "",
+        "id_warehouse": "",
+        "id_country": "",
+        "id_state": "",
+        "alias": "",
+        "company": "",
+        "lastname": "",
+        "firstname": "",
+        "vat_number": "",
+        "address1": "",
+        "address2": "",
+        "postcode": "",
+        "city": "",
+        "other": "",
+        "phone": "",
+        "phone_mobile": "",
+        "dni": "",
+        "deleted": "",
+        "date_add": "",
+        "date_upd": ""
+    }
+}
