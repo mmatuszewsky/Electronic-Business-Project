@@ -52,7 +52,7 @@ class AutowirePass extends AbstractRecursivePass
      */
     public function getAutowiringExceptions()
     {
-        @trigger_error('Calling AutowirePass::getAutowiringExceptions() is deprecated since Symfony 3.4 and will be removed in 4.0. Use Definition::getErrors() instead.', \E_USER_DEPRECATED);
+        @trigger_error('Calling AutowirePass::getAutowiringExceptions() is deprecated since Symfony 3.4 and will be removed in 4.0. Use Definition::getErrors() instead.', E_USER_DEPRECATED);
 
         return $this->autowiringExceptions;
     }
@@ -79,13 +79,15 @@ class AutowirePass extends AbstractRecursivePass
     /**
      * Creates a resource to help know if this service has changed.
      *
+     * @param \ReflectionClass $reflectionClass
+     *
      * @return AutowireServiceResource
      *
      * @deprecated since version 3.3, to be removed in 4.0. Use ContainerBuilder::getReflectionClass() instead.
      */
     public static function createResourceForClass(\ReflectionClass $reflectionClass)
     {
-        @trigger_error('The '.__METHOD__.'() method is deprecated since Symfony 3.3 and will be removed in 4.0. Use ContainerBuilder::getReflectionClass() instead.', \E_USER_DEPRECATED);
+        @trigger_error('The '.__METHOD__.'() method is deprecated since Symfony 3.3 and will be removed in 4.0. Use ContainerBuilder::getReflectionClass() instead.', E_USER_DEPRECATED);
 
         $metadata = [];
 
@@ -166,6 +168,9 @@ class AutowirePass extends AbstractRecursivePass
     }
 
     /**
+     * @param \ReflectionClass $reflectionClass
+     * @param array            $methodCalls
+     *
      * @return array
      */
     private function autowireCalls(\ReflectionClass $reflectionClass, array $methodCalls)
@@ -199,6 +204,9 @@ class AutowirePass extends AbstractRecursivePass
 
     /**
      * Autowires the constructor or a method.
+     *
+     * @param \ReflectionFunctionAbstract $reflectionMethod
+     * @param array                       $arguments
      *
      * @return array The autowired arguments
      *
@@ -304,13 +312,13 @@ class AutowirePass extends AbstractRecursivePass
                 $message .= sprintf(' You should %s the "%s" service to "%s" instead.', isset($this->types[$this->types[$type]]) ? 'alias' : 'rename (or alias)', $this->types[$type], $type);
             }
 
-            @trigger_error($message, \E_USER_DEPRECATED);
+            @trigger_error($message, E_USER_DEPRECATED);
 
             return new TypedReference($this->types[$type], $type);
         }
 
         if (!$reference->canBeAutoregistered() || isset($this->types[$type]) || isset($this->ambiguousServiceTypes[$type])) {
-            return null;
+            return;
         }
 
         if (isset($this->autowired[$type])) {
@@ -320,8 +328,6 @@ class AutowirePass extends AbstractRecursivePass
         if (!$this->strictMode) {
             return $this->createAutowiredDefinition($type);
         }
-
-        return null;
     }
 
     /**
@@ -342,7 +348,8 @@ class AutowirePass extends AbstractRecursivePass
     /**
      * Populates the list of available types for a given definition.
      *
-     * @param string $id
+     * @param string     $id
+     * @param Definition $definition
      */
     private function populateAvailableType($id, Definition $definition, $onlyAutowiringTypes)
     {
@@ -418,7 +425,7 @@ class AutowirePass extends AbstractRecursivePass
     private function createAutowiredDefinition($type)
     {
         if (!($typeHint = $this->container->getReflectionClass($type, false)) || !$typeHint->isInstantiable()) {
-            return null;
+            return;
         }
 
         $currentId = $this->currentId;
@@ -438,13 +445,13 @@ class AutowirePass extends AbstractRecursivePass
             $this->lastFailure = $e->getMessage();
             $this->container->log($this, $this->lastFailure);
 
-            return null;
+            return;
         } finally {
             $this->throwOnAutowiringException = $originalThrowSetting;
             $this->currentId = $currentId;
         }
 
-        @trigger_error(sprintf('Relying on service auto-registration for type "%s" is deprecated since Symfony 3.4 and won\'t be supported in 4.0. Create a service named "%s" instead.', $type, $type), \E_USER_DEPRECATED);
+        @trigger_error(sprintf('Relying on service auto-registration for type "%s" is deprecated since Symfony 3.4 and won\'t be supported in 4.0. Create a service named "%s" instead.', $type, $type), E_USER_DEPRECATED);
 
         $this->container->log($this, sprintf('Type "%s" has been auto-registered for service "%s".', $type, $this->currentId));
 
@@ -511,7 +518,7 @@ class AutowirePass extends AbstractRecursivePass
         } elseif ($reference->getRequiringClass() && !$reference->canBeAutoregistered() && !$this->strictMode) {
             return ' It cannot be auto-registered because it is from a different root namespace.';
         } else {
-            return '';
+            return;
         }
 
         return sprintf(' You should maybe alias this %s to %s.', class_exists($type, false) ? 'class' : 'interface', $message);
@@ -525,16 +532,7 @@ class AutowirePass extends AbstractRecursivePass
         $methodArgumentsMetadata = [];
         foreach ($method->getParameters() as $parameter) {
             try {
-                if (method_exists($parameter, 'getType')) {
-                    $type = $parameter->getType();
-                    if ($type && !$type->isBuiltin()) {
-                        $class = new \ReflectionClass($type instanceof \ReflectionNamedType ? $type->getName() : (string) $type);
-                    } else {
-                        $class = null;
-                    }
-                } else {
-                    $class = $parameter->getClass();
-                }
+                $class = $parameter->getClass();
             } catch (\ReflectionException $e) {
                 // type-hint is against a non-existent class
                 $class = false;
@@ -574,7 +572,5 @@ class AutowirePass extends AbstractRecursivePass
         if ($aliases) {
             return sprintf('Try changing the type-hint%s to "%s" instead.', $extraContext, $aliases[0]);
         }
-
-        return null;
     }
 }

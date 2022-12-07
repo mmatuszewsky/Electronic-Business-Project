@@ -86,13 +86,7 @@ class GetAttrNode extends Node
                     throw new \RuntimeException(sprintf('Unable to call method "%s" of object "%s".', $this->nodes['attribute']->attributes['value'], \get_class($obj)));
                 }
 
-                $arguments = $this->nodes['arguments']->evaluate($functions, $values);
-
-                if (\PHP_VERSION_ID >= 80000) {
-                    $arguments = array_values($arguments);
-                }
-
-                return \call_user_func_array($toCall, $arguments);
+                return \call_user_func_array($toCall, $this->nodes['arguments']->evaluate($functions, $values));
 
             case self::ARRAY_CALL:
                 $array = $this->nodes['node']->evaluate($functions, $values);

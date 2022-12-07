@@ -19,8 +19,6 @@
 
 namespace Doctrine\ORM\Query;
 
-use function trim;
-
 /**
  * Defines a Query Parameter.
  *
@@ -30,18 +28,6 @@ use function trim;
  */
 class Parameter
 {
-    /**
-     * Returns the internal representation of a parameter name.
-     *
-     * @param string|int $name The parameter name or position.
-     *
-     * @return string The normalized parameter name.
-     */
-    public static function normalizeName($name)
-    {
-        return trim((string) $name, ':');
-    }
-
     /**
      * The parameter name.
      *
@@ -64,13 +50,6 @@ class Parameter
     private $type;
 
     /**
-     * Whether the parameter type was explicitly specified or not
-     *
-     * @var bool
-     */
-    private $typeSpecified;
-
-    /**
      * Constructor.
      *
      * @param string $name  Parameter name
@@ -79,8 +58,7 @@ class Parameter
      */
     public function __construct($name, $value, $type = null)
     {
-        $this->name          = self::normalizeName($name);
-        $this->typeSpecified = $type !== null;
+        $this->name = trim($name, ':');
 
         $this->setValue($value, $type);
     }
@@ -125,10 +103,5 @@ class Parameter
     {
         $this->value = $value;
         $this->type  = $type ?: ParameterTypeInferer::inferType($value);
-    }
-
-    public function typeWasSpecified() : bool
-    {
-        return $this->typeSpecified;
     }
 }

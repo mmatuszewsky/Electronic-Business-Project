@@ -27,7 +27,7 @@ class TemplateLocatorTest extends TestCase
             ->expects($this->once())
             ->method('locate')
             ->with($template->getPath())
-            ->willReturn('/path/to/template')
+            ->will($this->returnValue('/path/to/template'))
         ;
 
         $locator = new TemplateLocator($fileLocator);
@@ -69,7 +69,7 @@ class TemplateLocatorTest extends TestCase
             $locator->locate($template);
             $this->fail('->locate() should throw an exception when the file is not found.');
         } catch (\InvalidArgumentException $e) {
-            $this->assertStringContainsString(
+            $this->assertContains(
                 $errorMessage,
                 $e->getMessage(),
                 'TemplateLocator exception should propagate the FileLocator exception message'
@@ -77,9 +77,11 @@ class TemplateLocatorTest extends TestCase
         }
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testThrowsAnExceptionWhenTemplateIsNotATemplateReferenceInterface()
     {
-        $this->expectException('InvalidArgumentException');
         $locator = new TemplateLocator($this->getFileLocator());
         $locator->locate('template');
     }

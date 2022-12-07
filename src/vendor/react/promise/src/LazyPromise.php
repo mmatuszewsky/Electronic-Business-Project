@@ -2,9 +2,6 @@
 
 namespace React\Promise;
 
-/**
- * @deprecated 2.8.0 LazyPromise is deprecated and should not be used anymore.
- */
 class LazyPromise implements ExtendedPromiseInterface, CancellablePromiseInterface
 {
     private $factory;

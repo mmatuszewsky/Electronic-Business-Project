@@ -128,7 +128,7 @@ class TreeBuilderTest extends TestCase
         $tree = $builder->buildTree();
         $children = $tree->getChildren();
 
-        $this->assertIsArray($tree->getExample());
+        $this->assertInternalType('array', $tree->getExample());
         $this->assertEquals('example', $children['child']->getExample());
     }
 }

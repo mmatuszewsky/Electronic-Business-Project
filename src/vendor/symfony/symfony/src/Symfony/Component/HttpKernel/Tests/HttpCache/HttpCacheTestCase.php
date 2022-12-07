@@ -91,7 +91,7 @@ class HttpCacheTestCase extends TestCase
         $traces = $this->cache->getTraces();
         $traces = current($traces);
 
-        $this->assertMatchesRegularExpression('/'.$trace.'/', implode(', ', $traces));
+        $this->assertRegExp('/'.$trace.'/', implode(', ', $traces));
     }
 
     public function assertTraceNotContains($trace)
@@ -99,7 +99,7 @@ class HttpCacheTestCase extends TestCase
         $traces = $this->cache->getTraces();
         $traces = current($traces);
 
-        $this->assertDoesNotMatchRegularExpression('/'.$trace.'/', implode(', ', $traces));
+        $this->assertNotRegExp('/'.$trace.'/', implode(', ', $traces));
     }
 
     public function assertExceptionsAreCaught()

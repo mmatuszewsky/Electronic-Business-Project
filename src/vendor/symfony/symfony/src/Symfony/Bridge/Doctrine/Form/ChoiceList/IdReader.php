@@ -11,10 +11,8 @@
 
 namespace Symfony\Bridge\Doctrine\Form\ChoiceList;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as LegacyClassMetadata;
-use Doctrine\Common\Persistence\ObjectManager as LegacyObjectManager;
-use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Form\Exception\RuntimeException;
 
 /**
@@ -37,11 +35,7 @@ class IdReader
      */
     private $associationIdReader;
 
-    /**
-     * @param ObjectManager|LegacyObjectManager $om
-     * @param ClassMetadata|LegacyClassMetadata $classMetadata
-     */
-    public function __construct($om, $classMetadata)
+    public function __construct(ObjectManager $om, ClassMetadata $classMetadata)
     {
         $ids = $classMetadata->getIdentifierFieldNames();
         $idType = $classMetadata->getTypeOfField(current($ids));
@@ -97,7 +91,7 @@ class IdReader
     public function getIdValue($object)
     {
         if (!$object) {
-            return null;
+            return;
         }
 
         if (!$this->om->contains($object)) {

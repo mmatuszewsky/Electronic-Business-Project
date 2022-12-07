@@ -52,12 +52,11 @@ class FormHelperDivLayoutTest extends AbstractDivLayoutTest
         ]);
     }
 
-    /**
-     * @after
-     */
-    public function doTearDown()
+    protected function tearDown()
     {
         $this->engine = null;
+
+        parent::tearDown();
     }
 
     public function testStartTagHasNoActionAttributeWhenActionIsEmpty()

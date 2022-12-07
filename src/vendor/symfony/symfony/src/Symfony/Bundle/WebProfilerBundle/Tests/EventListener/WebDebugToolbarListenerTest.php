@@ -58,7 +58,7 @@ class WebDebugToolbarListenerTest extends TestCase
     /**
      * @dataProvider provideRedirects
      */
-    public function testHtmlRedirectionIsIntercepted($statusCode, $hasSession)
+    public function testRedirectionIsIntercepted($statusCode, $hasSession)
     {
         $response = new Response('Some content', $statusCode);
         $response->headers->set('X-Debug-Token', 'xxxxxxxx');
@@ -69,19 +69,6 @@ class WebDebugToolbarListenerTest extends TestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('Redirection', $response->getContent());
-    }
-
-    public function testNonHtmlRedirectionIsNotIntercepted()
-    {
-        $response = new Response('Some content', '301');
-        $response->headers->set('X-Debug-Token', 'xxxxxxxx');
-        $event = new FilterResponseEvent($this->getKernelMock(), $this->getRequestMock(false, 'json', true), HttpKernelInterface::MASTER_REQUEST, $response);
-
-        $listener = new WebDebugToolbarListener($this->getTwigMock('Redirection'), true);
-        $listener->onKernelResponse($event);
-
-        $this->assertEquals(301, $response->getStatusCode());
-        $this->assertEquals('Some content', $response->getContent());
     }
 
     public function testToolbarIsInjected()
@@ -244,7 +231,7 @@ class WebDebugToolbarListenerTest extends TestCase
             ->expects($this->once())
             ->method('generate')
             ->with('_profiler', ['token' => 'xxxxxxxx'], UrlGeneratorInterface::ABSOLUTE_URL)
-            ->willReturn('http://mydomain.com/_profiler/xxxxxxxx')
+            ->will($this->returnValue('http://mydomain.com/_profiler/xxxxxxxx'))
         ;
 
         $event = new FilterResponseEvent($this->getKernelMock(), $this->getRequestMock(), HttpKernelInterface::MASTER_REQUEST, $response);
@@ -302,10 +289,10 @@ class WebDebugToolbarListenerTest extends TestCase
         $request = $this->getMockBuilder('Symfony\Component\HttpFoundation\Request')->setMethods(['getSession', 'isXmlHttpRequest', 'getRequestFormat'])->disableOriginalConstructor()->getMock();
         $request->expects($this->any())
             ->method('isXmlHttpRequest')
-            ->willReturn($isXmlHttpRequest);
+            ->will($this->returnValue($isXmlHttpRequest));
         $request->expects($this->any())
             ->method('getRequestFormat')
-            ->willReturn($requestFormat);
+            ->will($this->returnValue($requestFormat));
 
         $request->headers = new HeaderBag();
 
@@ -313,7 +300,7 @@ class WebDebugToolbarListenerTest extends TestCase
             $session = $this->getMockBuilder('Symfony\Component\HttpFoundation\Session\Session')->disableOriginalConstructor()->getMock();
             $request->expects($this->any())
                 ->method('getSession')
-                ->willReturn($session);
+                ->will($this->returnValue($session));
         }
 
         return $request;
@@ -324,7 +311,7 @@ class WebDebugToolbarListenerTest extends TestCase
         $templating = $this->getMockBuilder('Twig\Environment')->disableOriginalConstructor()->getMock();
         $templating->expects($this->any())
             ->method('render')
-            ->willReturn($render);
+            ->will($this->returnValue($render));
 
         return $templating;
     }

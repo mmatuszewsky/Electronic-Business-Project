@@ -33,7 +33,7 @@ class SimpleArithmeticExpression extends Node
     /**
      * @var array
      */
-    public $arithmeticTerms = [];
+    public $arithmeticTerms = array();
 
     /**
      * @param array $arithmeticTerms

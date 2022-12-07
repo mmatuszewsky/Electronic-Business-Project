@@ -68,13 +68,13 @@ class TemplatePathsCacheWarmerTest extends TestCase
         $this->templateFinder
             ->expects($this->once())
             ->method('findAllTemplates')
-            ->willReturn([$template]);
+            ->will($this->returnValue([$template]));
 
         $this->fileLocator
             ->expects($this->once())
             ->method('locate')
             ->with($template->getPath())
-            ->willReturn(\dirname($this->tmpDir).'/path/to/template.html.twig');
+            ->will($this->returnValue(\dirname($this->tmpDir).'/path/to/template.html.twig'));
 
         $warmer = new TemplatePathsCacheWarmer($this->templateFinder, $this->templateLocator);
         $warmer->warmUp($this->tmpDir);
@@ -87,7 +87,7 @@ class TemplatePathsCacheWarmerTest extends TestCase
         $this->templateFinder
             ->expects($this->once())
             ->method('findAllTemplates')
-            ->willReturn([]);
+            ->will($this->returnValue([]));
 
         $this->fileLocator
             ->expects($this->never())

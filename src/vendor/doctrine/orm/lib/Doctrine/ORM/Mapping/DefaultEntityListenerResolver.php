@@ -30,10 +30,8 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
 {
     /**
      * @var array Map to store entity listener instances.
-     *
-     * @psalm-var array<class-string, object>
      */
-    private $instances = [];
+    private $instances = array();
 
     /**
      * {@inheritdoc}
@@ -41,7 +39,7 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
     public function clear($className = null)
     {
         if ($className === null) {
-            $this->instances = [];
+            $this->instances = array();
 
             return;
         }

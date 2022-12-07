@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.42",
     "Names": {
         "ADP": [
             "ADP",
@@ -15,6 +16,10 @@
         "AFN": [
             "AFN",
             "Afghani Afghanistan"
+        ],
+        "ALK": [
+            "ALK",
+            "ALK"
         ],
         "ALL": [
             "ALL",
@@ -260,6 +265,10 @@
             "CNH",
             "Nhân dân tệ (hải ngoại)"
         ],
+        "CNX": [
+            "CNX",
+            "CNX"
+        ],
         "CNY": [
             "CN¥",
             "Nhân dân tệ"
@@ -394,7 +403,7 @@
         ],
         "GEL": [
             "GEL",
-            "Lari Georgia"
+            "Lari Gruzia"
         ],
         "GHC": [
             "GHC",
@@ -480,6 +489,10 @@
             "ILP",
             "Pao Ixraen"
         ],
+        "ILR": [
+            "ILR",
+            "ILR"
+        ],
         "ILS": [
             "₪",
             "Sheqel Israel mới"
@@ -490,11 +503,15 @@
         ],
         "IQD": [
             "IQD",
-            "Dinar Iraq"
+            "Dinar I-rắc"
         ],
         "IRR": [
             "IRR",
             "Rial Iran"
+        ],
+        "ISJ": [
+            "ISJ",
+            "ISJ"
         ],
         "ISK": [
             "ISK",
@@ -684,6 +701,10 @@
             "MUR",
             "Rupee Mauritius"
         ],
+        "MVP": [
+            "MVP",
+            "MVP"
+        ],
         "MVR": [
             "MVR",
             "Rufiyaa Maldives"
@@ -774,7 +795,7 @@
         ],
         "PGK": [
             "PGK",
-            "Kina Papua New Guinea"
+            "Kina Papua New Guinean"
         ],
         "PHP": [
             "PHP",
@@ -974,7 +995,7 @@
         ],
         "UAH": [
             "UAH",
-            "Hryvnia Ukraina"
+            "Hryvnia Ucraina"
         ],
         "UAK": [
             "UAK",
@@ -1011,6 +1032,10 @@
         "UYU": [
             "UYU",
             "Peso Uruguay"
+        ],
+        "UYW": [
+            "UYW",
+            "UYW"
         ],
         "UZS": [
             "UZS",

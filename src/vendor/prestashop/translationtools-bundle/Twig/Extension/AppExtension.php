@@ -3,8 +3,8 @@
 namespace PrestaShop\TranslationToolsBundle\Twig\Extension;
 
 use Symfony\Component\Translation\TranslatorInterface;
-use Twig_Environment;
-use Twig_Extension_InitRuntimeInterface;
+use \Twig_Extension_InitRuntimeInterface;
+use \Twig_Environment;
 
 class AppExtension extends \Twig_Extension implements Twig_Extension_InitRuntimeInterface
 {
@@ -15,6 +15,8 @@ class AppExtension extends \Twig_Extension implements Twig_Extension_InitRuntime
 
     /**
      * AppExtension constructor.
+     *
+     * @param TranslatorInterface $translation
      */
     public function __construct(TranslatorInterface $translation)
     {
@@ -27,7 +29,7 @@ class AppExtension extends \Twig_Extension implements Twig_Extension_InitRuntime
             return;
         });
 
-        $environment->registerUndefinedFilterCallback(function () {
+        $environment->registerUndefinedFilterCallback(function() {
             return;
         });
     }
@@ -38,9 +40,9 @@ class AppExtension extends \Twig_Extension implements Twig_Extension_InitRuntime
      */
     public function getFunctions()
     {
-        return [
-            new \Twig_SimpleFunction('renderhooksarray', [$this, 'transChoice']),
-        ];
+        return array(
+            new \Twig_SimpleFunction('renderhooksarray', array($this, 'transChoice')),
+        );
     }
 
     /**

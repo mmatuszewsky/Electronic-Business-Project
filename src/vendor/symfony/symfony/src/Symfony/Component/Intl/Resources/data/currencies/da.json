@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.17",
     "Names": {
         "ADP": [
             "ADP",
@@ -402,7 +403,7 @@
         ],
         "HKD": [
             "HK$",
-            "hongkongsk dollar"
+            "Hongkong dollar"
         ],
         "HNL": [
             "HNL",
@@ -917,7 +918,7 @@
             "ugandisk shilling"
         ],
         "USD": [
-            "US$",
+            "$",
             "amerikansk dollar"
         ],
         "USN": [

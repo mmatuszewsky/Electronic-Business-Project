@@ -81,9 +81,7 @@ class LogarithmicBestFit extends BestFit
      */
     public function __construct($yValues, $xValues = [], $const = true)
     {
-        parent::__construct($yValues, $xValues);
-
-        if (!$this->error) {
+        if (parent::__construct($yValues, $xValues) !== false) {
             $this->logarithmicRegression($yValues, $xValues, $const);
         }
     }

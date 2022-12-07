@@ -2,20 +2,20 @@
 
 namespace PrestaShop\TranslationToolsBundle\Twig\NodeVisitor;
 
-use Symfony\Bridge\Twig\Node\TransNode;
 use Symfony\Bridge\Twig\NodeVisitor\TranslationNodeVisitor as BaseTranslationNodeVisitor;
+use Symfony\Bridge\Twig\Node\TransNode;
 
 class TranslationNodeVisitor extends BaseTranslationNodeVisitor
 {
     const UNDEFINED_DOMAIN = '_undefined';
 
     private $enabled = true;
-    private $messages = [];
+    private $messages = array();
 
     public function enable()
     {
         $this->enabled = true;
-        $this->messages = [];
+        $this->messages = array();
     }
 
     public function getMessages()
@@ -38,36 +38,37 @@ class TranslationNodeVisitor extends BaseTranslationNodeVisitor
             $node->getNode('node') instanceof \Twig_Node_Expression_Constant
         ) {
             // extract constant nodes with a trans filter
-            $this->messages[] = [
+            $this->messages[] = array(
                 $node->getNode('node')->getAttribute('value'),
                 $this->getReadDomainFromArguments($node->getNode('arguments'), 1),
                 'line' => $node->getTemplateLine(),
-            ];
+            );
         } elseif (
             $node instanceof \Twig_Node_Expression_Filter &&
             'transchoice' === $node->getNode('filter')->getAttribute('value') &&
             $node->getNode('node') instanceof \Twig_Node_Expression_Constant
         ) {
             // extract constant nodes with a trans filter
-            $this->messages[] = [
+            $this->messages[] = array(
                 $node->getNode('node')->getAttribute('value'),
                 $this->getReadDomainFromArguments($node->getNode('arguments'), 2),
                 'line' => $node->getTemplateLine(),
-            ];
+            );
         } elseif ($node instanceof TransNode) {
             // extract trans nodes
-            $this->messages[] = [
+            $this->messages[] = array(
                 $node->getNode('body')->getAttribute('data'),
                 $this->getReadDomainFromNode($node->getNode('domain')),
                 'line' => $node->getTemplateLine(),
-            ];
+            );
         }
 
         return $node;
     }
 
     /**
-     * @param int $index
+     * @param \Twig_Node $arguments
+     * @param int        $index
      *
      * @return string|null
      */

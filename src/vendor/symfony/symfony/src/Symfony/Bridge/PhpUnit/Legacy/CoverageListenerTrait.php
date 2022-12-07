@@ -13,7 +13,6 @@ namespace Symfony\Bridge\PhpUnit\Legacy;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Warning;
-use PHPUnit\Util\Annotation\Registry;
 
 /**
  * PHP 5.3 compatible trait-like shared implementation.
@@ -71,48 +70,16 @@ class CoverageListenerTrait
             $testClass = \PHPUnit_Util_Test::class;
         }
 
-        $covers = $sutFqcn;
-        if (!\is_array($sutFqcn)) {
-            $covers = array($sutFqcn);
-            while ($parent = get_parent_class($sutFqcn)) {
-                $covers[] = $parent;
-                $sutFqcn = $parent;
-            }
-        }
-
-        if (class_exists(Registry::class)) {
-            $this->addCoversForDocBlockInsideRegistry($test, $covers);
-
-            return;
-        }
-
-        $this->addCoversForClassToAnnotationCache($testClass, $test, $covers);
-    }
-
-    private function addCoversForClassToAnnotationCache($testClass, $test, $covers)
-    {
         $r = new \ReflectionProperty($testClass, 'annotationCache');
         $r->setAccessible(true);
 
         $cache = $r->getValue();
         $cache = array_replace_recursive($cache, array(
             \get_class($test) => array(
-                'covers' => $covers,
+                'covers' => array($sutFqcn),
             ),
         ));
         $r->setValue($testClass, $cache);
-    }
-
-    private function addCoversForDocBlockInsideRegistry($test, $covers)
-    {
-        $docBlock = Registry::getInstance()->forClassName(\get_class($test));
-
-        $symbolAnnotations = new \ReflectionProperty($docBlock, 'symbolAnnotations');
-        $symbolAnnotations->setAccessible(true);
-
-        $symbolAnnotations->setValue($docBlock, array_replace($docBlock->symbolAnnotations(), array(
-            'covers' => $covers,
-        )));
     }
 
     private function findSutFqcn($test)
@@ -128,7 +95,11 @@ class CoverageListenerTrait
         $sutFqcn = str_replace('\\Tests\\', '\\', $class);
         $sutFqcn = preg_replace('{Test$}', '', $sutFqcn);
 
-        return class_exists($sutFqcn) ? $sutFqcn : null;
+        if (!class_exists($sutFqcn)) {
+            return;
+        }
+
+        return $sutFqcn;
     }
 
     public function __destruct()

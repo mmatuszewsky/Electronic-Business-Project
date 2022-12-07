@@ -66,7 +66,7 @@ class Client extends BaseClient
      */
     public function getProfile()
     {
-        if (null === $this->response || !$this->kernel->getContainer()->has('profiler')) {
+        if (!$this->kernel->getContainer()->has('profiler')) {
             return false;
         }
 

@@ -23,7 +23,7 @@ class MemcachedAdapterTest extends AdapterTestCase
 
     protected static $client;
 
-    public static function setUpBeforeClass()
+    public static function setupBeforeClass()
     {
         if (!MemcachedAdapter::isSupported()) {
             self::markTestSkipped('Extension memcached >=2.2.0 required.');
@@ -63,17 +63,11 @@ class MemcachedAdapterTest extends AdapterTestCase
 
     /**
      * @dataProvider provideBadOptions
+     * @expectedException \ErrorException
+     * @expectedExceptionMessage constant(): Couldn't find constant Memcached::
      */
     public function testBadOptions($name, $value)
     {
-        if (\PHP_VERSION_ID < 80000) {
-            $this->expectException('ErrorException');
-            $this->expectExceptionMessage('constant(): Couldn\'t find constant Memcached::');
-        } else {
-            $this->expectException('Error');
-            $this->expectExceptionMessage('Undefined constant Memcached::');
-        }
-
         MemcachedAdapter::createConnection([], [$name => $value]);
     }
 
@@ -99,10 +93,12 @@ class MemcachedAdapterTest extends AdapterTestCase
         $this->assertSame(1, $client->getOption(\Memcached::OPT_LIBKETAMA_COMPATIBLE));
     }
 
+    /**
+     * @expectedException \Symfony\Component\Cache\Exception\CacheException
+     * @expectedExceptionMessage MemcachedAdapter: "serializer" option must be "php" or "igbinary".
+     */
     public function testOptionSerializer()
     {
-        $this->expectException('Symfony\Component\Cache\Exception\CacheException');
-        $this->expectExceptionMessage('MemcachedAdapter: "serializer" option must be "php" or "igbinary".');
         if (!\Memcached::HAVE_JSON) {
             $this->markTestSkipped('Memcached::HAVE_JSON required');
         }
@@ -141,7 +137,7 @@ class MemcachedAdapterTest extends AdapterTestCase
             'localhost',
             11222,
         ];
-        if (filter_var(ini_get('memcached.use_sasl'), \FILTER_VALIDATE_BOOLEAN)) {
+        if (filter_var(ini_get('memcached.use_sasl'), FILTER_VALIDATE_BOOLEAN)) {
             yield [
                 'memcached://user:password@127.0.0.1?weight=50',
                 '127.0.0.1',
@@ -158,7 +154,7 @@ class MemcachedAdapterTest extends AdapterTestCase
             '/var/local/run/memcached.socket',
             0,
         ];
-        if (filter_var(ini_get('memcached.use_sasl'), \FILTER_VALIDATE_BOOLEAN)) {
+        if (filter_var(ini_get('memcached.use_sasl'), FILTER_VALIDATE_BOOLEAN)) {
             yield [
                 'memcached://user:password@/var/local/run/memcached.socket?weight=25',
                 '/var/local/run/memcached.socket',

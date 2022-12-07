@@ -11,8 +11,7 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Controller;
 
-use Doctrine\Common\Persistence\ManagerRegistry as LegacyManagerRegistry;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\ServiceSubscriberInterface;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -64,7 +63,7 @@ abstract class AbstractController implements ServiceSubscriberInterface
             'security.authorization_checker' => '?'.AuthorizationCheckerInterface::class,
             'templating' => '?'.EngineInterface::class,
             'twig' => '?'.Environment::class,
-            'doctrine' => '?'.(interface_exists(ManagerRegistry::class) ? ManagerRegistry::class : LegacyManagerRegistry::class),
+            'doctrine' => '?'.ManagerRegistry::class,
             'form.factory' => '?'.FormFactoryInterface::class,
             'security.token_storage' => '?'.TokenStorageInterface::class,
             'security.csrf.token_manager' => '?'.CsrfTokenManagerInterface::class,

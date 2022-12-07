@@ -176,7 +176,7 @@ class DateIntervalToArrayTransformerTest extends DateIntervalTestCase
     {
         $transformer = new DateIntervalToArrayTransformer();
         $this->assertNull($transformer->reverseTransform(null));
-        $this->expectException(UnexpectedTypeException::class);
+        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}(UnexpectedTypeException::class);
         $transformer->reverseTransform('12345');
     }
 
@@ -184,7 +184,7 @@ class DateIntervalToArrayTransformerTest extends DateIntervalTestCase
     {
         $transformer = new DateIntervalToArrayTransformer();
         $input = ['years' => '1'];
-        $this->expectException(TransformationFailedException::class);
+        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}(TransformationFailedException::class);
         $transformer->reverseTransform($input);
     }
 
@@ -196,8 +196,12 @@ class DateIntervalToArrayTransformerTest extends DateIntervalTestCase
             'minutes' => '',
             'seconds' => '6',
         ];
-        $this->expectException(TransformationFailedException::class);
-        $this->expectExceptionMessage('This amount of "minutes" is invalid');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException(TransformationFailedException::class);
+            $this->expectExceptionMessage('This amount of "minutes" is invalid');
+        } else {
+            $this->setExpectedException(TransformationFailedException::class, 'This amount of "minutes" is invalid');
+        }
         $transformer->reverseTransform($input);
     }
 
@@ -207,8 +211,12 @@ class DateIntervalToArrayTransformerTest extends DateIntervalTestCase
         $input = [
             'invert' => '1',
         ];
-        $this->expectException(TransformationFailedException::class);
-        $this->expectExceptionMessage('The value of "invert" must be boolean');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException(TransformationFailedException::class);
+            $this->expectExceptionMessage('The value of "invert" must be boolean');
+        } else {
+            $this->setExpectedException(TransformationFailedException::class, 'The value of "invert" must be boolean');
+        }
         $transformer->reverseTransform($input);
     }
 

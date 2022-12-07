@@ -25,7 +25,9 @@ interface ResolvedFormTypeFactoryInterface
     /**
      * Resolves a form type.
      *
-     * @param FormTypeExtensionInterface[] $typeExtensions
+     * @param FormTypeInterface              $type
+     * @param FormTypeExtensionInterface[]   $typeExtensions
+     * @param ResolvedFormTypeInterface|null $parent
      *
      * @return ResolvedFormTypeInterface
      *

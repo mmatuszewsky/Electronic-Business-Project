@@ -97,7 +97,7 @@ class NamespacedAttributeBag extends AttributeBag
      * @param string $name         Key name
      * @param bool   $writeContext Write context, default false
      *
-     * @return array|null
+     * @return array
      */
     protected function &resolveAttributePath($name, $writeContext = false)
     {

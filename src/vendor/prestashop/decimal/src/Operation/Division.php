@@ -9,7 +9,7 @@
 namespace PrestaShop\Decimal\Operation;
 
 use PrestaShop\Decimal\Exception\DivisionByZeroException;
-use PrestaShop\Decimal\DecimalNumber;
+use PrestaShop\Decimal\Number as DecimalNumber;
 
 /**
  * Computes the division between two decimal numbers.

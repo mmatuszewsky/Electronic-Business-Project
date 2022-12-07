@@ -35,7 +35,7 @@ use Symfony\Component\Security\Acl\Permission\BasicPermissionMap;
  * @requires extension pdo_sqlite
  * @group legacy
  */
-class SetAclCommandTest extends AbstractWebTestCase
+class SetAclCommandTest extends WebTestCase
 {
     const OBJECT_CLASS = 'Symfony\Bundle\SecurityBundle\Tests\Functional\Bundle\AclBundle\Entity\Car';
     const SECURITY_CLASS = 'Symfony\Component\Security\Core\User\User';
@@ -74,13 +74,13 @@ class SetAclCommandTest extends AbstractWebTestCase
 
         try {
             $acl->isGranted($permissionMap->getMasks('OWNER', null), [$securityIdentity1]);
-            $this->fail('NoAceFoundException not thrown');
+            $this->fail('NoAceFoundException not throwed');
         } catch (NoAceFoundException $e) {
         }
 
         try {
             $acl->isGranted($permissionMap->getMasks('OPERATOR', null), [$securityIdentity2]);
-            $this->fail('NoAceFoundException not thrown');
+            $this->fail('NoAceFoundException not throwed');
         } catch (NoAceFoundException $e) {
         }
     }
@@ -117,13 +117,13 @@ class SetAclCommandTest extends AbstractWebTestCase
 
         try {
             $acl->isGranted($permissionMap->getMasks('VIEW', null), [$userSecurityIdentity]);
-            $this->fail('NoAceFoundException not thrown');
+            $this->fail('NoAceFoundException not throwed');
         } catch (NoAceFoundException $e) {
         }
 
         try {
             $acl->isGranted($permissionMap->getMasks('OPERATOR', null), [$userSecurityIdentity]);
-            $this->fail('NoAceFoundException not thrown');
+            $this->fail('NoAceFoundException not throwed');
         } catch (NoAceFoundException $e) {
         }
     }

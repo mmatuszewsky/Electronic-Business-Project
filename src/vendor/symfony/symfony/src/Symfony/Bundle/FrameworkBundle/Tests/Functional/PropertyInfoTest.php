@@ -13,7 +13,7 @@ namespace Symfony\Bundle\FrameworkBundle\Tests\Functional;
 
 use Symfony\Component\PropertyInfo\Type;
 
-class PropertyInfoTest extends AbstractWebTestCase
+class PropertyInfoTest extends WebTestCase
 {
     public function testPhpDocPriority()
     {

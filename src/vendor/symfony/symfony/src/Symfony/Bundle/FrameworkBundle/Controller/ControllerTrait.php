@@ -11,8 +11,7 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Controller;
 
-use Doctrine\Common\Persistence\ManagerRegistry as LegacyManagerRegistry;
-use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -27,7 +26,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 
 /**
@@ -187,7 +185,7 @@ trait ControllerTrait
      * Adds a flash message to the current session for type.
      *
      * @param string $type    The type
-     * @param mixed  $message The message
+     * @param string $message The message
      *
      * @throws \LogicException
      *
@@ -415,7 +413,7 @@ trait ControllerTrait
     /**
      * Shortcut to return the Doctrine Registry service.
      *
-     * @return ManagerRegistry|LegacyManagerRegistry
+     * @return ManagerRegistry
      *
      * @throws \LogicException If DoctrineBundle is not available
      *
@@ -433,7 +431,7 @@ trait ControllerTrait
     /**
      * Get a user from the Security Token Storage.
      *
-     * @return UserInterface|object|null
+     * @return mixed
      *
      * @throws \LogicException If SecurityBundle is not available
      *
@@ -448,12 +446,12 @@ trait ControllerTrait
         }
 
         if (null === $token = $this->container->get('security.token_storage')->getToken()) {
-            return null;
+            return;
         }
 
         if (!\is_object($user = $token->getUser())) {
             // e.g. anonymous authentication
-            return null;
+            return;
         }
 
         return $user;

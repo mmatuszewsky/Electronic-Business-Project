@@ -19,8 +19,6 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\Query\AST\PathExpression;
-
 /**
  * Description of QueryException.
  *
@@ -206,15 +204,13 @@ class QueryException extends \Doctrine\ORM\ORMException
     }
 
     /**
-     * @param PathExpression $pathExpr
-     *
      * @return QueryException
      */
-    public static function associationPathInverseSideNotSupported(PathExpression $pathExpr)
+    public static function associationPathInverseSideNotSupported()
     {
         return new self(
-            'A single-valued association path expression to an inverse side is not supported in DQL queries. ' .
-            'Instead of "' . $pathExpr->identificationVariable . '.' . $pathExpr->field . '" use an explicit join.'
+            "A single-valued association path expression to an inverse side is not supported".
+            " in DQL queries. Use an explicit join instead."
         );
     }
 
@@ -252,7 +248,7 @@ class QueryException extends \Doctrine\ORM\ORMException
     public static function instanceOfUnrelatedClass($className, $rootClass)
     {
         return new self("Cannot check if a child of '" . $rootClass . "' is instanceof '" . $className . "', " .
-            "inheritance hierarchy does not exists between these two classes.");
+                "inheritance hierarchy does not exists between these two classes.");
     }
 
     /**

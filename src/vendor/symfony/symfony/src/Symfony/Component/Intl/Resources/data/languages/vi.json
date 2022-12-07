@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.42",
     "Names": {
         "aa": "Tiếng Afar",
         "ab": "Tiếng Abkhazia",
@@ -153,7 +154,6 @@
         "ewo": "Tiếng Ewondo",
         "ext": "Tiếng Extremadura",
         "fa": "Tiếng Ba Tư",
-        "fa_AF": "Tiếng Dari",
         "fan": "Tiếng Fang",
         "fat": "Tiếng Fanti",
         "ff": "Tiếng Fulah",
@@ -515,7 +515,7 @@
         "udm": "Tiếng Udmurt",
         "ug": "Tiếng Uyghur",
         "uga": "Tiếng Ugaritic",
-        "uk": "Tiếng Ukraina",
+        "uk": "Tiếng Ucraina",
         "umb": "Tiếng Umbundu",
         "und": "Ngôn ngữ không xác định",
         "ur": "Tiếng Urdu",

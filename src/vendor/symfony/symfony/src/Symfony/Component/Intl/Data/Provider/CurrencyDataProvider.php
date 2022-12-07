@@ -13,6 +13,7 @@ namespace Symfony\Component\Intl\Data\Provider;
 
 use Symfony\Component\Intl\Data\Bundle\Reader\BundleEntryReaderInterface;
 use Symfony\Component\Intl\Exception\MissingResourceException;
+use Symfony\Component\Intl\Locale;
 
 /**
  * Data provider for currency-related data.
@@ -52,7 +53,7 @@ class CurrencyDataProvider
     public function getSymbol($currency, $displayLocale = null)
     {
         if (null === $displayLocale) {
-            $displayLocale = \Locale::getDefault();
+            $displayLocale = Locale::getDefault();
         }
 
         return $this->reader->readEntry($this->path, $displayLocale, ['Names', $currency, static::INDEX_SYMBOL]);
@@ -61,7 +62,7 @@ class CurrencyDataProvider
     public function getName($currency, $displayLocale = null)
     {
         if (null === $displayLocale) {
-            $displayLocale = \Locale::getDefault();
+            $displayLocale = Locale::getDefault();
         }
 
         return $this->reader->readEntry($this->path, $displayLocale, ['Names', $currency, static::INDEX_NAME]);
@@ -70,7 +71,7 @@ class CurrencyDataProvider
     public function getNames($displayLocale = null)
     {
         if (null === $displayLocale) {
-            $displayLocale = \Locale::getDefault();
+            $displayLocale = Locale::getDefault();
         }
 
         // ====================================================================

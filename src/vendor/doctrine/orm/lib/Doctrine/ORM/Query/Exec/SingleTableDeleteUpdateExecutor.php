@@ -49,8 +49,6 @@ class SingleTableDeleteUpdateExecutor extends AbstractSqlExecutor
 
     /**
      * {@inheritDoc}
-     *
-     * @return int
      */
     public function execute(Connection $conn, array $params, array $types)
     {

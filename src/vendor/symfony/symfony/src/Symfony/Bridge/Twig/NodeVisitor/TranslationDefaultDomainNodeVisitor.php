@@ -95,7 +95,7 @@ class TranslationDefaultDomainNodeVisitor extends AbstractNodeVisitor
     protected function doLeaveNode(Node $node, Environment $env)
     {
         if ($node instanceof TransDefaultDomainNode) {
-            return null;
+            return false;
         }
 
         if ($node instanceof BlockNode || $node instanceof ModuleNode) {
@@ -107,8 +107,6 @@ class TranslationDefaultDomainNodeVisitor extends AbstractNodeVisitor
 
     /**
      * {@inheritdoc}
-     *
-     * @return int
      */
     public function getPriority()
     {

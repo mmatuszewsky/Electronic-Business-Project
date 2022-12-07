@@ -19,7 +19,8 @@ use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\Finder\Finder;
 
 /**
- * An implementation of BundleInterface that adds a few conventions for DependencyInjection extensions.
+ * An implementation of BundleInterface that adds a few conventions
+ * for DependencyInjection extensions and Console commands.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
@@ -70,7 +71,7 @@ abstract class Bundle implements BundleInterface
 
             if (null !== $extension) {
                 if (!$extension instanceof ExtensionInterface) {
-                    throw new \LogicException(sprintf('Extension "%s" must implement Symfony\Component\DependencyInjection\Extension\ExtensionInterface.', \get_class($extension)));
+                    throw new \LogicException(sprintf('Extension %s must implement Symfony\Component\DependencyInjection\Extension\ExtensionInterface.', \get_class($extension)));
                 }
 
                 // check naming convention
@@ -87,7 +88,9 @@ abstract class Bundle implements BundleInterface
             }
         }
 
-        return $this->extension ?: null;
+        if ($this->extension) {
+            return $this->extension;
+        }
     }
 
     /**
@@ -171,7 +174,7 @@ abstract class Bundle implements BundleInterface
             }
             $r = new \ReflectionClass($class);
             if ($r->isSubclassOf('Symfony\\Component\\Console\\Command\\Command') && !$r->isAbstract() && !$r->getConstructor()->getNumberOfRequiredParameters()) {
-                @trigger_error(sprintf('Auto-registration of the command "%s" is deprecated since Symfony 3.4 and won\'t be supported in 4.0. Use PSR-4 based service discovery instead.', $class), \E_USER_DEPRECATED);
+                @trigger_error(sprintf('Auto-registration of the command "%s" is deprecated since Symfony 3.4 and won\'t be supported in 4.0. Use PSR-4 based service discovery instead.', $class), E_USER_DEPRECATED);
 
                 $application->add($r->newInstance());
             }
@@ -197,7 +200,9 @@ abstract class Bundle implements BundleInterface
      */
     protected function createContainerExtension()
     {
-        return class_exists($class = $this->getContainerExtensionClass()) ? new $class() : null;
+        if (class_exists($class = $this->getContainerExtensionClass())) {
+            return new $class();
+        }
     }
 
     private function parseClassName()

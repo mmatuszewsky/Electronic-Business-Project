@@ -8,7 +8,7 @@
 
 namespace PrestaShop\Decimal\Operation;
 
-use PrestaShop\Decimal\DecimalNumber;
+use PrestaShop\Decimal\Number as DecimalNumber;
 
 /**
  * Compares two decimal numbers

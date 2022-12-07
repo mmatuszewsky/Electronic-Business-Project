@@ -25,8 +25,6 @@ class ClockMock
         }
 
         self::$now = is_numeric($enable) ? (float) $enable : ($enable ? microtime(true) : null);
-
-        return null;
     }
 
     public static function time()
@@ -52,10 +50,10 @@ class ClockMock
     public static function usleep($us)
     {
         if (null === self::$now) {
-            \usleep($us);
-        } else {
-            self::$now += $us / 1000000;
+            return \usleep($us);
         }
+
+        self::$now += $us / 1000000;
     }
 
     public static function microtime($asFloat = false)
@@ -106,7 +104,7 @@ function sleep(\$s)
 
 function usleep(\$us)
 {
-    \\$self::usleep(\$us);
+    return \\$self::usleep(\$us);
 }
 
 EOPHP

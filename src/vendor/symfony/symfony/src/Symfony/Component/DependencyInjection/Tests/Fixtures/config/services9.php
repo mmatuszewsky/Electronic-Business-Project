@@ -14,7 +14,7 @@ return function (ContainerConfigurator $c) {
     $p->set('foo_class', FooClass::class)
       ->set('foo', 'bar');
 
-    $s = $c->services()->defaults()->public();
+    $s = $c->services();
     $s->set('foo')
         ->args(['foo', ref('foo.baz'), ['%foo%' => 'foo is %foo%', 'foobar' => '%foo%'], true, ref('service_container')])
         ->class(FooClass::class)
@@ -120,6 +120,7 @@ return function (ContainerConfigurator $c) {
         ->tag('foo');
 
     $s->set('tagged_iterator', 'Bar')
+        ->public()
         ->args([tagged('foo')]);
 
     $s->alias('alias_for_foo', 'foo')->private()->public();

@@ -1,20 +1,14 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/**
+ * Doctrine ORM
  *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to kontakt@beberlei.de so I can send you a copy immediately.
  */
 
 namespace Doctrine\ORM\Tools\Pagination;
@@ -24,9 +18,18 @@ use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Platforms\SQLAnywherePlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
+use Doctrine\ORM\Query\AST\ArithmeticExpression;
+use Doctrine\ORM\Query\AST\ArithmeticFactor;
+use Doctrine\ORM\Query\AST\ArithmeticTerm;
+use Doctrine\ORM\Query\AST\Literal;
 use Doctrine\ORM\Query\AST\OrderByClause;
+use Doctrine\ORM\Query\AST\OrderByItem;
 use Doctrine\ORM\Query\AST\PartialObjectExpression;
+use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
+use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
+use Doctrine\ORM\Query\Expr\OrderBy;
+use Doctrine\ORM\Query\Expr\Select;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\AST\SelectStatement;
 
@@ -43,8 +46,6 @@ use Doctrine\ORM\Query\AST\SelectStatement;
  */
 class LimitSubqueryOutputWalker extends SqlWalker
 {
-    private const ORDER_BY_PATH_EXPRESSION = '/(?<![a-z0-9_])%s\.%s(?![a-z0-9_])/i';
-
     /**
      * @var \Doctrine\DBAL\Platforms\AbstractPlatform
      */
@@ -356,95 +357,69 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * Generates new SQL for statements with an order by clause
      *
-     * @param array              $sqlIdentifier
-     * @param string             $innerSql
-     * @param string             $sql
-     * @param OrderByClause|null $orderByClause
+     * @param array           $sqlIdentifier
+     * @param string          $innerSql
+     * @param string          $sql
+     * @param OrderByClause   $orderByClause
      *
      * @return string
      */
-    private function preserveSqlOrdering(
-        array $sqlIdentifier,
-        string $innerSql,
-        string $sql,
-        ?OrderByClause $orderByClause
-    ) : string {
-        // If the sql statement has an order by clause, we need to wrap it in a new select distinct statement
-        if (! $orderByClause) {
+    private function preserveSqlOrdering(array $sqlIdentifier, $innerSql, $sql, $orderByClause)
+    {
+        // If the sql statement has an order by clause, we need to wrap it in a new select distinct
+        // statement
+        if (! $orderByClause instanceof OrderByClause) {
             return $sql;
         }
 
-        // now only select distinct identifier
-        return \sprintf(
-            'SELECT DISTINCT %s FROM (%s) dctrn_result',
-            \implode(', ', $sqlIdentifier),
-            $this->recreateInnerSql($orderByClause, $sqlIdentifier, $innerSql)
+        // Rebuild the order by clause to work in the scope of the new select statement
+        /* @var array $orderBy an array of rebuilt order by items */
+        $orderBy = $this->rebuildOrderByClauseForOuterScope($orderByClause);
+
+        // Build the select distinct statement
+        $sql = sprintf(
+            'SELECT DISTINCT %s FROM (%s) dctrn_result ORDER BY %s',
+            implode(', ', $sqlIdentifier),
+            $innerSql,
+            implode(', ', $orderBy)
         );
+
+        return $sql;
     }
 
     /**
-     * Generates a new SQL statement for the inner query to keep the correct sorting
+     * Generates a new order by clause that works in the scope of a select query wrapping the original
      *
      * @param OrderByClause $orderByClause
-     * @param array         $identifiers
-     * @param string        $innerSql
-     *
-     * @return string
+     * @return array
      */
-    private function recreateInnerSql(
-        OrderByClause $orderByClause,
-        array $identifiers,
-        string $innerSql
-    ) : string {
-        [$searchPatterns, $replacements] = $this->generateSqlAliasReplacements();
-
-        $orderByItems = [];
-
-        foreach ($orderByClause->orderByItems as $orderByItem) {
-            // Walk order by item to get string representation of it and
-            // replace path expressions in the order by clause with their column alias
-            $orderByItemString = \preg_replace(
-                $searchPatterns,
-                $replacements,
-                $this->walkOrderByItem($orderByItem)
-            );
-
-            $orderByItems[] = $orderByItemString;
-            $identifier     = \substr($orderByItemString, 0, \strrpos($orderByItemString, ' '));
-
-            if (! \in_array($identifier, $identifiers, true)) {
-                $identifiers[] = $identifier;
-            }
-        }
-
-        return $sql = \sprintf(
-            'SELECT DISTINCT %s FROM (%s) dctrn_result_inner ORDER BY %s',
-            \implode(', ', $identifiers),
-            $innerSql,
-            \implode(', ', $orderByItems)
-        );
-    }
-
-    /**
-     * @return string[][]
-     */
-    private function generateSqlAliasReplacements() : array
+    private function rebuildOrderByClauseForOuterScope(OrderByClause $orderByClause)
     {
-        $aliasMap = $searchPatterns = $replacements = $metadataList = [];
+        $dqlAliasToSqlTableAliasMap
+            = $searchPatterns
+            = $replacements
+            = $dqlAliasToClassMap
+            = $selectListAdditions
+            = $orderByItems
+            = [];
 
         // Generate DQL alias -> SQL table alias mapping
-        foreach (\array_keys($this->rsm->aliasMap) as $dqlAlias) {
-            $metadataList[$dqlAlias] = $class = $this->queryComponents[$dqlAlias]['metadata'];
-            $aliasMap[$dqlAlias] = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
+        foreach(array_keys($this->rsm->aliasMap) as $dqlAlias) {
+            $dqlAliasToClassMap[$dqlAlias] = $class = $this->queryComponents[$dqlAlias]['metadata'];
+            $dqlAliasToSqlTableAliasMap[$dqlAlias] = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
         }
 
-        // Generate search patterns for each field's path expression in the order by clause
-        foreach ($this->rsm->fieldMappings as $fieldAlias => $fieldName) {
-            $dqlAliasForFieldAlias = $this->rsm->columnOwnerMap[$fieldAlias];
-            $class = $metadataList[$dqlAliasForFieldAlias];
+        // Pattern to find table path expressions in the order by clause
+        $fieldSearchPattern = '/(?<![a-z0-9_])%s\.%s(?![a-z0-9_])/i';
 
-            // If the field is from a joined child table, we won't be ordering on it.
-            if (! isset($class->fieldMappings[$fieldName])) {
+        // Generate search patterns for each field's path expression in the order by clause
+        foreach($this->rsm->fieldMappings as $fieldAlias => $fieldName) {
+            $dqlAliasForFieldAlias = $this->rsm->columnOwnerMap[$fieldAlias];
+            $class = $dqlAliasToClassMap[$dqlAliasForFieldAlias];
+
+            // If the field is from a joined child table, we won't be ordering
+            // on it.
+            if (!isset($class->fieldMappings[$fieldName])) {
                 continue;
             }
 
@@ -453,29 +428,38 @@ class LimitSubqueryOutputWalker extends SqlWalker
             // Get the proper column name as will appear in the select list
             $columnName = $this->quoteStrategy->getColumnName(
                 $fieldName,
-                $metadataList[$dqlAliasForFieldAlias],
+                $dqlAliasToClassMap[$dqlAliasForFieldAlias],
                 $this->em->getConnection()->getDatabasePlatform()
             );
 
             // Get the SQL table alias for the entity and field
-            $sqlTableAliasForFieldAlias = $aliasMap[$dqlAliasForFieldAlias];
-
+            $sqlTableAliasForFieldAlias = $dqlAliasToSqlTableAliasMap[$dqlAliasForFieldAlias];
             if (isset($fieldMapping['declared']) && $fieldMapping['declared'] !== $class->name) {
                 // Field was declared in a parent class, so we need to get the proper SQL table alias
                 // for the joined parent table.
                 $otherClassMetadata = $this->em->getClassMetadata($fieldMapping['declared']);
-
-                if (! $otherClassMetadata->isMappedSuperclass) {
+                if (!$otherClassMetadata->isMappedSuperclass) {
                     $sqlTableAliasForFieldAlias = $this->getSQLTableAlias($otherClassMetadata->getTableName(), $dqlAliasForFieldAlias);
+                    
                 }
             }
 
-            // Compose search and replace patterns
-            $searchPatterns[] = \sprintf(self::ORDER_BY_PATH_EXPRESSION, $sqlTableAliasForFieldAlias, $columnName);
-            $replacements[]   = $fieldAlias;
+            // Compose search/replace patterns
+            $searchPatterns[] = sprintf($fieldSearchPattern, $sqlTableAliasForFieldAlias, $columnName);
+            $replacements[] = $fieldAlias;
         }
 
-        return [$searchPatterns, $replacements];
+        foreach($orderByClause->orderByItems as $orderByItem) {
+            // Walk order by item to get string representation of it
+            $orderByItemString = $this->walkOrderByItem($orderByItem);
+
+            // Replace path expressions in the order by clause with their column alias
+            $orderByItemString = preg_replace($searchPatterns, $replacements, $orderByItemString);
+
+            $orderByItems[] = $orderByItemString;
+        }
+
+        return $orderByItems;
     }
 
     /**
@@ -521,9 +505,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * @param SelectStatement $AST
      *
-     * @return array-key[]
-     *
-     * @psalm-return array<array-key, array-key>
+     * @return array
      */
     private function getSQLIdentifier(SelectStatement $AST)
     {

@@ -57,7 +57,8 @@ class YamlDumper extends Dumper
     /**
      * Adds a service.
      *
-     * @param string $id
+     * @param string     $id
+     * @param Definition $definition
      *
      * @return string
      */
@@ -170,6 +171,7 @@ class YamlDumper extends Dumper
      * Adds a service alias.
      *
      * @param string $alias
+     * @param Alias  $id
      *
      * @return string
      */
@@ -228,7 +230,9 @@ class YamlDumper extends Dumper
     /**
      * Dumps callable to YAML format.
      *
-     * @param mixed $callable
+     * @param callable $callable
+     *
+     * @return callable
      */
     private function dumpCallable($callable)
     {
@@ -333,7 +337,8 @@ class YamlDumper extends Dumper
     /**
      * Prepares parameters.
      *
-     * @param bool $escape
+     * @param array $parameters
+     * @param bool  $escape
      *
      * @return array
      */

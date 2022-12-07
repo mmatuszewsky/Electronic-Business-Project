@@ -88,7 +88,5 @@ EOF
                 return 1;
             }
         }
-
-        return null;
     }
 }

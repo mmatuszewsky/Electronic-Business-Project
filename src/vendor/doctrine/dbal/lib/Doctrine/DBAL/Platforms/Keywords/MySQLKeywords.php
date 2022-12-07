@@ -1,9 +1,31 @@
 <?php
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the MIT license. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\DBAL\Platforms\Keywords;
 
 /**
  * MySQL Keywordlist.
+ *
+ * @link   www.doctrine-project.org
+ * @since  2.0
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
+ * @author David Coallier <davidc@php.net>
  */
 class MySQLKeywords extends KeywordList
 {
@@ -20,8 +42,7 @@ class MySQLKeywords extends KeywordList
      */
     protected function getKeywords()
     {
-        return [
-            'ACCESSIBLE',
+        return array(
             'ADD',
             'ALL',
             'ALTER',
@@ -97,7 +118,6 @@ class MySQLKeywords extends KeywordList
             'FOREIGN',
             'FROM',
             'FULLTEXT',
-            'GENERAL',
             'GOTO',
             'GRANT',
             'GROUP',
@@ -108,7 +128,6 @@ class MySQLKeywords extends KeywordList
             'HOUR_SECOND',
             'IF',
             'IGNORE',
-            'IGNORE_SERVER_IDS',
             'IN',
             'INDEX',
             'INFILE',
@@ -137,7 +156,6 @@ class MySQLKeywords extends KeywordList
             'LEFT',
             'LIKE',
             'LIMIT',
-            'LINEAR',
             'LINES',
             'LOAD',
             'LOCALTIME',
@@ -148,10 +166,7 @@ class MySQLKeywords extends KeywordList
             'LONGTEXT',
             'LOOP',
             'LOW_PRIORITY',
-            'MASTER_HEARTBEAT_PERIOD',
-            'MASTER_SSL_VERIFY_SERVER_CERT',
             'MATCH',
-            'MAXVALUE',
             'MEDIUMBLOB',
             'MEDIUMINT',
             'MEDIUMTEXT',
@@ -161,8 +176,8 @@ class MySQLKeywords extends KeywordList
             'MOD',
             'MODIFIES',
             'NATURAL',
-            'NO_WRITE_TO_BINLOG',
             'NOT',
+            'NO_WRITE_TO_BINLOG',
             'NULL',
             'NUMERIC',
             'ON',
@@ -174,7 +189,6 @@ class MySQLKeywords extends KeywordList
             'OUT',
             'OUTER',
             'OUTFILE',
-            'PARTITION',
             'PRECISION',
             'PRIMARY',
             'PROCEDURE',
@@ -182,10 +196,8 @@ class MySQLKeywords extends KeywordList
             'RAID0',
             'RANGE',
             'READ',
-            'READ_WRITE',
             'READS',
             'REAL',
-            'RECURSIVE',
             'REFERENCES',
             'REGEXP',
             'RELEASE',
@@ -193,13 +205,11 @@ class MySQLKeywords extends KeywordList
             'REPEAT',
             'REPLACE',
             'REQUIRE',
-            'RESIGNAL',
             'RESTRICT',
             'RETURN',
             'REVOKE',
             'RIGHT',
             'RLIKE',
-            'ROWS',
             'SCHEMA',
             'SCHEMAS',
             'SECOND_MICROSECOND',
@@ -208,19 +218,17 @@ class MySQLKeywords extends KeywordList
             'SEPARATOR',
             'SET',
             'SHOW',
-            'SIGNAL',
-            'SLOW',
             'SMALLINT',
             'SONAME',
             'SPATIAL',
             'SPECIFIC',
             'SQL',
-            'SQL_BIG_RESULT',
-            'SQL_CALC_FOUND_ROWS',
-            'SQL_SMALL_RESULT',
             'SQLEXCEPTION',
             'SQLSTATE',
             'SQLWARNING',
+            'SQL_BIG_RESULT',
+            'SQL_CALC_FOUND_ROWS',
+            'SQL_SMALL_RESULT',
             'SSL',
             'STARTING',
             'STRAIGHT_JOIN',
@@ -260,6 +268,6 @@ class MySQLKeywords extends KeywordList
             'XOR',
             'YEAR_MONTH',
             'ZEROFILL',
-        ];
+        );
     }
 }

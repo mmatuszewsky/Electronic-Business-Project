@@ -16,9 +16,11 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
 class MergeTest extends TestCase
 {
+    /**
+     * @expectedException \Symfony\Component\Config\Definition\Exception\ForbiddenOverwriteException
+     */
     public function testForbiddenOverwrite()
     {
-        $this->expectException('Symfony\Component\Config\Definition\Exception\ForbiddenOverwriteException');
         $tb = new TreeBuilder();
         $tree = $tb
             ->root('root', 'array')
@@ -90,9 +92,11 @@ class MergeTest extends TestCase
         ], $tree->merge($a, $b));
     }
 
+    /**
+     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     */
     public function testDoesNotAllowNewKeysInSubsequentConfigs()
     {
-        $this->expectException('Symfony\Component\Config\Definition\Exception\InvalidConfigurationException');
         $tb = new TreeBuilder();
         $tree = $tb
             ->root('config', 'array')

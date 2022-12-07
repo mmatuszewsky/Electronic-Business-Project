@@ -41,7 +41,7 @@ class SymfonyQuestionHelper extends QuestionHelper
             } else {
                 // make required
                 if (!\is_array($value) && !\is_bool($value) && 0 === \strlen($value)) {
-                    @trigger_error('The default question validator is deprecated since Symfony 3.3 and will not be used anymore in version 4.0. Set a custom question validator if needed.', \E_USER_DEPRECATED);
+                    @trigger_error('The default question validator is deprecated since Symfony 3.3 and will not be used anymore in version 4.0. Set a custom question validator if needed.', E_USER_DEPRECATED);
 
                     throw new LogicException('A value is required.');
                 }
@@ -96,15 +96,15 @@ class SymfonyQuestionHelper extends QuestionHelper
 
         $output->writeln($text);
 
-        $prompt = ' > ';
-
         if ($question instanceof ChoiceQuestion) {
-            $output->writeln($this->formatChoiceQuestionChoices($question, 'comment'));
+            $width = max(array_map('strlen', array_keys($question->getChoices())));
 
-            $prompt = $question->getPrompt();
+            foreach ($question->getChoices() as $key => $value) {
+                $output->writeln(sprintf("  [<comment>%-${width}s</comment>] %s", $key, $value));
+            }
         }
 
-        $output->write($prompt);
+        $output->write(' > ');
     }
 
     /**

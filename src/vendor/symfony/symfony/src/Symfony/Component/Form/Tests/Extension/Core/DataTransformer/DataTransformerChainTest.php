@@ -22,12 +22,12 @@ class DataTransformerChainTest extends TestCase
         $transformer1->expects($this->once())
             ->method('transform')
             ->with($this->identicalTo('foo'))
-            ->willReturn('bar');
+            ->will($this->returnValue('bar'));
         $transformer2 = $this->getMockBuilder('Symfony\Component\Form\DataTransformerInterface')->getMock();
         $transformer2->expects($this->once())
             ->method('transform')
             ->with($this->identicalTo('bar'))
-            ->willReturn('baz');
+            ->will($this->returnValue('baz'));
 
         $chain = new DataTransformerChain([$transformer1, $transformer2]);
 
@@ -40,12 +40,12 @@ class DataTransformerChainTest extends TestCase
         $transformer2->expects($this->once())
             ->method('reverseTransform')
             ->with($this->identicalTo('foo'))
-            ->willReturn('bar');
+            ->will($this->returnValue('bar'));
         $transformer1 = $this->getMockBuilder('Symfony\Component\Form\DataTransformerInterface')->getMock();
         $transformer1->expects($this->once())
             ->method('reverseTransform')
             ->with($this->identicalTo('bar'))
-            ->willReturn('baz');
+            ->will($this->returnValue('baz'));
 
         $chain = new DataTransformerChain([$transformer1, $transformer2]);
 

@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.42",
     "Names": {
         "ADP": [
             "ADP",
@@ -526,7 +527,7 @@
             "dinar jordà"
         ],
         "JPY": [
-            "¥",
+            "JP¥",
             "ien japonès"
         ],
         "KES": [
@@ -927,7 +928,7 @@
         ],
         "SYP": [
             "SYP",
-            "lliura siriana"
+            "lliura síria"
         ],
         "SZL": [
             "SZL",

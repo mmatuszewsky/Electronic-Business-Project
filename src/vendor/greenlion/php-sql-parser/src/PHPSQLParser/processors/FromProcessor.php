@@ -237,7 +237,7 @@ class FromProcessor extends AbstractProcessor {
                 $parseInfo['alias']['name'] = $str;
                 $parseInfo['alias']['no_quotes'] = $this->revokeQuotation($str);
                 $parseInfo['alias']['base_expr'] = trim($parseInfo['alias']['base_expr']);
-                break;
+                continue;
 
             case 'IGNORE':
             case 'USE':
@@ -269,12 +269,12 @@ class FromProcessor extends AbstractProcessor {
             case 'OUTER':
             case 'NATURAL':
                 $parseInfo['token_count']++;
-                break;
+                continue;
 
             case 'FOR':
                 $parseInfo['token_count']++;
                 $skip_next = true;
-                break;
+                continue;
 
             case 'STRAIGHT_JOIN':
                 $parseInfo['next_join_type'] = "STRAIGHT_JOIN";
@@ -307,7 +307,7 @@ class FromProcessor extends AbstractProcessor {
                     $token_category = '';
                     $cur_hint = (count($parseInfo['hints']) - 1);
                     $parseInfo['hints'][$cur_hint]['hint_list'] = $token;
-                    break;
+                    continue;
                 }
 
                 if ($parseInfo['token_count'] === 0) {

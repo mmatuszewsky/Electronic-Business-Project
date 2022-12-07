@@ -11,11 +11,7 @@
 
 namespace Symfony\Bridge\Doctrine\Tests\Form;
 
-use Doctrine\Common\Persistence\ManagerRegistry as LegacyManagerRegistry;
-use Doctrine\Common\Persistence\ObjectManager as LegacyObjectManager;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\Form\DoctrineOrmTypeGuesser;
 use Symfony\Component\Form\Guess\Guess;
@@ -38,47 +34,47 @@ class DoctrineOrmTypeGuesserTest extends TestCase
         // Simple field, not nullable
         $classMetadata = $this->getMockBuilder('Doctrine\ORM\Mapping\ClassMetadata')->disableOriginalConstructor()->getMock();
         $classMetadata->fieldMappings['field'] = true;
-        $classMetadata->expects($this->once())->method('isNullable')->with('field')->willReturn(false);
+        $classMetadata->expects($this->once())->method('isNullable')->with('field')->will($this->returnValue(false));
 
         $return[] = [$classMetadata, new ValueGuess(true, Guess::HIGH_CONFIDENCE)];
 
         // Simple field, nullable
         $classMetadata = $this->getMockBuilder('Doctrine\ORM\Mapping\ClassMetadata')->disableOriginalConstructor()->getMock();
         $classMetadata->fieldMappings['field'] = true;
-        $classMetadata->expects($this->once())->method('isNullable')->with('field')->willReturn(true);
+        $classMetadata->expects($this->once())->method('isNullable')->with('field')->will($this->returnValue(true));
 
         $return[] = [$classMetadata, new ValueGuess(false, Guess::MEDIUM_CONFIDENCE)];
 
         // One-to-one, nullable (by default)
         $classMetadata = $this->getMockBuilder('Doctrine\ORM\Mapping\ClassMetadata')->disableOriginalConstructor()->getMock();
-        $classMetadata->expects($this->once())->method('isAssociationWithSingleJoinColumn')->with('field')->willReturn(true);
+        $classMetadata->expects($this->once())->method('isAssociationWithSingleJoinColumn')->with('field')->will($this->returnValue(true));
 
         $mapping = ['joinColumns' => [[]]];
-        $classMetadata->expects($this->once())->method('getAssociationMapping')->with('field')->willReturn($mapping);
+        $classMetadata->expects($this->once())->method('getAssociationMapping')->with('field')->will($this->returnValue($mapping));
 
         $return[] = [$classMetadata, new ValueGuess(false, Guess::HIGH_CONFIDENCE)];
 
         // One-to-one, nullable (explicit)
         $classMetadata = $this->getMockBuilder('Doctrine\ORM\Mapping\ClassMetadata')->disableOriginalConstructor()->getMock();
-        $classMetadata->expects($this->once())->method('isAssociationWithSingleJoinColumn')->with('field')->willReturn(true);
+        $classMetadata->expects($this->once())->method('isAssociationWithSingleJoinColumn')->with('field')->will($this->returnValue(true));
 
         $mapping = ['joinColumns' => [['nullable' => true]]];
-        $classMetadata->expects($this->once())->method('getAssociationMapping')->with('field')->willReturn($mapping);
+        $classMetadata->expects($this->once())->method('getAssociationMapping')->with('field')->will($this->returnValue($mapping));
 
         $return[] = [$classMetadata, new ValueGuess(false, Guess::HIGH_CONFIDENCE)];
 
         // One-to-one, not nullable
         $classMetadata = $this->getMockBuilder('Doctrine\ORM\Mapping\ClassMetadata')->disableOriginalConstructor()->getMock();
-        $classMetadata->expects($this->once())->method('isAssociationWithSingleJoinColumn')->with('field')->willReturn(true);
+        $classMetadata->expects($this->once())->method('isAssociationWithSingleJoinColumn')->with('field')->will($this->returnValue(true));
 
         $mapping = ['joinColumns' => [['nullable' => false]]];
-        $classMetadata->expects($this->once())->method('getAssociationMapping')->with('field')->willReturn($mapping);
+        $classMetadata->expects($this->once())->method('getAssociationMapping')->with('field')->will($this->returnValue($mapping));
 
         $return[] = [$classMetadata, new ValueGuess(true, Guess::HIGH_CONFIDENCE)];
 
         // One-to-many, no clue
         $classMetadata = $this->getMockBuilder('Doctrine\ORM\Mapping\ClassMetadata')->disableOriginalConstructor()->getMock();
-        $classMetadata->expects($this->once())->method('isAssociationWithSingleJoinColumn')->with('field')->willReturn(false);
+        $classMetadata->expects($this->once())->method('isAssociationWithSingleJoinColumn')->with('field')->will($this->returnValue(false));
 
         $return[] = [$classMetadata, null];
 
@@ -87,11 +83,11 @@ class DoctrineOrmTypeGuesserTest extends TestCase
 
     private function getGuesser(ClassMetadata $classMetadata)
     {
-        $em = $this->getMockBuilder(interface_exists(ObjectManager::class) ? ObjectManager::class : LegacyObjectManager::class)->getMock();
-        $em->expects($this->once())->method('getClassMetaData')->with('TestEntity')->willReturn($classMetadata);
+        $em = $this->getMockBuilder('Doctrine\Common\Persistence\ObjectManager')->getMock();
+        $em->expects($this->once())->method('getClassMetaData')->with('TestEntity')->will($this->returnValue($classMetadata));
 
-        $registry = $this->getMockBuilder(interface_exists(ManagerRegistry::class) ? ManagerRegistry::class : LegacyManagerRegistry::class)->getMock();
-        $registry->expects($this->once())->method('getManagers')->willReturn([$em]);
+        $registry = $this->getMockBuilder('Doctrine\Common\Persistence\ManagerRegistry')->getMock();
+        $registry->expects($this->once())->method('getManagers')->will($this->returnValue([$em]));
 
         return new DoctrineOrmTypeGuesser($registry);
     }

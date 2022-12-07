@@ -208,9 +208,11 @@ class ClassCollectionLoaderTest extends TestCase
         ];
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testUnableToLoadClassException()
     {
-        $this->expectException('InvalidArgumentException');
         if (is_file($file = sys_get_temp_dir().'/foo.php')) {
             unlink($file);
         }

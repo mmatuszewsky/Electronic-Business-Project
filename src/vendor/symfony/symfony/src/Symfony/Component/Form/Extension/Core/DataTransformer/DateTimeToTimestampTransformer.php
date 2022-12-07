@@ -26,14 +26,14 @@ class DateTimeToTimestampTransformer extends BaseDateTimeTransformer
      *
      * @param \DateTimeInterface $dateTime A DateTimeInterface object
      *
-     * @return int|null A timestamp
+     * @return int A timestamp
      *
      * @throws TransformationFailedException If the given value is not a \DateTimeInterface
      */
     public function transform($dateTime)
     {
         if (null === $dateTime) {
-            return null;
+            return;
         }
 
         if (!$dateTime instanceof \DateTimeInterface) {
@@ -48,7 +48,7 @@ class DateTimeToTimestampTransformer extends BaseDateTimeTransformer
      *
      * @param string $value A timestamp
      *
-     * @return \DateTime|null A \DateTime object
+     * @return \DateTime A \DateTime object
      *
      * @throws TransformationFailedException If the given value is not a timestamp
      *                                       or if the given timestamp is invalid
@@ -56,7 +56,7 @@ class DateTimeToTimestampTransformer extends BaseDateTimeTransformer
     public function reverseTransform($value)
     {
         if (null === $value) {
-            return null;
+            return;
         }
 
         if (!is_numeric($value)) {

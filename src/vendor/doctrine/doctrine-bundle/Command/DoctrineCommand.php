@@ -2,11 +2,11 @@
 
 namespace Doctrine\Bundle\DoctrineBundle\Command;
 
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Sharding\PoolingShardConnection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\EntityGenerator;
-use Doctrine\Persistence\ManagerRegistry;
 use LogicException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -28,14 +28,6 @@ abstract class DoctrineCommand extends Command
     {
         parent::__construct();
 
-        if ($doctrine === null) {
-            @trigger_error(sprintf(
-                'The "%s" constructor expects a "%s" instance as first argument, not passing it will throw a \TypeError in DoctrineBundle 2.0.',
-                static::class,
-                ManagerRegistry::class
-            ), E_USER_DEPRECATED);
-        }
-
         $this->doctrine = $doctrine;
     }
 
@@ -44,8 +36,6 @@ abstract class DoctrineCommand extends Command
      */
     public function setContainer(ContainerInterface $container = null)
     {
-        @trigger_error(sprintf('The "%s()" method is deprecated and will be removed in DoctrineBundle 2.0.', __METHOD__), E_USER_DEPRECATED);
-
         $this->container = $container;
     }
 
@@ -58,8 +48,6 @@ abstract class DoctrineCommand extends Command
      */
     protected function getContainer()
     {
-        @trigger_error(sprintf('The "%s()" method is deprecated and will be removed in DoctrineBundle 2.0.', __METHOD__), E_USER_DEPRECATED);
-
         if ($this->container === null) {
             $application = $this->getApplication();
             if ($application === null) {

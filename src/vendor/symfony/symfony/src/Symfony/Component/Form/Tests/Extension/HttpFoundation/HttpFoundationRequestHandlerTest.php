@@ -21,15 +21,19 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class HttpFoundationRequestHandlerTest extends AbstractRequestHandlerTest
 {
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\UnexpectedTypeException
+     */
     public function testRequestShouldNotBeNull()
     {
-        $this->expectException('Symfony\Component\Form\Exception\UnexpectedTypeException');
         $this->requestHandler->handleRequest($this->createForm('name', 'GET'));
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\UnexpectedTypeException
+     */
     public function testRequestShouldBeInstanceOfRequest()
     {
-        $this->expectException('Symfony\Component\Form\Exception\UnexpectedTypeException');
         $this->requestHandler->handleRequest($this->createForm('name', 'GET'), new \stdClass());
     }
 

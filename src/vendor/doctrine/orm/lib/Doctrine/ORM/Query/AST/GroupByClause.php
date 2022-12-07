@@ -33,7 +33,7 @@ class GroupByClause extends Node
     /**
      * @var array
      */
-    public $groupByItems = [];
+    public $groupByItems = array();
 
     /**
      * @param array $groupByItems

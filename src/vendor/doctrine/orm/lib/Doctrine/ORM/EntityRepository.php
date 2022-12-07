@@ -19,11 +19,11 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\Selectable;
-use Doctrine\Common\Inflector\Inflector;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
-use Doctrine\Persistence\ObjectRepository;
+use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\Common\Collections\Selectable;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * An EntityRepository serves as a repository for entities with generic as well as
@@ -57,8 +57,11 @@ class EntityRepository implements ObjectRepository, Selectable
 
     /**
      * Initializes a new <tt>EntityRepository</tt>.
+     *
+     * @param EntityManager         $em    The EntityManager to use.
+     * @param Mapping\ClassMetadata $class The class descriptor.
      */
-    public function __construct(EntityManagerInterface $em, Mapping\ClassMetadata $class)
+    public function __construct($em, Mapping\ClassMetadata $class)
     {
         $this->_entityName = $class->name;
         $this->_em         = $em;
@@ -158,7 +161,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function findAll()
     {
-        return $this->findBy([]);
+        return $this->findBy(array());
     }
 
     /**
@@ -181,7 +184,7 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Finds a single entity by a set of criteria.
      *
-     * @param array      $criteria
+     * @param array $criteria
      * @param array|null $orderBy
      *
      * @return object|null The entity instance or NULL if the entity can not be found.
@@ -190,52 +193,68 @@ class EntityRepository implements ObjectRepository, Selectable
     {
         $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
 
-        return $persister->load($criteria, null, null, [], null, 1, $orderBy);
+        return $persister->load($criteria, null, null, array(), null, 1, $orderBy);
     }
 
     /**
-     * Counts entities by a set of criteria.
-     *
-     * @todo Add this method to `ObjectRepository` interface in the next major release
-     *
-     * @param array $criteria
-     *
-     * @return int The cardinality of the objects that match the given criteria.
-     */
-    public function count(array $criteria)
-    {
-        return $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->count($criteria);
-    }
-
-    /**
-     * Adds support for magic method calls.
+     * Adds support for magic finders.
      *
      * @param string $method
      * @param array  $arguments
      *
-     * @return mixed The returned value from the resolved method.
+     * @return array|object The found entity/entities.
      *
      * @throws ORMException
-     * @throws \BadMethodCallException If the method called is invalid
+     * @throws \BadMethodCallException If the method called is an invalid find* method
+     *                                 or no find* method at all and therefore an invalid
+     *                                 method call.
      */
     public function __call($method, $arguments)
     {
-        if (0 === strpos($method, 'findBy')) {
-            return $this->resolveMagicCall('findBy', substr($method, 6), $arguments);
+        switch (true) {
+            case (0 === strpos($method, 'findBy')):
+                $by = substr($method, 6);
+                $method = 'findBy';
+                break;
+
+            case (0 === strpos($method, 'findOneBy')):
+                $by = substr($method, 9);
+                $method = 'findOneBy';
+                break;
+
+            default:
+                throw new \BadMethodCallException(
+                    "Undefined method '$method'. The method name must start with ".
+                    "either findBy or findOneBy!"
+                );
         }
 
-        if (0 === strpos($method, 'findOneBy')) {
-            return $this->resolveMagicCall('findOneBy', substr($method, 9), $arguments);
+        if (empty($arguments)) {
+            throw ORMException::findByRequiresParameter($method . $by);
         }
 
-        if (0 === strpos($method, 'countBy')) {
-            return $this->resolveMagicCall('count', substr($method, 7), $arguments);
+        $fieldName = lcfirst(\Doctrine\Common\Util\Inflector::classify($by));
+
+        if ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName)) {
+            switch (count($arguments)) {
+                case 1:
+                    return $this->$method(array($fieldName => $arguments[0]));
+
+                case 2:
+                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1]);
+
+                case 3:
+                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2]);
+
+                case 4:
+                    return $this->$method(array($fieldName => $arguments[0]), $arguments[1], $arguments[2], $arguments[3]);
+
+                default:
+                    // Do nothing
+            }
         }
 
-        throw new \BadMethodCallException(
-            "Undefined method '$method'. The method name must start with ".
-            "either findBy, findOneBy or countBy!"
-        );
+        throw ORMException::invalidFindByCall($this->_entityName, $fieldName, $method.$by);
     }
 
     /**
@@ -283,31 +302,5 @@ class EntityRepository implements ObjectRepository, Selectable
         $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
 
         return new LazyCriteriaCollection($persister, $criteria);
-    }
-
-    /**
-     * Resolves a magic method call to the proper existent method at `EntityRepository`.
-     *
-     * @param string $method    The method to call
-     * @param string $by        The property name used as condition
-     * @param array  $arguments The arguments to pass at method call
-     *
-     * @throws ORMException If the method called is invalid or the requested field/association does not exist
-     *
-     * @return mixed
-     */
-    private function resolveMagicCall($method, $by, array $arguments)
-    {
-        if (! $arguments) {
-            throw ORMException::findByRequiresParameter($method . $by);
-        }
-
-        $fieldName = lcfirst(Inflector::classify($by));
-
-        if (! ($this->_class->hasField($fieldName) || $this->_class->hasAssociation($fieldName))) {
-            throw ORMException::invalidMagicCall($this->_entityName, $fieldName, $method . $by);
-        }
-
-        return $this->$method([$fieldName => $arguments[0]], ...array_slice($arguments, 1));
     }
 }

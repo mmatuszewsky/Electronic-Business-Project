@@ -15,8 +15,6 @@ use Symfony\Bundle\WebProfilerBundle\Profiler\TemplateManager;
 use Symfony\Bundle\WebProfilerBundle\Tests\TestCase;
 use Symfony\Component\HttpKernel\Profiler\Profile;
 use Twig\Environment;
-use Twig\Loader\LoaderInterface;
-use Twig\Loader\SourceContextLoaderInterface;
 
 /**
  * Test for TemplateManager class.
@@ -55,9 +53,11 @@ class TemplateManagerTest extends TestCase
         $this->templateManager = new TemplateManager($profiler, $twigEnvironment, $templates);
     }
 
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
     public function testGetNameOfInvalidTemplate()
     {
-        $this->expectException('Symfony\Component\HttpKernel\Exception\NotFoundHttpException');
         $this->templateManager->getName(new Profile('token'), 'notexistingpanel');
     }
 
@@ -69,7 +69,7 @@ class TemplateManagerTest extends TestCase
         $this->profiler->expects($this->any())
             ->method('has')
             ->withAnyParameters()
-            ->willReturnCallback([$this, 'profilerHasCallback']);
+            ->will($this->returnCallback([$this, 'profilerHasCallback']));
 
         $this->assertEquals('FooBundle:Collector:foo.html.twig', $this->templateManager->getName(new ProfileDummy(), 'foo'));
     }
@@ -83,7 +83,7 @@ class TemplateManagerTest extends TestCase
         $this->profiler->expects($this->any())
             ->method('has')
             ->withAnyParameters()
-            ->willReturnCallback([$this, 'profileHasCollectorCallback']);
+            ->will($this->returnCallback([$this, 'profileHasCollectorCallback']));
 
         $result = $this->templateManager->getTemplates(new ProfileDummy());
         $this->assertArrayHasKey('foo', $result);
@@ -124,19 +124,14 @@ class TemplateManagerTest extends TestCase
 
         $this->twigEnvironment->expects($this->any())
             ->method('loadTemplate')
-            ->willReturn('loadedTemplate');
+            ->will($this->returnValue('loadedTemplate'));
 
-        if (Environment::MAJOR_VERSION > 1) {
-            $loader = $this->createMock(LoaderInterface::class);
-            $loader
-                ->expects($this->any())
-                ->method('exists')
-                ->willReturn(true);
+        if (interface_exists('Twig\Loader\SourceContextLoaderInterface')) {
+            $loader = $this->getMockBuilder('Twig\Loader\SourceContextLoaderInterface')->getMock();
         } else {
-            $loader = $this->createMock(SourceContextLoaderInterface::class);
+            $loader = $this->getMockBuilder('Twig\Loader\LoaderInterface')->getMock();
         }
-
-        $this->twigEnvironment->expects($this->any())->method('getLoader')->willReturn($loader);
+        $this->twigEnvironment->expects($this->any())->method('getLoader')->will($this->returnValue($loader));
 
         return $this->twigEnvironment;
     }

@@ -13,8 +13,6 @@ namespace Symfony\Component\Form\Extension\Core\DataMapper;
 
 use Symfony\Component\Form\DataMapperInterface;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
-use Symfony\Component\PropertyAccess\Exception\AccessException;
-use Symfony\Component\PropertyAccess\Exception\UninitializedPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -48,9 +46,9 @@ class PropertyPathMapper implements DataMapperInterface
             $config = $form->getConfig();
 
             if (!$empty && null !== $propertyPath && $config->getMapped()) {
-                $form->setData($this->getPropertyValue($data, $propertyPath));
+                $form->setData($this->propertyAccessor->getValue($data, $propertyPath));
             } else {
-                $form->setData($config->getData());
+                $form->setData($form->getConfig()->getData());
             }
         }
     }
@@ -78,32 +76,16 @@ class PropertyPathMapper implements DataMapperInterface
                 $propertyValue = $form->getData();
                 // If the field is of type DateTimeInterface and the data is the same skip the update to
                 // keep the original object hash
-                if ($propertyValue instanceof \DateTimeInterface && $propertyValue == $this->getPropertyValue($data, $propertyPath)) {
+                if ($propertyValue instanceof \DateTimeInterface && $propertyValue == $this->propertyAccessor->getValue($data, $propertyPath)) {
                     continue;
                 }
 
                 // If the data is identical to the value in $data, we are
                 // dealing with a reference
-                if (!\is_object($data) || !$config->getByReference() || $propertyValue !== $this->getPropertyValue($data, $propertyPath)) {
+                if (!\is_object($data) || !$config->getByReference() || $propertyValue !== $this->propertyAccessor->getValue($data, $propertyPath)) {
                     $this->propertyAccessor->setValue($data, $propertyPath, $propertyValue);
                 }
             }
-        }
-    }
-
-    private function getPropertyValue($data, $propertyPath)
-    {
-        try {
-            return $this->propertyAccessor->getValue($data, $propertyPath);
-        } catch (AccessException $e) {
-            if (!$e instanceof UninitializedPropertyException
-                // For versions without UninitializedPropertyException check the exception message
-                && (class_exists(UninitializedPropertyException::class) || false === strpos($e->getMessage(), 'You should initialize it'))
-            ) {
-                throw $e;
-            }
-
-            return null;
         }
     }
 }

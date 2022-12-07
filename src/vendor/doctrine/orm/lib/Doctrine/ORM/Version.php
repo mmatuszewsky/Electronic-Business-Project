@@ -22,6 +22,7 @@ namespace Doctrine\ORM;
 /**
  * Class to store and retrieve the version of Doctrine
  *
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @version $Revision$
@@ -29,15 +30,13 @@ namespace Doctrine\ORM;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
- *
- * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
  */
 class Version
 {
     /**
      * Current Doctrine Version
      */
-    const VERSION = '2.7.1-DEV';
+    const VERSION = '2.5.14';
 
     /**
      * Compares a Doctrine version with the current one.

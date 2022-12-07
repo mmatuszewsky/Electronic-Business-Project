@@ -61,8 +61,6 @@ class RavenHandler extends AbstractProcessingHandler
      */
     public function __construct(Raven_Client $ravenClient, $level = Logger::DEBUG, $bubble = true)
     {
-        @trigger_error('The Monolog\Handler\RavenHandler class is deprecated. You should rather upgrade to the sentry/sentry 2.x and use Sentry\Monolog\Handler, see https://github.com/getsentry/sentry-php/blob/master/src/Monolog/Handler.php', E_USER_DEPRECATED);
-
         parent::__construct($level, $bubble);
 
         $this->ravenClient = $ravenClient;
@@ -86,7 +84,7 @@ class RavenHandler extends AbstractProcessingHandler
 
         // the record with the highest severity is the "main" one
         $record = array_reduce($records, function ($highest, $record) {
-            if (null === $highest || $record['level'] > $highest['level']) {
+            if ($record['level'] > $highest['level']) {
                 return $record;
             }
 

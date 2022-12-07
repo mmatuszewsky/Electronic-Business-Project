@@ -30,6 +30,6 @@ class FooTypeBarExtension extends AbstractTypeExtension
 
     public function getExtendedType()
     {
-        return FooType::class;
+        return __NAMESPACE__.'\FooType';
     }
 }

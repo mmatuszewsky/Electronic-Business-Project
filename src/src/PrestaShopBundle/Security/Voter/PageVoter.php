@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,17 +16,17 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Security\Voter;
 
 use Access;
-use PrestaShopBundle\Security\Admin\Employee;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
@@ -36,21 +35,21 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
  */
 class PageVoter extends Voter
 {
-    public const CREATE = 'create';
+    const CREATE = 'create';
 
-    public const UPDATE = 'update';
+    const UPDATE = 'update';
 
-    public const DELETE = 'delete';
+    const DELETE = 'delete';
 
-    public const READ = 'read';
+    const READ = 'read';
 
-    public const LEVEL_DELETE = 4;
+    const LEVEL_DELETE = 4;
 
-    public const LEVEL_UPDATE = 2;
+    const LEVEL_UPDATE = 2;
 
-    public const LEVEL_CREATE = 3;
+    const LEVEL_CREATE = 3;
 
-    public const LEVEL_READ = 1;
+    const LEVEL_READ = 1;
 
     /**
      * Indicates if this voter should pronounce on this attribute and subject.
@@ -62,7 +61,7 @@ class PageVoter extends Voter
      */
     protected function supports($attribute, $subject)
     {
-        return in_array($attribute, [self::CREATE, self::UPDATE, self::DELETE, self::READ]);
+        return in_array($attribute, array(self::CREATE, self::UPDATE, self::DELETE, self::READ));
     }
 
     /**
@@ -74,7 +73,6 @@ class PageVoter extends Voter
      */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
-        /** @var Employee $user */
         $user = $token->getUser();
         $employeeProfileId = $user->getData()->id_profile;
         $action = $this->buildAction($subject, $attribute);

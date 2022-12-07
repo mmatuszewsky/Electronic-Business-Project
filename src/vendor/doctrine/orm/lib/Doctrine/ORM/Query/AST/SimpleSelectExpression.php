@@ -32,7 +32,7 @@ namespace Doctrine\ORM\Query\AST;
 class SimpleSelectExpression extends Node
 {
     /**
-     * @var Node|string
+     * @var Node
      */
     public $expression;
 
@@ -42,7 +42,7 @@ class SimpleSelectExpression extends Node
     public $fieldIdentificationVariable;
 
     /**
-     * @param Node|string $expression
+     * @param Node $expression
      */
     public function __construct($expression)
     {

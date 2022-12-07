@@ -44,14 +44,16 @@ class DoctrineExtensionTest extends TestCase
 
         $this->extension->expects($this->any())
             ->method('getObjectManagerElementName')
-            ->willReturnCallback(function ($name) {
+            ->will($this->returnCallback(function ($name) {
                 return 'doctrine.orm.'.$name;
-            });
+            }));
     }
 
+    /**
+     * @expectedException \LogicException
+     */
     public function testFixManagersAutoMappingsWithTwoAutomappings()
     {
-        $this->expectException('LogicException');
         $emConfigs = [
             'em1' => [
                 'auto_mapping' => true,
@@ -186,6 +188,7 @@ class DoctrineExtensionTest extends TestCase
 
     /**
      * @param string $class
+     * @param array  $config
      *
      * @dataProvider providerBasicDrivers
      */
@@ -235,10 +238,12 @@ class DoctrineExtensionTest extends TestCase
         $this->assertTrue($container->hasAlias('doctrine.orm.default_metadata_cache'));
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage "unrecognized_type" is an unrecognized Doctrine cache driver.
+     */
     public function testUnrecognizedCacheDriverException()
     {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('"unrecognized_type" is an unrecognized Doctrine cache driver.');
         $cacheName = 'metadata_cache';
         $container = $this->createContainer();
         $objectManager = [

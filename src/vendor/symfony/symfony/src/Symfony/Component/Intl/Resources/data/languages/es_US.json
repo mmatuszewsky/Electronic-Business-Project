@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.47.86",
     "Names": {
         "ace": "acehnés",
         "alt": "altái meridional",
@@ -16,18 +17,18 @@
         "gmh": "alemán de la alta edad media",
         "grc": "griego antiguo",
         "gu": "gurayatí",
-        "hil": "hiligainón",
+        "hak": "hak",
         "hsn": "xiang (China)",
         "ht": "criollo haitiano",
-        "inh": "ingusetio",
         "kbd": "kabardiano",
         "krc": "karachay-balkar",
         "lo": "lao",
         "lus": "lushai",
         "mga": "irlandés medieval",
-        "nl_BE": "flamenco",
+        "nan": "nan",
         "nr": "ndebele meridional",
         "nso": "sotho septentrional",
+        "pcm": "pcm",
         "rm": "romanche",
         "rn": "kiroundi",
         "shu": "árabe chadiano",
@@ -39,9 +40,9 @@
         "tet": "tetún",
         "tn": "setchwana",
         "tyv": "tuviniano",
+        "tzm": "tamazight del Atlas Central",
         "wo": "wolof",
-        "xal": "kalmyk",
-        "zh_Hans": "chino simplificado",
-        "zh_Hant": "chino tradicional"
+        "wuu": "wuu",
+        "xal": "kalmyk"
     }
 }

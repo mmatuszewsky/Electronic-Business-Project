@@ -48,7 +48,7 @@ class ComposerResource implements SelfCheckingResourceInterface, \Serializable
     {
         self::refresh();
 
-        return array_values(self::$runtimeVendors) === array_values($this->vendors);
+        return self::$runtimeVendors === $this->vendors;
     }
 
     /**

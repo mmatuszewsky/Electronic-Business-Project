@@ -40,8 +40,6 @@ class DotenvTest extends TestCase
             ['FOO', "Missing = in the environment variable declaration in \".env\" at line 1.\n...FOO...\n     ^ line 1 offset 3"],
             ['FOO="foo', "Missing quote to end the value in \".env\" at line 1.\n...FOO=\"foo...\n          ^ line 1 offset 8"],
             ['FOO=\'foo', "Missing quote to end the value in \".env\" at line 1.\n...FOO='foo...\n          ^ line 1 offset 8"],
-            ["FOO=\"foo\nBAR=\"bar\"", "Missing quote to end the value in \".env\" at line 1.\n...FOO=\"foo\\nBAR=\"bar\"...\n                     ^ line 1 offset 18"],
-            ['FOO=\'foo'."\n", "Missing quote to end the value in \".env\" at line 1.\n...FOO='foo\\n...\n            ^ line 1 offset 9"],
             ['export FOO', "Unable to unset an environment variable in \".env\" at line 1.\n...export FOO...\n            ^ line 1 offset 10"],
             ['FOO=${FOO', "Unclosed braces on variable expansion in \".env\" at line 1.\n...FOO=\${FOO...\n           ^ line 1 offset 9"],
         ];
@@ -65,7 +63,6 @@ class DotenvTest extends TestCase
     public function getEnvData()
     {
         putenv('LOCAL=local');
-        $_ENV['LOCAL'] = 'local';
         $_ENV['REMOTE'] = 'remote';
 
         $tests = [
@@ -107,7 +104,6 @@ class DotenvTest extends TestCase
             ['FOO="bar\rfoo"', ['FOO' => "bar\rfoo"]],
             ['FOO=\'bar\nfoo\'', ['FOO' => 'bar\nfoo']],
             ['FOO=\'bar\rfoo\'', ['FOO' => 'bar\rfoo']],
-            ["FOO='bar\nfoo'", ['FOO' => "bar\nfoo"]],
             ['FOO=" FOO "', ['FOO' => ' FOO ']],
             ['FOO="  "', ['FOO' => '  ']],
             ['PATH="c:\\\\"', ['PATH' => 'c:\\']],
@@ -204,14 +200,16 @@ class DotenvTest extends TestCase
         $this->assertSame('BAZ', $bar);
     }
 
+    /**
+     * @expectedException \Symfony\Component\Dotenv\Exception\PathException
+     */
     public function testLoadDirectory()
     {
-        $this->expectException('Symfony\Component\Dotenv\Exception\PathException');
         $dotenv = new Dotenv();
         $dotenv->load(__DIR__);
     }
 
-    public function testServerSuperglobalIsNotOverridden()
+    public function testServerSuperglobalIsNotOverriden()
     {
         $originalValue = $_SERVER['argc'];
 
@@ -221,7 +219,7 @@ class DotenvTest extends TestCase
         $this->assertSame($originalValue, $_SERVER['argc']);
     }
 
-    public function testEnvVarIsNotOverridden()
+    public function testEnvVarIsNotOverriden()
     {
         putenv('TEST_ENV_VAR=original_value');
         $_SERVER['TEST_ENV_VAR'] = 'original_value';
@@ -232,7 +230,7 @@ class DotenvTest extends TestCase
         $this->assertSame('original_value', getenv('TEST_ENV_VAR'));
     }
 
-    public function testHttpVarIsPartiallyOverridden()
+    public function testHttpVarIsPartiallyOverriden()
     {
         $_SERVER['HTTP_TEST_ENV_VAR'] = 'http_value';
 
@@ -298,35 +296,5 @@ class DotenvTest extends TestCase
         $this->assertSame('bar1', getenv('BAR'));
         $this->assertSame('baz1', getenv('BAZ'));
         $this->assertSame('/var/www', getenv('DOCUMENT_ROOT'));
-    }
-
-    public function testGetVariablesValueFromEnvFirst()
-    {
-        $_ENV['APP_ENV'] = 'prod';
-        $dotenv = new Dotenv(true);
-
-        $test = "APP_ENV=dev\nTEST1=foo1_\${APP_ENV}";
-        $values = $dotenv->parse($test);
-        $this->assertSame('foo1_prod', $values['TEST1']);
-
-        if ('\\' !== \DIRECTORY_SEPARATOR) {
-            $test = "APP_ENV=dev\nTEST2=foo2_\$(php -r 'echo \$_SERVER[\"APP_ENV\"];')";
-            $values = $dotenv->parse($test);
-            $this->assertSame('foo2_prod', $values['TEST2']);
-        }
-    }
-
-    public function testGetVariablesValueFromGetenv()
-    {
-        putenv('Foo=Bar');
-
-        $dotenv = new Dotenv(true);
-
-        try {
-            $values = $dotenv->parse('Foo=${Foo}');
-            $this->assertSame('Bar', $values['Foo']);
-        } finally {
-            putenv('Foo');
-        }
     }
 }

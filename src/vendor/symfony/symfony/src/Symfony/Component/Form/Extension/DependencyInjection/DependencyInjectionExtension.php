@@ -29,13 +29,14 @@ class DependencyInjectionExtension implements FormExtensionInterface
     private $guesserServiceIds;
 
     /**
-     * @param iterable[] $typeExtensionServices
-     * @param iterable   $guesserServices
+     * @param ContainerInterface $typeContainer
+     * @param iterable[]         $typeExtensionServices
+     * @param iterable           $guesserServices
      */
     public function __construct(ContainerInterface $typeContainer, array $typeExtensionServices, $guesserServices, array $guesserServiceIds = null)
     {
         if (null !== $guesserServiceIds) {
-            @trigger_error(sprintf('Passing four arguments to the %s::__construct() method is deprecated since Symfony 3.3 and will be disallowed in Symfony 4.0. The new constructor only accepts three arguments.', __CLASS__), \E_USER_DEPRECATED);
+            @trigger_error(sprintf('Passing four arguments to the %s::__construct() method is deprecated since Symfony 3.3 and will be disallowed in Symfony 4.0. The new constructor only accepts three arguments.', __CLASS__), E_USER_DEPRECATED);
             $this->guesserServiceIds = $guesserServiceIds;
             $this->typeServiceIds = $typeExtensionServices;
             $typeExtensionServices = $guesserServices;

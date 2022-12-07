@@ -27,18 +27,18 @@
 
 namespace PrestaShop\TranslationToolsBundle\Translation\Manager;
 
-use PrestaShop\TranslationToolsBundle\Translation\Parser\CrowdinPhpParser;
 use Symfony\Component\Translation\MessageCatalogue;
+use PrestaShop\TranslationToolsBundle\Translation\Parser\CrowdinPhpParser;
 
 class OriginalStringManager
 {
-    /** @var string */
+    /** @var string $defaultLocale */
     private $defaultLocale = 'en-US';
 
-    /** @var MessageCatalogue */
+    /** @var MessageCatalogue $catalogue */
     private $catalogue;
 
-    /** @var CrowdinPhpParser */
+    /** @var CrowdinPhpParser $parser */
     private $parser;
 
     public function __construct(CrowdinPhpParser $crodwinPhpParser)

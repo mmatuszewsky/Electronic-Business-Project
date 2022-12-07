@@ -11,7 +11,7 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Tests\Functional;
 
-class AnnotatedControllerTest extends AbstractWebTestCase
+class AnnotatedControllerTest extends WebTestCase
 {
     /**
      * @dataProvider getRoutes

@@ -16,6 +16,7 @@ use Symfony\Bridge\Twig\Extension\TranslationExtension;
 use Symfony\Bridge\Twig\Translation\TwigExtractor;
 use Symfony\Component\Translation\MessageCatalogue;
 use Twig\Environment;
+use Twig\Error\Error;
 use Twig\Loader\ArrayLoader;
 
 class TwigExtractorTest extends TestCase
@@ -75,17 +76,28 @@ class TwigExtractorTest extends TestCase
     }
 
     /**
+     * @expectedException \Twig\Error\Error
      * @dataProvider resourcesWithSyntaxErrorsProvider
      */
-    public function testExtractSyntaxError($resources, array $messages)
+    public function testExtractSyntaxError($resources)
     {
         $twig = new Environment($this->getMockBuilder('Twig\Loader\LoaderInterface')->getMock());
         $twig->addExtension(new TranslationExtension($this->getMockBuilder('Symfony\Component\Translation\TranslatorInterface')->getMock()));
 
         $extractor = new TwigExtractor($twig);
-        $catalogue = new MessageCatalogue('en');
-        $extractor->extract($resources, $catalogue);
-        $this->assertSame($messages, $catalogue->all());
+
+        try {
+            $extractor->extract($resources, new MessageCatalogue('en'));
+        } catch (Error $e) {
+            if (method_exists($e, 'getSourceContext')) {
+                $this->assertSame(\dirname(__DIR__).strtr('/Fixtures/extractor/syntax_error.twig', '/', \DIRECTORY_SEPARATOR), $e->getFile());
+                $this->assertSame(1, $e->getLine());
+                $this->assertSame('Unclosed "block".', $e->getMessage());
+            } else {
+                $this->expectExceptionMessageRegExp('/Unclosed "block" in ".*extractor(\\/|\\\\)syntax_error\\.twig" at line 1/');
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -94,9 +106,9 @@ class TwigExtractorTest extends TestCase
     public function resourcesWithSyntaxErrorsProvider()
     {
         return [
-            [__DIR__.'/../Fixtures', ['messages' => ['Hi!' => 'Hi!']]],
-            [__DIR__.'/../Fixtures/extractor/syntax_error.twig', []],
-            [new \SplFileInfo(__DIR__.'/../Fixtures/extractor/syntax_error.twig'), []],
+            [__DIR__.'/../Fixtures'],
+            [__DIR__.'/../Fixtures/extractor/syntax_error.twig'],
+            [new \SplFileInfo(__DIR__.'/../Fixtures/extractor/syntax_error.twig')],
         ];
     }
 

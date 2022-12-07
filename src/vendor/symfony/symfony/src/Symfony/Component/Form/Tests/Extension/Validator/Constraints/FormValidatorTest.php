@@ -18,7 +18,6 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Form\Extension\Core\DataMapper\PropertyPathMapper;
 use Symfony\Component\Form\Extension\Validator\Constraints\Form;
 use Symfony\Component\Form\Extension\Validator\Constraints\FormValidator;
-use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormFactoryBuilder;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -51,9 +50,7 @@ class FormValidatorTest extends ConstraintValidatorTestCase
     protected function setUp()
     {
         $this->dispatcher = new EventDispatcher();
-        $this->factory = (new FormFactoryBuilder())
-            ->addExtension(new ValidatorExtension(Validation::createValidator()))
-            ->getFormFactory();
+        $this->factory = (new FormFactoryBuilder())->getFormFactory();
 
         parent::setUp();
 
@@ -135,10 +132,7 @@ class FormValidatorTest extends ConstraintValidatorTestCase
         $parent->add($form);
 
         $form->setData($object);
-        $parent->submit([]);
 
-        $this->assertTrue($form->isSubmitted());
-        $this->assertTrue($form->isSynchronized());
         $this->expectNoValidate();
 
         $this->validator->validate($form, new Form());
@@ -193,15 +187,10 @@ class FormValidatorTest extends ConstraintValidatorTestCase
                 'validation_groups' => [],
             ])
             ->setData($object)
-            ->setCompound(true)
-            ->setDataMapper(new PropertyPathMapper())
             ->getForm();
 
         $form->setData($object);
-        $form->submit([]);
 
-        $this->assertTrue($form->isSubmitted());
-        $this->assertTrue($form->isSynchronized());
         $this->expectNoValidate();
 
         $this->validator->validate($form, new Form());
@@ -224,8 +213,6 @@ class FormValidatorTest extends ConstraintValidatorTestCase
         // Launch transformer
         $form->submit('foo');
 
-        $this->assertTrue($form->isSubmitted());
-        $this->assertTrue($form->isSynchronized());
         $this->expectNoValidate();
 
         $this->validator->validate($form, new Form());
@@ -248,8 +235,6 @@ class FormValidatorTest extends ConstraintValidatorTestCase
         $form->add($child);
         $form->submit([]);
 
-        $this->assertTrue($form->isSubmitted());
-        $this->assertTrue($form->isSynchronized());
         $this->expectNoValidate();
 
         $this->validator->validate($form, new Form());
@@ -278,8 +263,6 @@ class FormValidatorTest extends ConstraintValidatorTestCase
         // Launch transformer
         $form->submit('foo');
 
-        $this->assertTrue($form->isSubmitted());
-        $this->assertFalse($form->isSynchronized());
         $this->expectNoValidate();
 
         $this->validator->validate($form, new Form());
@@ -315,8 +298,6 @@ class FormValidatorTest extends ConstraintValidatorTestCase
         // Launch transformer
         $form->submit('foo');
 
-        $this->assertTrue($form->isSubmitted());
-        $this->assertFalse($form->isSynchronized());
         $this->expectNoValidate();
 
         $this->validator->validate($form, new Form());
@@ -362,6 +343,38 @@ class FormValidatorTest extends ConstraintValidatorTestCase
             ->assertRaised();
     }
 
+    // https://github.com/symfony/symfony/issues/4359
+    public function testDontMarkInvalidIfAnyChildIsNotSynchronized()
+    {
+        $object = new \stdClass();
+        $object->child = 'bar';
+
+        $failingTransformer = new CallbackTransformer(
+            function ($data) { return $data; },
+            function () { throw new TransformationFailedException(); }
+        );
+
+        $form = $this->getBuilder('name', '\stdClass')
+            ->setData($object)
+            ->addViewTransformer($failingTransformer)
+            ->setCompound(true)
+            ->setDataMapper(new PropertyPathMapper())
+            ->add(
+                $this->getBuilder('child')
+                    ->addViewTransformer($failingTransformer)
+            )
+            ->getForm();
+
+        // Launch transformer
+        $form->submit(['child' => 'foo']);
+
+        $this->expectNoValidate();
+
+        $this->validator->validate($form, new Form());
+
+        $this->assertNoViolation();
+    }
+
     public function testHandleGroupSequenceValidationGroups()
     {
         $object = new \stdClass();
@@ -369,8 +382,8 @@ class FormValidatorTest extends ConstraintValidatorTestCase
         $form = $this->getCompoundForm($object, $options);
         $form->submit([]);
 
-        $this->expectValidateAt(0, 'data', $object, 'group1');
-        $this->expectValidateAt(1, 'data', $object, 'group2');
+        $this->expectValidateAt(0, 'data', $object, new GroupSequence(['group1', 'group2']));
+        $this->expectValidateAt(1, 'data', $object, new GroupSequence(['group1', 'group2']));
 
         $this->validator->validate($form, new Form());
 
@@ -560,10 +573,7 @@ class FormValidatorTest extends ConstraintValidatorTestCase
         $form = $this->getBuilder()
             ->setData('scalar')
             ->getForm();
-        $form->submit('foo');
 
-        $this->assertTrue($form->isSubmitted());
-        $this->assertTrue($form->isSynchronized());
         $this->expectNoValidate();
 
         $this->validator->validate($form, new Form());
@@ -581,10 +591,7 @@ class FormValidatorTest extends ConstraintValidatorTestCase
 
         $form->submit(['foo' => 'bar']);
 
-        $this->assertTrue($form->isSubmitted());
-        $this->assertTrue($form->isSynchronized());
-
-        $this->expectValidateValueAt(0, 'children[child]', $form->get('child'), new Form());
+        $this->expectNoValidate();
 
         $this->validator->validate($form, new Form());
 
@@ -605,10 +612,7 @@ class FormValidatorTest extends ConstraintValidatorTestCase
 
         $form->submit(['foo' => 'bar', 'baz' => 'qux', 'quux' => 'quuz']);
 
-        $this->assertTrue($form->isSubmitted());
-        $this->assertTrue($form->isSynchronized());
-
-        $this->expectValidateValueAt(0, 'children[child]', $form->get('child'), new Form());
+        $this->expectNoValidate();
 
         $this->validator->validate($form, new Form());
 
@@ -677,6 +681,7 @@ class FormValidatorTest extends ConstraintValidatorTestCase
     /**
      * @param string $name
      * @param string $dataClass
+     * @param array  $options
      *
      * @return FormBuilder
      */
@@ -697,7 +702,7 @@ class FormValidatorTest extends ConstraintValidatorTestCase
 
     private function getCompoundForm($data, array $options = [])
     {
-        return $this->getBuilder('name', \is_object($data) ? \get_class($data) : null, $options)
+        return $this->getBuilder('name', \get_class($data), $options)
             ->setData($data)
             ->setCompound(true)
             ->setDataMapper(new PropertyPathMapper())

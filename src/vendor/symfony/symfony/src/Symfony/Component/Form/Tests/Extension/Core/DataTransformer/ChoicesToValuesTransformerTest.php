@@ -53,9 +53,11 @@ class ChoicesToValuesTransformerTest extends TestCase
         $this->assertSame([], $this->transformer->transform(null));
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\TransformationFailedException
+     */
     public function testTransformExpectsArray()
     {
-        $this->expectException('Symfony\Component\Form\Exception\TransformationFailedException');
         $this->transformer->transform('foobar');
     }
 
@@ -79,9 +81,11 @@ class ChoicesToValuesTransformerTest extends TestCase
         $this->assertSame([], $this->transformerWithNull->reverseTransform(null));
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\TransformationFailedException
+     */
     public function testReverseTransformExpectsArray()
     {
-        $this->expectException('Symfony\Component\Form\Exception\TransformationFailedException');
         $this->transformer->reverseTransform('foobar');
     }
 }

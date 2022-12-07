@@ -145,21 +145,21 @@ class FileType extends AbstractType
     {
         $messageParameters = [];
 
-        if (\UPLOAD_ERR_INI_SIZE === $errorCode) {
+        if (UPLOAD_ERR_INI_SIZE === $errorCode) {
             list($limitAsString, $suffix) = $this->factorizeSizes(0, self::getMaxFilesize());
             $messageTemplate = 'The file is too large. Allowed maximum size is {{ limit }} {{ suffix }}.';
             $messageParameters = [
                 '{{ limit }}' => $limitAsString,
                 '{{ suffix }}' => $suffix,
             ];
-        } elseif (\UPLOAD_ERR_FORM_SIZE === $errorCode) {
+        } elseif (UPLOAD_ERR_FORM_SIZE === $errorCode) {
             $messageTemplate = 'The file is too large.';
         } else {
             $messageTemplate = 'The file could not be uploaded.';
         }
 
         if (null !== $this->translator) {
-            $message = $this->translator->trans($messageTemplate, $messageParameters, 'validators');
+            $message = $this->translator->trans($messageTemplate, $messageParameters);
         } else {
             $message = strtr($messageTemplate, $messageParameters);
         }
@@ -179,7 +179,7 @@ class FileType extends AbstractType
         $iniMax = strtolower(ini_get('upload_max_filesize'));
 
         if ('' === $iniMax) {
-            return \PHP_INT_MAX;
+            return PHP_INT_MAX;
         }
 
         $max = ltrim($iniMax, '+');

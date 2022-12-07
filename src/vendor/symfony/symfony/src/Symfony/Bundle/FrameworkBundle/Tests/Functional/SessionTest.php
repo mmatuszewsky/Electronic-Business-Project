@@ -11,7 +11,7 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Tests\Functional;
 
-class SessionTest extends AbstractWebTestCase
+class SessionTest extends WebTestCase
 {
     /**
      * Tests session attributes persist.
@@ -27,23 +27,23 @@ class SessionTest extends AbstractWebTestCase
 
         // no session
         $crawler = $client->request('GET', '/session');
-        $this->assertStringContainsString('You are new here and gave no name.', $crawler->text());
+        $this->assertContains('You are new here and gave no name.', $crawler->text());
 
         // remember name
         $crawler = $client->request('GET', '/session/drak');
-        $this->assertStringContainsString('Hello drak, nice to meet you.', $crawler->text());
+        $this->assertContains('Hello drak, nice to meet you.', $crawler->text());
 
         // prove remembered name
         $crawler = $client->request('GET', '/session');
-        $this->assertStringContainsString('Welcome back drak, nice to meet you.', $crawler->text());
+        $this->assertContains('Welcome back drak, nice to meet you.', $crawler->text());
 
         // clear session
         $crawler = $client->request('GET', '/session_logout');
-        $this->assertStringContainsString('Session cleared.', $crawler->text());
+        $this->assertContains('Session cleared.', $crawler->text());
 
         // prove cleared session
         $crawler = $client->request('GET', '/session');
-        $this->assertStringContainsString('You are new here and gave no name.', $crawler->text());
+        $this->assertContains('You are new here and gave no name.', $crawler->text());
     }
 
     /**
@@ -59,42 +59,19 @@ class SessionTest extends AbstractWebTestCase
         }
 
         // set flash
-        $client->request('GET', '/session_setflash/Hello%20world.');
+        $crawler = $client->request('GET', '/session_setflash/Hello%20world.');
 
         // check flash displays on redirect
-        $this->assertStringContainsString('Hello world.', $client->followRedirect()->text());
+        $this->assertContains('Hello world.', $client->followRedirect()->text());
 
         // check flash is gone
         $crawler = $client->request('GET', '/session_showflash');
-        $this->assertStringContainsString('No flash was set.', $crawler->text());
-    }
-
-    /**
-     * Tests flash messages work when flashbag service is injected to the constructor.
-     *
-     * @dataProvider getConfigs
-     */
-    public function testFlashOnInjectedFlashbag($config, $insulate)
-    {
-        $client = $this->createClient(['test_case' => 'Session', 'root_config' => $config]);
-        if ($insulate) {
-            $client->insulate();
-        }
-
-        // set flash
-        $client->request('GET', '/injected_flashbag/session_setflash/Hello%20world.');
-
-        // check flash displays on redirect
-        $this->assertStringContainsString('Hello world.', $client->followRedirect()->text());
-
-        // check flash is gone
-        $crawler = $client->request('GET', '/session_showflash');
-        $this->assertStringContainsString('No flash was set.', $crawler->text());
+        $this->assertContains('No flash was set.', $crawler->text());
     }
 
     /**
      * See if two separate insulated clients can run without
-     * polluting each other's session data.
+     * polluting eachother's session data.
      *
      * @dataProvider getConfigs
      */
@@ -114,39 +91,39 @@ class SessionTest extends AbstractWebTestCase
 
         // new session, so no name set.
         $crawler1 = $client1->request('GET', '/session');
-        $this->assertStringContainsString('You are new here and gave no name.', $crawler1->text());
+        $this->assertContains('You are new here and gave no name.', $crawler1->text());
 
         // set name of client1
         $crawler1 = $client1->request('GET', '/session/client1');
-        $this->assertStringContainsString('Hello client1, nice to meet you.', $crawler1->text());
+        $this->assertContains('Hello client1, nice to meet you.', $crawler1->text());
 
         // no session for client2
         $crawler2 = $client2->request('GET', '/session');
-        $this->assertStringContainsString('You are new here and gave no name.', $crawler2->text());
+        $this->assertContains('You are new here and gave no name.', $crawler2->text());
 
         // remember name client2
         $crawler2 = $client2->request('GET', '/session/client2');
-        $this->assertStringContainsString('Hello client2, nice to meet you.', $crawler2->text());
+        $this->assertContains('Hello client2, nice to meet you.', $crawler2->text());
 
         // prove remembered name of client1
         $crawler1 = $client1->request('GET', '/session');
-        $this->assertStringContainsString('Welcome back client1, nice to meet you.', $crawler1->text());
+        $this->assertContains('Welcome back client1, nice to meet you.', $crawler1->text());
 
         // prove remembered name of client2
         $crawler2 = $client2->request('GET', '/session');
-        $this->assertStringContainsString('Welcome back client2, nice to meet you.', $crawler2->text());
+        $this->assertContains('Welcome back client2, nice to meet you.', $crawler2->text());
 
         // clear client1
         $crawler1 = $client1->request('GET', '/session_logout');
-        $this->assertStringContainsString('Session cleared.', $crawler1->text());
+        $this->assertContains('Session cleared.', $crawler1->text());
 
         // prove client1 data is cleared
         $crawler1 = $client1->request('GET', '/session');
-        $this->assertStringContainsString('You are new here and gave no name.', $crawler1->text());
+        $this->assertContains('You are new here and gave no name.', $crawler1->text());
 
         // prove remembered name of client2 remains untouched.
         $crawler2 = $client2->request('GET', '/session');
-        $this->assertStringContainsString('Welcome back client2, nice to meet you.', $crawler2->text());
+        $this->assertContains('Welcome back client2, nice to meet you.', $crawler2->text());
     }
 
     /**

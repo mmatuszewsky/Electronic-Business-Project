@@ -19,7 +19,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 /**
  * @group functional
  */
-class ConfigDebugCommandTest extends AbstractWebTestCase
+class ConfigDebugCommandTest extends WebTestCase
 {
     private $application;
 
@@ -36,7 +36,7 @@ class ConfigDebugCommandTest extends AbstractWebTestCase
         $ret = $tester->execute(['name' => 'TestBundle']);
 
         $this->assertSame(0, $ret, 'Returns 0 in case of success');
-        $this->assertStringContainsString('custom: foo', $tester->getDisplay());
+        $this->assertContains('custom: foo', $tester->getDisplay());
     }
 
     public function testDumpBundleOption()
@@ -45,7 +45,7 @@ class ConfigDebugCommandTest extends AbstractWebTestCase
         $ret = $tester->execute(['name' => 'TestBundle', 'path' => 'custom']);
 
         $this->assertSame(0, $ret, 'Returns 0 in case of success');
-        $this->assertStringContainsString('foo', $tester->getDisplay());
+        $this->assertContains('foo', $tester->getDisplay());
     }
 
     public function testParametersValuesAreResolved()
@@ -54,8 +54,8 @@ class ConfigDebugCommandTest extends AbstractWebTestCase
         $ret = $tester->execute(['name' => 'framework']);
 
         $this->assertSame(0, $ret, 'Returns 0 in case of success');
-        $this->assertStringContainsString("locale: '%env(LOCALE)%'", $tester->getDisplay());
-        $this->assertStringContainsString('secret: test', $tester->getDisplay());
+        $this->assertContains("locale: '%env(LOCALE)%'", $tester->getDisplay());
+        $this->assertContains('secret: test', $tester->getDisplay());
     }
 
     public function testDumpUndefinedBundleOption()
@@ -63,7 +63,7 @@ class ConfigDebugCommandTest extends AbstractWebTestCase
         $tester = $this->createCommandTester();
         $tester->execute(['name' => 'TestBundle', 'path' => 'foo']);
 
-        $this->assertStringContainsString('Unable to find configuration for "test.foo"', $tester->getDisplay());
+        $this->assertContains('Unable to find configuration for "test.foo"', $tester->getDisplay());
     }
 
     /**

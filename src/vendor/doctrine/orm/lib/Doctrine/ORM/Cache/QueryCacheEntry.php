@@ -54,8 +54,6 @@ class QueryCacheEntry implements CacheEntry
 
     /**
      * @param array $values
-     *
-     * @return QueryCacheEntry
      */
     public static function __set_state(array $values)
     {

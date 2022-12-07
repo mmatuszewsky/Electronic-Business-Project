@@ -15,7 +15,7 @@ use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
 use Symfony\Component\Cache\Exception\InvalidArgumentException;
 
-class CachePoolsTest extends AbstractWebTestCase
+class CachePoolsTest extends WebTestCase
 {
     public function testCachePools()
     {
@@ -34,13 +34,13 @@ class CachePoolsTest extends AbstractWebTestCase
                 throw $e;
             }
             $this->markTestSkipped($e->getMessage());
-        } catch (\PHPUnit\Framework\Error\Warning $e) {
+        } catch (\PHPUnit_Framework_Error_Warning $e) {
             if (0 !== strpos($e->getMessage(), 'unable to connect to')) {
                 throw $e;
             }
             $this->markTestSkipped($e->getMessage());
         } catch (InvalidArgumentException $e) {
-            if (0 !== strpos($e->getMessage(), 'Redis connection ')) {
+            if (0 !== strpos($e->getMessage(), 'Redis connection failed')) {
                 throw $e;
             }
             $this->markTestSkipped($e->getMessage());
@@ -59,7 +59,7 @@ class CachePoolsTest extends AbstractWebTestCase
                 throw $e;
             }
             $this->markTestSkipped($e->getMessage());
-        } catch (\PHPUnit\Framework\Error\Warning $e) {
+        } catch (\PHPUnit_Framework_Error_Warning $e) {
             if (0 !== strpos($e->getMessage(), 'unable to connect to')) {
                 throw $e;
             }

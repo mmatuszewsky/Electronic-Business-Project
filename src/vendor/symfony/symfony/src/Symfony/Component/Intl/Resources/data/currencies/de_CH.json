@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.47.86",
     "Names": {
         "BYN": [
             "BYN",
@@ -8,6 +9,10 @@
             "BYR",
             "Weissrussischer Rubel (2000–2016)"
         ],
+        "CHF": [
+            "CHF",
+            "Schweizer Franken"
+        ],
         "EUR": [
             "EUR",
             "Euro"
@@ -15,6 +20,14 @@
         "STN": [
             "STN",
             "São-toméischer Dobra (2018)"
+        ],
+        "VEF": [
+            "VEF",
+            "Venezolanischer Bolívar"
+        ],
+        "VES": [
+            "VES",
+            "VES"
         ]
     }
 }

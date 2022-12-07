@@ -41,9 +41,10 @@ class Expr
      *     // (u.type = ?1) AND (u.role = ?2)
      *     $expr->andX($expr->eq('u.type', ':1'), $expr->eq('u.role', ':2'));
      *
-     * @param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string $x Optional clause. Defaults to null,
-     *                                                               but requires at least one defined
-     *                                                               when converting to string.
+     * @param \Doctrine\ORM\Query\Expr\Comparison |
+     *        \Doctrine\ORM\Query\Expr\Func |
+     *        \Doctrine\ORM\Query\Expr\Orx
+     *        $x Optional clause. Defaults to null, but requires at least one defined when converting to string.
      *
      * @return Expr\Andx
      */
@@ -61,9 +62,8 @@ class Expr
      *     // (u.type = ?1) OR (u.role = ?2)
      *     $q->where($q->expr()->orX('u.type = ?1', 'u.role = ?2'));
      *
-     * @param Expr\Comparison|Expr\Func|Expr\Andx|Expr\Orx|string $x Optional clause. Defaults to null,
-     *                                                               but requires at least one defined
-     *                                                               when converting to string.
+     * @param mixed $x Optional clause. Defaults to null, but requires
+     *                 at least one defined when converting to string.
      *
      * @return Expr\Orx
      */
@@ -220,7 +220,7 @@ class Expr
      */
     public function avg($x)
     {
-        return new Expr\Func('AVG', [$x]);
+        return new Expr\Func('AVG', array($x));
     }
 
     /**
@@ -232,7 +232,7 @@ class Expr
      */
     public function max($x)
     {
-        return new Expr\Func('MAX', [$x]);
+        return new Expr\Func('MAX', array($x));
     }
 
     /**
@@ -244,7 +244,7 @@ class Expr
      */
     public function min($x)
     {
-        return new Expr\Func('MIN', [$x]);
+        return new Expr\Func('MIN', array($x));
     }
 
     /**
@@ -256,7 +256,7 @@ class Expr
      */
     public function count($x)
     {
-        return new Expr\Func('COUNT', [$x]);
+        return new Expr\Func('COUNT', array($x));
     }
 
     /**
@@ -280,7 +280,7 @@ class Expr
      */
     public function exists($subquery)
     {
-        return new Expr\Func('EXISTS', [$subquery]);
+        return new Expr\Func('EXISTS', array($subquery));
     }
 
     /**
@@ -292,7 +292,7 @@ class Expr
      */
     public function all($subquery)
     {
-        return new Expr\Func('ALL', [$subquery]);
+        return new Expr\Func('ALL', array($subquery));
     }
 
     /**
@@ -304,7 +304,7 @@ class Expr
      */
     public function some($subquery)
     {
-        return new Expr\Func('SOME', [$subquery]);
+        return new Expr\Func('SOME', array($subquery));
     }
 
     /**
@@ -316,7 +316,7 @@ class Expr
      */
     public function any($subquery)
     {
-        return new Expr\Func('ANY', [$subquery]);
+        return new Expr\Func('ANY', array($subquery));
     }
 
     /**
@@ -328,7 +328,7 @@ class Expr
      */
     public function not($restriction)
     {
-        return new Expr\Func('NOT', [$restriction]);
+        return new Expr\Func('NOT', array($restriction));
     }
 
     /**
@@ -340,7 +340,7 @@ class Expr
      */
     public function abs($x)
     {
-        return new Expr\Func('ABS', [$x]);
+        return new Expr\Func('ABS', array($x));
     }
 
     /**
@@ -389,7 +389,7 @@ class Expr
      *
      *     [php]
      *     // u.numChildren + 1
-     *     $q->expr()->sum('u.numChildren', '1')
+     *     $q->expr()->diff('u.numChildren', '1')
      *
      * @param mixed $x Left expression.
      * @param mixed $y Right expression.
@@ -429,7 +429,7 @@ class Expr
      */
     public function sqrt($x)
     {
-        return new Expr\Func('SQRT', [$x]);
+        return new Expr\Func('SQRT', array($x));
     }
 
     /**
@@ -449,7 +449,6 @@ class Expr
                 }
             }
         }
-
         return new Expr\Func($x . ' IN', (array) $y);
     }
 
@@ -457,7 +456,7 @@ class Expr
      * Creates a NOT IN() expression with the given arguments.
      *
      * @param string $x Field in string format to be restricted by NOT IN() function.
-     * @param mixed  $y Argument to be used in NOT IN() function.
+     * @param mixed $y Argument to be used in NOT IN() function.
      *
      * @return Expr\Func
      */
@@ -470,7 +469,6 @@ class Expr
                 }
             }
         }
-
         return new Expr\Func($x . ' NOT IN', (array) $y);
     }
 
@@ -528,13 +526,13 @@ class Expr
      * Creates a CONCAT() function expression with the given arguments.
      *
      * @param mixed $x First argument to be used in CONCAT() function.
-     * @param mixed $y,... Other arguments to be used in CONCAT() function.
+     * @param mixed $y Second argument to be used in CONCAT() function.
      *
      * @return Expr\Func
      */
     public function concat($x, $y)
     {
-        return new Expr\Func('CONCAT', func_get_args());
+        return new Expr\Func('CONCAT', array($x, $y));
     }
 
     /**
@@ -548,11 +546,10 @@ class Expr
      */
     public function substring($x, $from, $len = null)
     {
-        $args = [$x, $from];
+        $args = array($x, $from);
         if (null !== $len) {
             $args[] = $len;
         }
-
         return new Expr\Func('SUBSTRING', $args);
     }
 
@@ -565,7 +562,7 @@ class Expr
      */
     public function lower($x)
     {
-        return new Expr\Func('LOWER', [$x]);
+        return new Expr\Func('LOWER', array($x));
     }
 
     /**
@@ -577,7 +574,7 @@ class Expr
      */
     public function upper($x)
     {
-        return new Expr\Func('UPPER', [$x]);
+        return new Expr\Func('UPPER', array($x));
     }
 
     /**
@@ -589,7 +586,7 @@ class Expr
      */
     public function length($x)
     {
-        return new Expr\Func('LENGTH', [$x]);
+        return new Expr\Func('LENGTH', array($x));
     }
 
     /**
@@ -617,19 +614,19 @@ class Expr
             return (string) $literal;
         } else if (is_bool($literal)) {
             return $literal ? "true" : "false";
+        } else {
+            return "'" . str_replace("'", "''", $literal) . "'";
         }
-
-        return "'" . str_replace("'", "''", $literal) . "'";
     }
 
     /**
      * Creates an instance of BETWEEN() function, with the given argument.
      *
-     * @param mixed          $val Valued to be inspected by range values.
-     * @param integer|string $x   Starting range value to be used in BETWEEN() function.
-     * @param integer|string $y   End point value to be used in BETWEEN() function.
+     * @param mixed   $val Valued to be inspected by range values.
+     * @param integer $x   Starting range value to be used in BETWEEN() function.
+     * @param integer $y   End point value to be used in BETWEEN() function.
      *
-     * @return string A BETWEEN expression.
+     * @return Expr\Func A BETWEEN expression.
      */
     public function between($val, $x, $y)
     {

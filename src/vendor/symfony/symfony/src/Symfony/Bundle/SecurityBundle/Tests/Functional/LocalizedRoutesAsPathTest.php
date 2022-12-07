@@ -11,7 +11,7 @@
 
 namespace Symfony\Bundle\SecurityBundle\Tests\Functional;
 
-class LocalizedRoutesAsPathTest extends AbstractWebTestCase
+class LocalizedRoutesAsPathTest extends WebTestCase
 {
     /**
      * @dataProvider getLocales

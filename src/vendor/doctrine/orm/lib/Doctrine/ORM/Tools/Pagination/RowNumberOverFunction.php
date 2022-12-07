@@ -23,6 +23,7 @@ namespace Doctrine\ORM\Tools\Pagination;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 
+
 /**
  * RowNumberOverFunction
  *
@@ -40,7 +41,6 @@ class RowNumberOverFunction extends FunctionNode
 
     /**
      * @override
-     * @inheritdoc
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
@@ -51,7 +51,6 @@ class RowNumberOverFunction extends FunctionNode
 
     /**
      * @override
-     * @inheritdoc
      *
      * @throws ORMException
      */

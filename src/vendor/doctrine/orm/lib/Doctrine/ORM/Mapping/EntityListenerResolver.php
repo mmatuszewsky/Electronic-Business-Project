@@ -31,29 +31,25 @@ interface EntityListenerResolver
     /**
      * Clear all instances from the set, or a specific class when given.
      *
-     * @param string $className The fully-qualified class name
-     *
+     * @param  string $className The fully-qualified class name
+     * 
      * @return void
-     *
-     * @psalm-param class-string $className
      */
     function clear($className = null);
 
     /**
      * Returns a entity listener instance for the given class name.
      *
-     * @param string $className The fully-qualified class name
-     *
-     * @return object An entity listener
-     *
-     * @psalm-param class-string $className
+     * @param   string $className The fully-qualified class name
+     * 
+     * @return  object An entity listener
      */
     function resolve($className);
 
     /**
      * Register a entity listener instance.
      *
-     * @param object $object An entity listener
+     * @param   object $object An entity listener
      */
     function register($object);
 }

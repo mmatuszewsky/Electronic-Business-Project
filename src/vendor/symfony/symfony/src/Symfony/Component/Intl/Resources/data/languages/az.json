@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.17",
     "Names": {
         "aa": "afar",
         "ab": "abxaz",
@@ -130,7 +131,6 @@
         "eu": "bask",
         "ewo": "evondo",
         "fa": "fars",
-        "fa_AF": "dari",
         "fan": "fang",
         "fat": "fanti",
         "ff": "fula",
@@ -335,6 +335,7 @@
         "no": "norveç",
         "nog": "noqay",
         "non": "qədim nors",
+        "nqo": "nqo",
         "nr": "cənubi ndebele",
         "nso": "şimal soto",
         "nus": "nuer",

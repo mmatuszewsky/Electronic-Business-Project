@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.20",
     "Names": {
         "AC": "Insula Ascension",
         "AD": "Andorra",
@@ -145,7 +146,7 @@
         "MF": "Sfântul Martin",
         "MG": "Madagascar",
         "MH": "Insulele Marshall",
-        "MK": "Macedonia de Nord",
+        "MK": "Republica Macedonia",
         "ML": "Mali",
         "MM": "Myanmar (Birmania)",
         "MN": "Mongolia",
@@ -210,7 +211,7 @@
         "SO": "Somalia",
         "SR": "Suriname",
         "SS": "Sudanul de Sud",
-        "ST": "São Tomé și Príncipe",
+        "ST": "Sao Tome și Principe",
         "SV": "El Salvador",
         "SX": "Sint-Maarten",
         "SY": "Siria",

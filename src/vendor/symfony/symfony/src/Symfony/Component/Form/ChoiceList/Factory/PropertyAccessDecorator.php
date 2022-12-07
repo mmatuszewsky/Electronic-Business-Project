@@ -70,7 +70,7 @@ class PropertyAccessDecorator implements ChoiceListFactoryInterface
         if (\is_string($value) && !\is_callable($value)) {
             $value = new PropertyPath($value);
         } elseif (\is_string($value) && \is_callable($value)) {
-            @trigger_error('Passing callable strings is deprecated since Symfony 3.1 and PropertyAccessDecorator will treat them as property paths in 4.0. You should use a "\Closure" instead.', \E_USER_DEPRECATED);
+            @trigger_error('Passing callable strings is deprecated since Symfony 3.1 and PropertyAccessDecorator will treat them as property paths in 4.0. You should use a "\Closure" instead.', E_USER_DEPRECATED);
         }
 
         if ($value instanceof PropertyPath) {
@@ -80,7 +80,9 @@ class PropertyAccessDecorator implements ChoiceListFactoryInterface
                 // when such values are passed to
                 // ChoiceListInterface::getValuesForChoices(). Handle this case
                 // so that the call to getValue() doesn't break.
-                return \is_object($choice) || \is_array($choice) ? $accessor->getValue($choice, $value) : null;
+                if (\is_object($choice) || \is_array($choice)) {
+                    return $accessor->getValue($choice, $value);
+                }
             };
         }
 
@@ -101,7 +103,7 @@ class PropertyAccessDecorator implements ChoiceListFactoryInterface
         if (\is_string($value) && !\is_callable($value)) {
             $value = new PropertyPath($value);
         } elseif (\is_string($value) && \is_callable($value)) {
-            @trigger_error('Passing callable strings is deprecated since Symfony 3.1 and PropertyAccessDecorator will treat them as property paths in 4.0. You should use a "\Closure" instead.', \E_USER_DEPRECATED);
+            @trigger_error('Passing callable strings is deprecated since Symfony 3.1 and PropertyAccessDecorator will treat them as property paths in 4.0. You should use a "\Closure" instead.', E_USER_DEPRECATED);
         }
 
         if ($value instanceof PropertyPath) {
@@ -111,7 +113,9 @@ class PropertyAccessDecorator implements ChoiceListFactoryInterface
                 // when such values are passed to
                 // ChoiceListInterface::getValuesForChoices(). Handle this case
                 // so that the call to getValue() doesn't break.
-                return \is_object($choice) || \is_array($choice) ? $accessor->getValue($choice, $value) : null;
+                if (\is_object($choice) || \is_array($choice)) {
+                    return $accessor->getValue($choice, $value);
+                }
             };
         }
 
@@ -137,7 +141,7 @@ class PropertyAccessDecorator implements ChoiceListFactoryInterface
         if (\is_string($label) && !\is_callable($label)) {
             $label = new PropertyPath($label);
         } elseif (\is_string($label) && \is_callable($label)) {
-            @trigger_error('Passing callable strings is deprecated since Symfony 3.1 and PropertyAccessDecorator will treat them as property paths in 4.0. You should use a "\Closure" instead.', \E_USER_DEPRECATED);
+            @trigger_error('Passing callable strings is deprecated since Symfony 3.1 and PropertyAccessDecorator will treat them as property paths in 4.0. You should use a "\Closure" instead.', E_USER_DEPRECATED);
         }
 
         if ($label instanceof PropertyPath) {
@@ -149,7 +153,7 @@ class PropertyAccessDecorator implements ChoiceListFactoryInterface
         if (\is_string($preferredChoices) && !\is_callable($preferredChoices)) {
             $preferredChoices = new PropertyPath($preferredChoices);
         } elseif (\is_string($preferredChoices) && \is_callable($preferredChoices)) {
-            @trigger_error('Passing callable strings is deprecated since Symfony 3.1 and PropertyAccessDecorator will treat them as property paths in 4.0. You should use a "\Closure" instead.', \E_USER_DEPRECATED);
+            @trigger_error('Passing callable strings is deprecated since Symfony 3.1 and PropertyAccessDecorator will treat them as property paths in 4.0. You should use a "\Closure" instead.', E_USER_DEPRECATED);
         }
 
         if ($preferredChoices instanceof PropertyPath) {
@@ -166,7 +170,7 @@ class PropertyAccessDecorator implements ChoiceListFactoryInterface
         if (\is_string($index) && !\is_callable($index)) {
             $index = new PropertyPath($index);
         } elseif (\is_string($index) && \is_callable($index)) {
-            @trigger_error('Passing callable strings is deprecated since Symfony 3.1 and PropertyAccessDecorator will treat them as property paths in 4.0. You should use a "\Closure" instead.', \E_USER_DEPRECATED);
+            @trigger_error('Passing callable strings is deprecated since Symfony 3.1 and PropertyAccessDecorator will treat them as property paths in 4.0. You should use a "\Closure" instead.', E_USER_DEPRECATED);
         }
 
         if ($index instanceof PropertyPath) {
@@ -178,7 +182,7 @@ class PropertyAccessDecorator implements ChoiceListFactoryInterface
         if (\is_string($groupBy) && !\is_callable($groupBy)) {
             $groupBy = new PropertyPath($groupBy);
         } elseif (\is_string($groupBy) && \is_callable($groupBy)) {
-            @trigger_error('Passing callable strings is deprecated since Symfony 3.1 and PropertyAccessDecorator will treat them as property paths in 4.0. You should use a "\Closure" instead.', \E_USER_DEPRECATED);
+            @trigger_error('Passing callable strings is deprecated since Symfony 3.1 and PropertyAccessDecorator will treat them as property paths in 4.0. You should use a "\Closure" instead.', E_USER_DEPRECATED);
         }
 
         if ($groupBy instanceof PropertyPath) {
@@ -187,7 +191,6 @@ class PropertyAccessDecorator implements ChoiceListFactoryInterface
                     return $accessor->getValue($choice, $groupBy);
                 } catch (UnexpectedTypeException $e) {
                     // Don't group if path is not readable
-                    return null;
                 }
             };
         }
@@ -195,7 +198,7 @@ class PropertyAccessDecorator implements ChoiceListFactoryInterface
         if (\is_string($attr) && !\is_callable($attr)) {
             $attr = new PropertyPath($attr);
         } elseif (\is_string($attr) && \is_callable($attr)) {
-            @trigger_error('Passing callable strings is deprecated since Symfony 3.1 and PropertyAccessDecorator will treat them as property paths in 4.0. You should use a "\Closure" instead.', \E_USER_DEPRECATED);
+            @trigger_error('Passing callable strings is deprecated since Symfony 3.1 and PropertyAccessDecorator will treat them as property paths in 4.0. You should use a "\Closure" instead.', E_USER_DEPRECATED);
         }
 
         if ($attr instanceof PropertyPath) {

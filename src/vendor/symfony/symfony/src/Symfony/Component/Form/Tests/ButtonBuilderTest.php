@@ -54,8 +54,12 @@ class ButtonBuilderTest extends TestCase
      */
     public function testInvalidNames($name)
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Buttons cannot have empty names.');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException(InvalidArgumentException::class);
+            $this->expectExceptionMessage('Buttons cannot have empty names.');
+        } else {
+            $this->setExpectedException(InvalidArgumentException::class, 'Buttons cannot have empty names.');
+        }
         new ButtonBuilder($name);
     }
 }

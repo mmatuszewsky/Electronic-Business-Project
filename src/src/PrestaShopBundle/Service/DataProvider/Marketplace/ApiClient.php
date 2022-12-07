@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,31 +16,24 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Service\DataProvider\Marketplace;
 
 use GuzzleHttp\Client;
-use PrestaShop\PrestaShop\Adapter\Addons\AddonsDataProvider;
 
 class ApiClient
 {
-    /**
-     * @var Client
-     */
     private $addonsApiClient;
-
-    /**
-     * @var array<string, string>
-     */
-    private $queryParameters = [
+    private $queryParameters = array(
         'format' => 'json',
-    ];
+    );
     private $defaultQueryParameters;
 
     /**
@@ -116,7 +108,7 @@ class ApiClient
 
         $responseArray = json_decode($response);
 
-        return isset($responseArray->modules) ? $responseArray->modules : [];
+        return isset($responseArray->modules) ? $responseArray->modules : array();
     }
 
     public function getPreInstalledModules()
@@ -126,7 +118,7 @@ class ApiClient
             ->getResponse();
         $responseDecoded = json_decode($response);
 
-        return isset($responseDecoded->modules) ? $responseDecoded->modules : [];
+        return isset($responseDecoded->modules) ? $responseDecoded->modules : array();
     }
 
     public function getMustHaveModules()
@@ -137,7 +129,7 @@ class ApiClient
 
         $responseArray = json_decode($response);
 
-        return isset($responseArray->modules) ? $responseArray->modules : [];
+        return isset($responseArray->modules) ? $responseArray->modules : array();
     }
 
     /**
@@ -167,7 +159,7 @@ class ApiClient
 
         $responseArray = json_decode($response);
 
-        return isset($responseArray->services) ? $responseArray->services : [];
+        return isset($responseArray->services) ? $responseArray->services : array();
     }
 
     public function getCategories()
@@ -178,7 +170,7 @@ class ApiClient
 
         $responseArray = json_decode($response);
 
-        return isset($responseArray->module) ? $responseArray->module : [];
+        return isset($responseArray->module) ? $responseArray->module : array();
     }
 
     public function getModule($moduleId)
@@ -199,15 +191,13 @@ class ApiClient
      * Call API for module ZIP content (= download).
      *
      * @param int $moduleId
-     * @param string $moduleChannel
      *
      * @return string binary content (zip format)
      */
-    public function getModuleZip($moduleId, string $moduleChannel = AddonsDataProvider::ADDONS_API_MODULE_CHANNEL_STABLE)
+    public function getModuleZip($moduleId)
     {
         return $this->setMethod('module')
             ->setModuleId($moduleId)
-            ->setModuleChannel($moduleChannel)
             ->getPostResponse();
     }
 
@@ -225,7 +215,7 @@ class ApiClient
             return $responseArray->modules;
         }
 
-        return [];
+        return array();
     }
 
     /**
@@ -245,7 +235,7 @@ class ApiClient
             return $responseDecoded->themes;
         }
 
-        return new \stdClass();
+        return array();
     }
 
     public function getResponse()
@@ -253,8 +243,8 @@ class ApiClient
         return (string) $this->addonsApiClient
             ->get(
                 null,
-                ['query' => $this->queryParameters,
-                ]
+                array('query' => $this->queryParameters,
+                )
             )->getBody();
     }
 
@@ -263,8 +253,8 @@ class ApiClient
         return (string) $this->addonsApiClient
             ->post(
                 null,
-                ['query' => $this->queryParameters,
-                ]
+                array('query' => $this->queryParameters,
+                )
             )->getBody();
     }
 
@@ -304,18 +294,6 @@ class ApiClient
     public function setVersion($version)
     {
         $this->queryParameters['version'] = $version;
-
-        return $this;
-    }
-
-    /**
-     * @param string $moduleChannel
-     *
-     * @return self
-     */
-    public function setModuleChannel(string $moduleChannel): self
-    {
-        $this->queryParameters['channel'] = $moduleChannel;
 
         return $this;
     }
@@ -362,11 +340,7 @@ class ApiClient
         return $this;
     }
 
-    /**
-     * @return array<string, string>
+    /*
+     * END OF REQUEST PARAMETER SETTERS.
      */
-    public function getQueryParameters(): array
-    {
-        return $this->queryParameters;
-    }
 }

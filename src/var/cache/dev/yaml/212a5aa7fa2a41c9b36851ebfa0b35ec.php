@@ -17,10 +17,6 @@
     array (
       'resource' => 'addons/*.yml',
     ),
-    4 => 
-    array (
-      'resource' => 'doctrine.yml',
-    ),
   ),
   'parameters' => 
   array (
@@ -32,22 +28,6 @@
     'env(PS_LOG_OUTPUT)' => '%kernel.logs_dir%/%kernel.environment%.log',
     'mail_themes_uri' => '/mails/themes',
     'mail_themes_dir' => '%kernel.project_dir%%mail_themes_uri%',
-    'modules_translation_paths' => 
-    array (
-    ),
-  ),
-  'services' => 
-  array (
-    'PrestaShopBundle\\Controller\\' => 
-    array (
-      'resource' => '%kernel.root_dir%/../src/PrestaShopBundle/Controller/*',
-      'exclude' => '%kernel.root_dir%/../src/PrestaShopBundle/Controller/Api',
-      'tags' => 
-      array (
-        0 => 'controller.service_arguments',
-        1 => NULL,
-      ),
-    ),
   ),
   'framework' => 
   array (
@@ -62,7 +42,6 @@
       array (
         0 => 'default',
       ),
-      'paths' => '%modules_translation_paths%',
     ),
     'router' => 
     array (
@@ -130,7 +109,6 @@
     array (
       '%admin_page%/Product' => 'Product',
       '%admin_page%/TwigTemplateForm' => 'Twig',
-      '%admin_page%/Common' => 'Common',
       '%admin_page%/Configure/AdvancedParameters' => 'AdvancedParameters',
       '%admin_page%/Configure/ShopParameters' => 'ShopParameters',
       '%kernel.root_dir%/../modules' => 'Modules',
@@ -139,7 +117,48 @@
     'globals' => 
     array (
       'webpack_server' => false,
-      'multistore_field_prefix' => NULL,
+    ),
+  ),
+  'doctrine' => 
+  array (
+    'dbal' => 
+    array (
+      'default_connection' => 'default',
+      'connections' => 
+      array (
+        'default' => 
+        array (
+          'driver' => 'pdo_mysql',
+          'host' => '%database_host%',
+          'port' => '%database_port%',
+          'dbname' => '%database_name%',
+          'user' => '%database_user%',
+          'password' => '%database_password%',
+          'server_version' => 5.0999999999999996,
+          'charset' => 'UTF8',
+          'mapping_types' => 
+          array (
+            'enum' => 'string',
+          ),
+          'options' => 
+          array (
+            1002 => 'SET sql_mode=(SELECT REPLACE(@@sql_mode,\'ONLY_FULL_GROUP_BY\',\'\'))',
+          ),
+        ),
+      ),
+    ),
+    'orm' => 
+    array (
+      'auto_generate_proxy_classes' => '%kernel.debug%',
+      'naming_strategy' => 'prestashop.database.naming_strategy',
+      'auto_mapping' => true,
+      'dql' => 
+      array (
+        'string_functions' => 
+        array (
+          'regexp' => 'DoctrineExtensions\\Query\\Mysql\\Regexp',
+        ),
+      ),
     ),
   ),
   'swiftmailer' => 
@@ -178,11 +197,6 @@
           'headers' => 
           array (
             'Accept' => 'application/json',
-          ),
-          'curl' => 
-          array (
-            'forbid_reuse' => true,
-            'fresh_connect' => true,
           ),
         ),
       ),

@@ -88,7 +88,7 @@ class Response
     const HTTP_NETWORK_AUTHENTICATION_REQUIRED = 511;                             // RFC6585
 
     /**
-     * @var ResponseHeaderBag
+     * @var \Symfony\Component\HttpFoundation\ResponseHeaderBag
      */
     public $headers;
 
@@ -121,7 +121,7 @@ class Response
      * Status codes translation table.
      *
      * The list of codes is complete according to the
-     * {@link https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml Hypertext Transfer Protocol (HTTP) Status Code Registry}
+     * {@link http://www.iana.org/assignments/http-status-codes/ Hypertext Transfer Protocol (HTTP) Status Code Registry}
      * (last updated 2016-03-01).
      *
      * Unless otherwise noted, the status code is defined in RFC2616.
@@ -342,7 +342,7 @@ class Response
 
         // cookies
         foreach ($this->headers->getCookies() as $cookie) {
-            header('Set-Cookie: '.$cookie, false, $this->statusCode);
+            header('Set-Cookie: '.$cookie->getName().strstr($cookie, '='), false, $this->statusCode);
         }
 
         // status
@@ -407,7 +407,7 @@ class Response
     /**
      * Gets the current response content.
      *
-     * @return string|false
+     * @return string Content
      */
     public function getContent()
     {
@@ -649,7 +649,7 @@ class Response
     }
 
     /**
-     * Returns true if the response must be revalidated by shared caches once it has become stale.
+     * Returns true if the response must be revalidated by caches.
      *
      * This method indicates that the response must not be served stale by a
      * cache in any circumstance without first revalidating with the origin.
@@ -707,7 +707,7 @@ class Response
             return (int) $age;
         }
 
-        return max(time() - (int) $this->getDate()->format('U'), 0);
+        return max(time() - $this->getDate()->format('U'), 0);
     }
 
     /**
@@ -738,7 +738,7 @@ class Response
             return $this->headers->getDate('Expires');
         } catch (\RuntimeException $e) {
             // according to RFC 2616 invalid date formats (e.g. "0" and "-1") must be treated as in the past
-            return \DateTime::createFromFormat(\DATE_RFC2822, 'Sat, 01 Jan 00 00:00:00 +0000');
+            return \DateTime::createFromFormat(DATE_RFC2822, 'Sat, 01 Jan 00 00:00:00 +0000');
         }
     }
 
@@ -788,10 +788,8 @@ class Response
         }
 
         if (null !== $this->getExpires()) {
-            return (int) $this->getExpires()->format('U') - (int) $this->getDate()->format('U');
+            return $this->getExpires()->format('U') - $this->getDate()->format('U');
         }
-
-        return null;
     }
 
     /**
@@ -848,8 +846,6 @@ class Response
         if (null !== $maxAge = $this->getMaxAge()) {
             return $maxAge - $this->getAge();
         }
-
-        return null;
     }
 
     /**
@@ -1029,7 +1025,7 @@ class Response
      *
      * @return $this
      *
-     * @see https://tools.ietf.org/html/rfc2616#section-10.3.5
+     * @see http://tools.ietf.org/html/rfc2616#section-10.3.5
      *
      * @final since version 3.3
      */
@@ -1137,7 +1133,7 @@ class Response
      *
      * @return bool
      *
-     * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+     * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
      *
      * @final since version 3.2
      */
@@ -1283,7 +1279,7 @@ class Response
         $status = ob_get_status(true);
         $level = \count($status);
         // PHP_OUTPUT_HANDLER_* are not defined on HHVM 3.3
-        $flags = \defined('PHP_OUTPUT_HANDLER_REMOVABLE') ? \PHP_OUTPUT_HANDLER_REMOVABLE | ($flush ? \PHP_OUTPUT_HANDLER_FLUSHABLE : \PHP_OUTPUT_HANDLER_CLEANABLE) : -1;
+        $flags = \defined('PHP_OUTPUT_HANDLER_REMOVABLE') ? PHP_OUTPUT_HANDLER_REMOVABLE | ($flush ? PHP_OUTPUT_HANDLER_FLUSHABLE : PHP_OUTPUT_HANDLER_CLEANABLE) : -1;
 
         while ($level-- > $targetLevel && ($s = $status[$level]) && (!isset($s['del']) ? !isset($s['flags']) || ($s['flags'] & $flags) === $flags : $s['del'])) {
             if ($flush) {

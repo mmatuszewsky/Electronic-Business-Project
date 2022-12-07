@@ -39,25 +39,6 @@ trait TraitExtractor
     protected $finder;
 
     /**
-     * Directories ignored when scanning files for catalogue extraction.
-     *
-     * @var array
-     */
-    protected $excludedDirectories = [];
-
-    public function getExcludedDirectories(): array
-    {
-        return $this->excludedDirectories;
-    }
-
-    public function setExcludedDirectories(array $excludedDirectories): self
-    {
-        $this->excludedDirectories = $excludedDirectories;
-
-        return $this;
-    }
-
-    /**
      * @param $domainName
      *
      * @return string
@@ -76,7 +57,7 @@ trait TraitExtractor
      * @param $file
      * @param $line
      *
-     * @return array|null
+     * @return array
      */
     public function getEntryComment(array $comments, $file, $line)
     {
@@ -85,8 +66,6 @@ trait TraitExtractor
                 return $comment['comment'];
             }
         }
-
-        return null;
     }
 
     /**

@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.44",
     "Names": {
         "AED": [
             "AED",
@@ -118,11 +119,11 @@
         ],
         "CNH": [
             "CNH",
-            "Yuan Tyongkok (Jaban Rangkah)"
+            "Yuan Cina (Jaban Rangkah)"
         ],
         "CNY": [
             "CN¥",
-            "Yuan Tyongkok"
+            "Yuan Cina"
         ],
         "COP": [
             "COP",

@@ -21,12 +21,12 @@ class MoneyToLocalizedStringTransformerTest extends TestCase
 
     protected function setUp()
     {
-        $this->previousLocale = setlocale(\LC_ALL, '0');
+        $this->previousLocale = setlocale(LC_ALL, '0');
     }
 
     protected function tearDown()
     {
-        setlocale(\LC_ALL, $this->previousLocale);
+        setlocale(LC_ALL, $this->previousLocale);
     }
 
     public function testTransform()
@@ -45,7 +45,7 @@ class MoneyToLocalizedStringTransformerTest extends TestCase
     {
         $transformer = new MoneyToLocalizedStringTransformer(null, null, null, 100);
 
-        $this->expectException('Symfony\Component\Form\Exception\TransformationFailedException');
+        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}('Symfony\Component\Form\Exception\TransformationFailedException');
 
         $transformer->transform('abcd');
     }
@@ -73,7 +73,7 @@ class MoneyToLocalizedStringTransformerTest extends TestCase
     {
         $transformer = new MoneyToLocalizedStringTransformer(null, null, null, 100);
 
-        $this->expectException('Symfony\Component\Form\Exception\TransformationFailedException');
+        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}('Symfony\Component\Form\Exception\TransformationFailedException');
 
         $transformer->reverseTransform(12345);
     }
@@ -106,7 +106,7 @@ class MoneyToLocalizedStringTransformerTest extends TestCase
     public function testValidNumericValuesWithNonDotDecimalPointCharacter()
     {
         // calling setlocale() here is important as it changes the representation of floats when being cast to strings
-        setlocale(\LC_ALL, 'de_AT.UTF-8');
+        setlocale(LC_ALL, 'de_AT.UTF-8');
 
         $transformer = new MoneyToLocalizedStringTransformer(4, null, null, 100);
         IntlTestHelper::requireFullIntl($this, false);

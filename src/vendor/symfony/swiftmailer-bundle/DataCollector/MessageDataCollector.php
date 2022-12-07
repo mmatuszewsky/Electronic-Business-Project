@@ -53,27 +53,11 @@ class MessageDataCollector extends DataCollector
                 $loggerName = sprintf('swiftmailer.mailer.%s.plugin.messagelogger', $name);
                 if ($this->container->has($loggerName)) {
                     $logger = $this->container->get($loggerName);
-                    $this->data['mailer'][$name] = [
-                        'messages' => [],
+                    $this->data['mailer'][$name] = array(
+                        'messages' => $logger->getMessages(),
                         'messageCount' => $logger->countMessages(),
                         'isSpool' => $this->container->getParameter(sprintf('swiftmailer.mailer.%s.spool.enabled', $name)),
-                    ];
-
-                    foreach ($logger->getMessages() as $message) {
-                        $message->__contentType = $message->getBodyContentType();
-                        $message->__base64EncodedBody = base64_encode($message->getBody());
-                        if ('text/plain' === $message->__contentType) {
-                            foreach ($message->getChildren() as $child) {
-                                if ('text/html' === $child->getContentType()) {
-                                    $message->__contentType = 'text/html';
-                                    $message->__base64EncodedBody = base64_encode($child->getBody());
-                                    break;
-                                }
-                            }
-                        }
-                        $this->data['mailer'][$name]['messages'][] = $message;
-                    }
-
+                    );
                     $this->data['messageCount'] += $logger->countMessages();
                 }
             }
@@ -85,17 +69,17 @@ class MessageDataCollector extends DataCollector
      */
     public function reset()
     {
-        $this->data = [
-            'mailer' => [],
+        $this->data = array(
+            'mailer' => array(),
             'messageCount' => 0,
             'defaultMailer' => '',
-        ];
+        );
     }
 
     /**
      * Returns the mailer names.
      *
-     * @return array the mailer names
+     * @return array The mailer names.
      */
     public function getMailers()
     {
@@ -105,12 +89,12 @@ class MessageDataCollector extends DataCollector
     /**
      * Returns the data collected of a mailer.
      *
-     * @return array the data of the mailer
+     * @return array The data of the mailer.
      */
     public function getMailerData($name)
     {
         if (!isset($this->data['mailer'][$name])) {
-            throw new \LogicException(sprintf('Missing "%s" data in "%s".', $name, \get_class($this)));
+            throw new \LogicException(sprintf('Missing "%s" data in "%s".', $name, get_class($this)));
         }
 
         return $this->data['mailer'][$name];
@@ -119,11 +103,11 @@ class MessageDataCollector extends DataCollector
     /**
      * Returns the message count of a mailer or the total.
      *
-     * @return int the number of messages
+     * @return int The number of messages.
      */
     public function getMessageCount($name = null)
     {
-        if (null === $name) {
+        if (is_null($name)) {
             return $this->data['messageCount'];
         } elseif ($data = $this->getMailerData($name)) {
             return $data['messageCount'];
@@ -135,7 +119,7 @@ class MessageDataCollector extends DataCollector
     /**
      * Returns the messages of a mailer.
      *
-     * @return \Swift_Message[] the messages
+     * @return array The messages.
      */
     public function getMessages($name = 'default')
     {
@@ -143,7 +127,7 @@ class MessageDataCollector extends DataCollector
             return $data['messages'];
         }
 
-        return [];
+        return array();
     }
 
     /**
@@ -172,7 +156,7 @@ class MessageDataCollector extends DataCollector
 
     public function extractAttachments(\Swift_Message $message)
     {
-        $attachments = [];
+        $attachments = array();
 
         foreach ($message->getChildren() as $child) {
             if ($child instanceof \Swift_Attachment) {

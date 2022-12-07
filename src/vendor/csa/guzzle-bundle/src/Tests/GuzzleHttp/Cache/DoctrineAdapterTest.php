@@ -4,7 +4,6 @@
  * This file is part of the CsaGuzzleBundle package
  *
  * (c) Charles Sarrazin <charles@sarraz.in>
- * (c) PrestaShop and Contributors
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code
@@ -16,11 +15,11 @@ use Csa\Bundle\GuzzleBundle\GuzzleHttp\Cache\DoctrineAdapter;
 use GuzzleHttp\Message\MessageParser;
 use GuzzleHttp\Message\Request;
 
-class DoctrineAdapterTest extends \PHPUnit\Framework\TestCase
+class DoctrineAdapterTest extends \PHPUnit_Framework_TestCase
 {
     public function testConstructor()
     {
-        $cache = $this->createMock('Doctrine\Common\Cache\Cache');
+        $cache = $this->getMock('Doctrine\Common\Cache\Cache');
         new DoctrineAdapter($cache, 0);
     }
 
@@ -28,7 +27,7 @@ class DoctrineAdapterTest extends \PHPUnit\Framework\TestCase
     {
         $httpResponse = file_get_contents(__DIR__.'/../../Fixtures/response.txt');
         $parser = new MessageParser();
-        $cache = $this->createMock('Doctrine\Common\Cache\Cache');
+        $cache = $this->getMock('Doctrine\Common\Cache\Cache');
 
         $cache
             ->expects($this->at(0))
@@ -66,7 +65,7 @@ class DoctrineAdapterTest extends \PHPUnit\Framework\TestCase
 
     public function testSave()
     {
-        $cache = $this->createMock('Doctrine\Common\Cache\Cache');
+        $cache = $this->getMock('Doctrine\Common\Cache\Cache');
 
         $cache
             ->expects($this->at(0))
@@ -77,11 +76,11 @@ class DoctrineAdapterTest extends \PHPUnit\Framework\TestCase
                 10
             );
         $adapter = new DoctrineAdapter($cache, 10);
-        $this->assertNull($adapter->save($this->getRequestMock(), $this->createMock('GuzzleHttp\Message\ResponseInterface')));
+        $this->assertNull($adapter->save($this->getRequestMock(), $this->getMock('GuzzleHttp\Message\ResponseInterface')));
     }
 
     private function getRequestMock()
     {
-        return new Request('GET', 'http://google.com/', ['Accept' => 'text/html'], $this->createMock('GuzzleHttp\Stream\StreamInterface'));
+        return new Request('GET', 'http://google.com/', ['Accept' => 'text/html'], $this->getMock('GuzzleHttp\Stream\StreamInterface'));
     }
 }

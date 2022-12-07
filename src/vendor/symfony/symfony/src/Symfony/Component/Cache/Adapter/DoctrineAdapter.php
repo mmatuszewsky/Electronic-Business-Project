@@ -19,8 +19,9 @@ class DoctrineAdapter extends AbstractAdapter
     use DoctrineTrait;
 
     /**
-     * @param string $namespace
-     * @param int    $defaultLifetime
+     * @param CacheProvider $provider
+     * @param string        $namespace
+     * @param int           $defaultLifetime
      */
     public function __construct(CacheProvider $provider, $namespace = '', $defaultLifetime = 0)
     {

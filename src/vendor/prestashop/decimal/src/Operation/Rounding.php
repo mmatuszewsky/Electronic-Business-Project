@@ -8,7 +8,7 @@
 
 namespace PrestaShop\Decimal\Operation;
 
-use PrestaShop\Decimal\DecimalNumber;
+use PrestaShop\Decimal\Number as DecimalNumber;
 
 /**
  * Allows transforming a decimal number's precision

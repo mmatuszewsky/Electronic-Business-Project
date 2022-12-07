@@ -11,7 +11,7 @@
 
 namespace Symfony\Bridge\Doctrine\Form\Type;
 
-use Doctrine\Common\Persistence\ObjectManager as LegacyObjectManager;
+use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\ChoiceList\ORMQueryBuilderLoader;
@@ -46,12 +46,13 @@ class EntityType extends DoctrineType
     /**
      * Return the default loader object.
      *
-     * @param QueryBuilder $queryBuilder
-     * @param string       $class
+     * @param ObjectManager $manager
+     * @param QueryBuilder  $queryBuilder
+     * @param string        $class
      *
      * @return ORMQueryBuilderLoader
      */
-    public function getLoader(LegacyObjectManager $manager, $queryBuilder, $class)
+    public function getLoader(ObjectManager $manager, $queryBuilder, $class)
     {
         return new ORMQueryBuilderLoader($queryBuilder);
     }

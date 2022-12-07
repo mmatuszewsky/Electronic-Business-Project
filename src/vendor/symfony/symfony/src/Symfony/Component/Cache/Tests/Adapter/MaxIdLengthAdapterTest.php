@@ -40,10 +40,6 @@ class MaxIdLengthAdapterTest extends TestCase
             ->setConstructorArgs([str_repeat('-', 26)])
             ->getMock();
 
-        $cache
-            ->method('doFetch')
-            ->willReturn(['2:']);
-
         $reflectionClass = new \ReflectionClass(AbstractAdapter::class);
 
         $reflectionMethod = $reflectionClass->getMethod('getId');
@@ -60,17 +56,19 @@ class MaxIdLengthAdapterTest extends TestCase
         $reflectionProperty->setValue($cache, true);
 
         // Versioning enabled
-        $this->assertEquals('--------------------------:2:------------', $reflectionMethod->invokeArgs($cache, [str_repeat('-', 12)]));
+        $this->assertEquals('--------------------------:1:------------', $reflectionMethod->invokeArgs($cache, [str_repeat('-', 12)]));
         $this->assertLessThanOrEqual(50, \strlen($reflectionMethod->invokeArgs($cache, [str_repeat('-', 12)])));
         $this->assertLessThanOrEqual(50, \strlen($reflectionMethod->invokeArgs($cache, [str_repeat('-', 23)])));
         $this->assertLessThanOrEqual(50, \strlen($reflectionMethod->invokeArgs($cache, [str_repeat('-', 40)])));
     }
 
+    /**
+     * @expectedException \Symfony\Component\Cache\Exception\InvalidArgumentException
+     * @expectedExceptionMessage Namespace must be 26 chars max, 40 given ("----------------------------------------")
+     */
     public function testTooLongNamespace()
     {
-        $this->expectException('Symfony\Component\Cache\Exception\InvalidArgumentException');
-        $this->expectExceptionMessage('Namespace must be 26 chars max, 40 given ("----------------------------------------")');
-        $this->getMockBuilder(MaxIdLengthAdapter::class)
+        $cache = $this->getMockBuilder(MaxIdLengthAdapter::class)
             ->setConstructorArgs([str_repeat('-', 40)])
             ->getMock();
     }

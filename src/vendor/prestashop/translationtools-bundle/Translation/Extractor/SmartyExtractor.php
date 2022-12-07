@@ -27,9 +27,9 @@
 
 namespace PrestaShop\TranslationToolsBundle\Translation\Extractor;
 
-use PrestaShop\TranslationToolsBundle\Translation\Compiler\Smarty\TranslationTemplateCompiler;
-use PrestaShop\TranslationToolsBundle\Translation\Helper\DomainHelper;
 use SplFileInfo;
+use PrestaShop\TranslationToolsBundle\Translation\Helper\DomainHelper;
+use PrestaShop\TranslationToolsBundle\Translation\Compiler\Smarty\TranslationTemplateCompiler;
 use Symfony\Component\Translation\Extractor\AbstractFileExtractor;
 use Symfony\Component\Translation\Extractor\ExtractorInterface;
 use Symfony\Component\Translation\MessageCatalogue;
@@ -53,6 +53,7 @@ class SmartyExtractor extends AbstractFileExtractor implements ExtractorInterfac
     private $includeExternalWordings;
 
     /**
+     * @param TranslationTemplateCompiler $smartyCompiler
      * @param bool $includeExternalWordings Set to SmartyCompiler::INCLUDE_EXTERNAL_MODULES to include wordings signed with 'mod' (external modules)
      */
     public function __construct(
@@ -78,6 +79,10 @@ class SmartyExtractor extends AbstractFileExtractor implements ExtractorInterfac
         }
     }
 
+    /**
+     * @param SplFileInfo      $resource
+     * @param MessageCatalogue $catalogue
+     */
     protected function extractFromFile(SplFileInfo $resource, MessageCatalogue $catalogue)
     {
         $compiler = $this->smartyCompiler->setTemplateFile($resource->getPathname());
@@ -137,9 +142,6 @@ class SmartyExtractor extends AbstractFileExtractor implements ExtractorInterfac
      */
     protected function extractFromDirectory($directory)
     {
-        return $this->getFinder()
-            ->name('*.tpl')
-            ->in($directory)
-            ->exclude($this->getExcludedDirectories());
+        return $this->getFinder()->name('*.tpl')->in($directory);
     }
 }

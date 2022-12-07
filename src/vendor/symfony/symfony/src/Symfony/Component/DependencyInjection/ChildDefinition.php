@@ -89,7 +89,7 @@ class ChildDefinition extends Definition
      * @param int|string $index
      * @param mixed      $value
      *
-     * @return $this
+     * @return self the current instance
      *
      * @throws InvalidArgumentException when $index isn't an integer
      */

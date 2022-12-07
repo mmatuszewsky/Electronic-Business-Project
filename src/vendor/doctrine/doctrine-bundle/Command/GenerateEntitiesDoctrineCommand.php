@@ -135,7 +135,5 @@ EOT
 
             $repoGenerator->writeEntityRepositoryClass($m->customRepositoryClassName, $metadata->getPath());
         }
-
-        return 0;
     }
 }

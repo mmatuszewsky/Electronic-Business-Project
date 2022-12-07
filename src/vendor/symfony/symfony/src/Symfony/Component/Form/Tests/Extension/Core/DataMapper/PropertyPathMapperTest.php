@@ -17,7 +17,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Extension\Core\DataMapper\PropertyPathMapper;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormConfigBuilder;
-use Symfony\Component\Form\Tests\Fixtures\TypehintedPropertiesCar;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\PropertyAccess\PropertyPath;
@@ -112,23 +111,6 @@ class PropertyPathMapperTest extends TestCase
         $this->mapper->mapDataToForms($car, [$form]);
 
         $this->assertNull($form->getData());
-    }
-
-    /**
-     * @requires PHP 7.4
-     */
-    public function testMapDataToFormsIgnoresUninitializedProperties()
-    {
-        $engineForm = new Form(new FormConfigBuilder('engine', null, $this->dispatcher));
-        $colorForm = new Form(new FormConfigBuilder('color', null, $this->dispatcher));
-
-        $car = new TypehintedPropertiesCar();
-        $car->engine = 'BMW';
-
-        $this->mapper->mapDataToForms($car, [$engineForm, $colorForm]);
-
-        $this->assertSame($car->engine, $engineForm->getData());
-        $this->assertNull($colorForm->getData());
     }
 
     public function testMapDataToFormsSetsDefaultDataIfPassedDataIsNull()
@@ -311,26 +293,11 @@ class PropertyPathMapperTest extends TestCase
         $config->setPropertyPath($propertyPath);
         $config->setData($engine);
         $config->setDisabled(true);
-        $form = new SubmittedForm($config);
+        $form = new Form($config);
 
         $this->mapper->mapFormsToData([$form], $car);
 
         $this->assertSame($initialEngine, $car->engine);
-    }
-
-    /**
-     * @requires PHP 7.4
-     */
-    public function testMapFormsToUninitializedProperties()
-    {
-        $car = new TypehintedPropertiesCar();
-        $config = new FormConfigBuilder('engine', null, $this->dispatcher);
-        $config->setData('BMW');
-        $form = new SubmittedForm($config);
-
-        $this->mapper->mapFormsToData([$form], $car);
-
-        $this->assertSame('BMW', $car->engine);
     }
 
     /**
@@ -372,7 +339,7 @@ class SubmittedForm extends Form
     }
 }
 
-class NotSynchronizedForm extends SubmittedForm
+class NotSynchronizedForm extends Form
 {
     public function isSynchronized()
     {

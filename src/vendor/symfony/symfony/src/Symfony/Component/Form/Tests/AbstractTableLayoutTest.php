@@ -339,7 +339,7 @@ abstract class AbstractTableLayoutTest extends AbstractLayoutTest
     {
         $this->csrfTokenManager->expects($this->any())
             ->method('getToken')
-            ->willReturn(new CsrfToken('token_id', 'foo&bar'));
+            ->will($this->returnValue(new CsrfToken('token_id', 'foo&bar')));
 
         $form = $this->factory->createNamedBuilder('name', 'Symfony\Component\Form\Extension\Core\Type\FormType')
             ->add($this->factory
@@ -519,7 +519,7 @@ abstract class AbstractTableLayoutTest extends AbstractLayoutTest
         $html = $this->renderWidget($form->createView());
 
         // compare plain HTML to check the whitespace
-        $this->assertStringContainsString('<table id="form" class="foobar" data-foo="bar">', $html);
+        $this->assertContains('<table id="form" class="foobar" data-foo="bar">', $html);
     }
 
     public function testWidgetContainerAttributeNameRepeatedIfTrue()
@@ -531,6 +531,6 @@ abstract class AbstractTableLayoutTest extends AbstractLayoutTest
         $html = $this->renderWidget($form->createView());
 
         // foo="foo"
-        $this->assertStringContainsString('<table id="form" foo="foo">', $html);
+        $this->assertContains('<table id="form" foo="foo">', $html);
     }
 }

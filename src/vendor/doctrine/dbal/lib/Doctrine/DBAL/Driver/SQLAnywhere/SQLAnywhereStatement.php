@@ -1,68 +1,70 @@
 <?php
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the MIT license. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\DBAL\Driver\SQLAnywhere;
 
-use Doctrine\DBAL\Driver\Statement;
-use Doctrine\DBAL\Driver\StatementIterator;
-use Doctrine\DBAL\FetchMode;
-use Doctrine\DBAL\ParameterType;
 use IteratorAggregate;
 use PDO;
-use ReflectionClass;
-use ReflectionObject;
-use stdClass;
-use const SASQL_BOTH;
-use function array_key_exists;
-use function func_get_args;
-use function func_num_args;
-use function gettype;
-use function is_array;
-use function is_numeric;
-use function is_object;
-use function is_resource;
-use function is_string;
-use function sasql_fetch_array;
-use function sasql_fetch_assoc;
-use function sasql_fetch_object;
-use function sasql_fetch_row;
-use function sasql_prepare;
-use function sasql_stmt_affected_rows;
-use function sasql_stmt_bind_param_ex;
-use function sasql_stmt_errno;
-use function sasql_stmt_error;
-use function sasql_stmt_execute;
-use function sasql_stmt_field_count;
-use function sasql_stmt_reset;
-use function sasql_stmt_result_metadata;
-use function sprintf;
+use Doctrine\DBAL\Driver\Statement;
 
 /**
  * SAP SQL Anywhere implementation of the Statement interface.
+ *
+ * @author Steve Müller <st.mueller@dzh-online.de>
+ * @link   www.doctrine-project.org
+ * @since  2.5
  */
 class SQLAnywhereStatement implements IteratorAggregate, Statement
 {
-    /** @var resource The connection resource. */
+    /**
+     * @var resource The connection resource.
+     */
     private $conn;
 
-    /** @var string Name of the default class to instantiate when fetching class instances. */
+    /**
+     * @var string Name of the default class to instantiate when fetch mode is \PDO::FETCH_CLASS.
+     */
     private $defaultFetchClass = '\stdClass';
 
-    /** @var mixed[] Constructor arguments for the default class to instantiate when fetching class instances. */
-    private $defaultFetchClassCtorArgs = [];
-
-    /** @var int Default fetch mode to use. */
-    private $defaultFetchMode = FetchMode::MIXED;
-
-    /** @var resource The result set resource to fetch. */
-    private $result;
-
-    /** @var resource The prepared SQL statement to execute. */
-    private $stmt;
-
-    /** @var mixed[] The references to bound parameter values. */
-    private $boundValues = [];
+    /**
+     * @var string Constructor arguments for the default class to instantiate when fetch mode is \PDO::FETCH_CLASS.
+     */
+    private $defaultFetchClassCtorArgs = array();
 
     /**
+     * @var int Default fetch mode to use.
+     */
+    private $defaultFetchMode = PDO::FETCH_BOTH;
+
+    /**
+     * @var resource The result set resource to fetch.
+     */
+    private $result;
+
+    /**
+     * @var resource The prepared SQL statement to execute.
+     */
+    private $stmt;
+
+    /**
+     * Constructor.
+     *
      * Prepares given statement for given connection.
      *
      * @param resource $conn The connection resource to use.
@@ -72,14 +74,14 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
      */
     public function __construct($conn, $sql)
     {
-        if (! is_resource($conn)) {
+        if ( ! is_resource($conn)) {
             throw new SQLAnywhereException('Invalid SQL Anywhere connection resource: ' . $conn);
         }
 
         $this->conn = $conn;
         $this->stmt = sasql_prepare($conn, $sql);
 
-        if (! is_resource($this->stmt)) {
+        if ( ! is_resource($this->stmt)) {
             throw SQLAnywhereException::fromSQLAnywhereError($conn);
         }
     }
@@ -89,31 +91,25 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
      *
      * @throws SQLAnywhereException
      */
-    public function bindParam($column, &$variable, $type = ParameterType::STRING, $length = null)
+    public function bindParam($column, &$variable, $type = null, $length = null)
     {
         switch ($type) {
-            case ParameterType::INTEGER:
-            case ParameterType::BOOLEAN:
+            case PDO::PARAM_INT:
+            case PDO::PARAM_BOOL:
                 $type = 'i';
                 break;
-
-            case ParameterType::LARGE_OBJECT:
+            case PDO::PARAM_LOB:
                 $type = 'b';
                 break;
-
-            case ParameterType::NULL:
-            case ParameterType::STRING:
-            case ParameterType::BINARY:
+            case PDO::PARAM_NULL:
+            case PDO::PARAM_STR:
                 $type = 's';
                 break;
-
             default:
                 throw new SQLAnywhereException('Unknown type: ' . $type);
         }
 
-        $this->boundValues[$column] =& $variable;
-
-        if (! sasql_stmt_bind_param_ex($this->stmt, $column - 1, $variable, $type, $variable === null)) {
+        if ( ! sasql_stmt_bind_param_ex($this->stmt, $column - 1, $variable, $type, $variable === null)) {
             throw SQLAnywhereException::fromSQLAnywhereError($this->conn, $this->stmt);
         }
 
@@ -123,7 +119,7 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function bindValue($param, $value, $type = ParameterType::STRING)
+    public function bindValue($param, $value, $type = null)
     {
         return $this->bindParam($param, $value, $type);
     }
@@ -135,7 +131,7 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
      */
     public function closeCursor()
     {
-        if (! sasql_stmt_reset($this->stmt)) {
+        if (!sasql_stmt_reset($this->stmt)) {
             throw SQLAnywhereException::fromSQLAnywhereError($this->conn, $this->stmt);
         }
 
@@ -177,13 +173,13 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
             $hasZeroIndex = array_key_exists(0, $params);
 
             foreach ($params as $key => $val) {
-                $key = $hasZeroIndex && is_numeric($key) ? $key + 1 : $key;
+                $key = ($hasZeroIndex && is_numeric($key)) ? $key + 1 : $key;
 
                 $this->bindValue($key, $val);
             }
         }
 
-        if (! sasql_stmt_execute($this->stmt)) {
+        if ( ! sasql_stmt_execute($this->stmt)) {
             throw SQLAnywhereException::fromSQLAnywhereError($this->conn, $this->stmt);
         }
 
@@ -197,48 +193,40 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
      *
      * @throws SQLAnywhereException
      */
-    public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
+    public function fetch($fetchMode = null)
     {
-        if (! is_resource($this->result)) {
+        if ( ! is_resource($this->result)) {
             return false;
         }
 
         $fetchMode = $fetchMode ?: $this->defaultFetchMode;
 
         switch ($fetchMode) {
-            case FetchMode::COLUMN:
-                return $this->fetchColumn();
-
-            case FetchMode::ASSOCIATIVE:
+            case PDO::FETCH_ASSOC:
                 return sasql_fetch_assoc($this->result);
-
-            case FetchMode::MIXED:
+            case PDO::FETCH_BOTH:
                 return sasql_fetch_array($this->result, SASQL_BOTH);
-
-            case FetchMode::CUSTOM_OBJECT:
+            case PDO::FETCH_CLASS:
                 $className = $this->defaultFetchClass;
                 $ctorArgs  = $this->defaultFetchClassCtorArgs;
 
                 if (func_num_args() >= 2) {
                     $args      = func_get_args();
                     $className = $args[1];
-                    $ctorArgs  = $args[2] ?? [];
+                    $ctorArgs  = isset($args[2]) ? $args[2] : array();
                 }
 
                 $result = sasql_fetch_object($this->result);
 
-                if ($result instanceof stdClass) {
+                if ($result instanceof \stdClass) {
                     $result = $this->castObject($result, $className, $ctorArgs);
                 }
 
                 return $result;
-
-            case FetchMode::NUMERIC:
+            case PDO::FETCH_NUM:
                 return sasql_fetch_row($this->result);
-
-            case FetchMode::STANDARD_OBJECT:
+            case PDO::FETCH_OBJ:
                 return sasql_fetch_object($this->result);
-
             default:
                 throw new SQLAnywhereException('Fetch mode is not supported: ' . $fetchMode);
         }
@@ -247,25 +235,23 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
+    public function fetchAll($fetchMode = null)
     {
-        $rows = [];
+        $rows = array();
 
         switch ($fetchMode) {
-            case FetchMode::CUSTOM_OBJECT:
-                while (($row = $this->fetch(...func_get_args())) !== false) {
+            case PDO::FETCH_CLASS:
+                while ($row = call_user_func_array(array($this, 'fetch'), func_get_args())) {
                     $rows[] = $row;
                 }
                 break;
-
-            case FetchMode::COLUMN:
-                while (($row = $this->fetchColumn()) !== false) {
+            case PDO::FETCH_COLUMN:
+                while ($row = $this->fetchColumn()) {
                     $rows[] = $row;
                 }
                 break;
-
             default:
-                while (($row = $this->fetch($fetchMode)) !== false) {
+                while ($row = $this->fetch($fetchMode)) {
                     $rows[] = $row;
                 }
         }
@@ -278,13 +264,13 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
      */
     public function fetchColumn($columnIndex = 0)
     {
-        $row = $this->fetch(FetchMode::NUMERIC);
+        $row = $this->fetch(PDO::FETCH_NUM);
 
-        if ($row === false) {
+        if (false === $row) {
             return false;
         }
 
-        return $row[$columnIndex] ?? null;
+        return isset($row[$columnIndex]) ? $row[$columnIndex] : null;
     }
 
     /**
@@ -292,7 +278,7 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
      */
     public function getIterator()
     {
-        return new StatementIterator($this);
+        return new \ArrayIterator($this->fetchAll());
     }
 
     /**
@@ -309,37 +295,36 @@ class SQLAnywhereStatement implements IteratorAggregate, Statement
     public function setFetchMode($fetchMode, $arg2 = null, $arg3 = null)
     {
         $this->defaultFetchMode          = $fetchMode;
-        $this->defaultFetchClass         = $arg2 ?: $this->defaultFetchClass;
+        $this->defaultFetchClass         = $arg2 ? $arg2 : $this->defaultFetchClass;
         $this->defaultFetchClassCtorArgs = $arg3 ? (array) $arg3 : $this->defaultFetchClassCtorArgs;
     }
 
     /**
      * Casts a stdClass object to the given class name mapping its' properties.
      *
-     * @param stdClass      $sourceObject     Object to cast from.
+     * @param \stdClass     $sourceObject     Object to cast from.
      * @param string|object $destinationClass Name of the class or class instance to cast to.
-     * @param mixed[]       $ctorArgs         Arguments to use for constructing the destination class instance.
+     * @param array         $ctorArgs         Arguments to use for constructing the destination class instance.
      *
      * @return object
      *
      * @throws SQLAnywhereException
      */
-    private function castObject(stdClass $sourceObject, $destinationClass, array $ctorArgs = [])
+    private function castObject(\stdClass $sourceObject, $destinationClass, array $ctorArgs = array())
     {
-        if (! is_string($destinationClass)) {
-            if (! is_object($destinationClass)) {
+        if ( ! is_string($destinationClass)) {
+            if ( ! is_object($destinationClass)) {
                 throw new SQLAnywhereException(sprintf(
-                    'Destination class has to be of type string or object, %s given.',
-                    gettype($destinationClass)
+                    'Destination class has to be of type string or object, %s given.', gettype($destinationClass)
                 ));
             }
         } else {
-            $destinationClass = new ReflectionClass($destinationClass);
+            $destinationClass = new \ReflectionClass($destinationClass);
             $destinationClass = $destinationClass->newInstanceArgs($ctorArgs);
         }
 
-        $sourceReflection           = new ReflectionObject($sourceObject);
-        $destinationClassReflection = new ReflectionObject($destinationClass);
+        $sourceReflection           = new \ReflectionObject($sourceObject);
+        $destinationClassReflection = new \ReflectionObject($destinationClass);
 
         foreach ($sourceReflection->getProperties() as $sourceProperty) {
             $sourceProperty->setAccessible(true);

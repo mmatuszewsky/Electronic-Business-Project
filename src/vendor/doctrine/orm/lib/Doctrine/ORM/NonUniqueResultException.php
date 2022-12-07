@@ -27,10 +27,4 @@ namespace Doctrine\ORM;
  */
 class NonUniqueResultException extends UnexpectedResultException
 {
-    const DEFAULT_MESSAGE = 'More than one result was found for query although one row or none was expected.';
-
-    public function __construct(string $message = null)
-    {
-        parent::__construct($message ?? self::DEFAULT_MESSAGE);
-    }
 }

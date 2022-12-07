@@ -28,8 +28,6 @@ use Doctrine\ORM\Tools\EntityGenerator;
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Jonathan Wage <jonwage@gmail.com>
- *
- * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
  */
 class AnnotationExporter extends AbstractExporter
 {
@@ -61,7 +59,7 @@ class AnnotationExporter extends AbstractExporter
     }
 
     /**
-     * @param ClassMetadataInfo $metadata
+     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata
      *
      * @return string
      */
@@ -71,7 +69,7 @@ class AnnotationExporter extends AbstractExporter
     }
 
     /**
-     * @param EntityGenerator $entityGenerator
+     * @param \Doctrine\ORM\Tools\EntityGenerator $entityGenerator
      *
      * @return void
      */

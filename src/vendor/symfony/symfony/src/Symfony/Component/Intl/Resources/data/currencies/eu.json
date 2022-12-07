@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.17",
     "Names": {
         "AED": [
             "AED",
@@ -6,95 +7,95 @@
         ],
         "AFN": [
             "AFN",
-            "afgani afganiarra"
+            "Afganistango afghania"
         ],
         "ALL": [
             "ALL",
-            "lek albaniarra"
+            "Albaniako leka"
         ],
         "AMD": [
             "AMD",
-            "dram armeniarra"
+            "Armeniako drama"
         ],
         "ANG": [
             "ANG",
-            "Holandarren Antilletako florina"
+            "Holandarren Antilletako guilderra"
         ],
         "AOA": [
             "AOA",
-            "kwanza angolarra"
+            "Angolako kwanza"
         ],
         "ARS": [
             "ARS",
-            "peso argentinarra"
+            "Argentinako pesoa"
         ],
         "AUD": [
             "A$",
-            "dolar australiarra"
+            "Australiako dolarra"
         ],
         "AWG": [
             "AWG",
-            "florin arubarra"
+            "Arubako florina"
         ],
         "AZN": [
             "AZN",
-            "manat azerbaijandarra"
+            "Azerbaijango manata"
         ],
         "BAM": [
             "BAM",
-            "marko bihurgarri bosniarra"
+            "Bosnia-Herzegovinako marko trukakorra"
         ],
         "BBD": [
             "BBD",
-            "dolar barbadostarra"
+            "Barbadosetako dolarra"
         ],
         "BDT": [
             "BDT",
-            "taka bangladeshtarra"
+            "Bangladesheko taka"
         ],
         "BGN": [
             "BGN",
-            "lev bulgariarra"
+            "Bulgariako leva"
         ],
         "BHD": [
             "BHD",
-            "dinar bahraindarra"
+            "Bahraingo dinarra"
         ],
         "BIF": [
             "BIF",
-            "franko burundiarra"
+            "Burundiko frankoa"
         ],
         "BMD": [
             "BMD",
-            "dolar bermudarra"
+            "Bermudetako dolarra"
         ],
         "BND": [
             "BND",
-            "dolar bruneitarra"
+            "Bruneiko dolarra"
         ],
         "BOB": [
             "BOB",
-            "boliviano boliviarra"
+            "Boliviako bolivianoa"
         ],
         "BRL": [
             "R$",
-            "erreal brasildarra"
+            "Brasilgo erreala"
         ],
         "BSD": [
             "BSD",
-            "dolar bahamarra"
+            "Bahametako dolarra"
         ],
         "BTN": [
             "BTN",
-            "ngultrum bhutandarra"
+            "Bhutango ngultruma"
         ],
         "BWP": [
             "BWP",
-            "pula botswanarra"
+            "Bosniako pula"
         ],
         "BYN": [
             "BYN",
-            "errublo bielorrusiarra"
+            "Bielorrusiako errubloa"
         ],
         "BYR": [
             "BYR",
@@ -102,35 +103,35 @@
         ],
         "BZD": [
             "BZD",
-            "dolar belizetarra"
+            "Belizeko dolarra"
         ],
         "CAD": [
             "CA$",
-            "dolar kanadarra"
+            "Kanadako dolarra"
         ],
         "CDF": [
             "CDF",
-            "franko kongoarra"
+            "Kongoko frankoa"
         ],
         "CHF": [
             "CHF",
-            "franko suitzarra"
+            "Suitzako frankoa"
         ],
         "CLP": [
             "CLP",
-            "peso txiletarra"
+            "Txileko pesoa"
         ],
         "CNH": [
             "CNH",
-            "yuan txinatarra (itsasoz haraindikoa)"
+            "yuan txinatar (itsasoz haraindikoa)"
         ],
         "CNY": [
             "CN¥",
-            "yuan txinatarra"
+            "Txinako yuana"
         ],
         "COP": [
             "COP",
-            "peso kolonbiarra"
+            "Kolonbiako pesoa"
         ],
         "CRC": [
             "CRC",
@@ -138,43 +139,43 @@
         ],
         "CUC": [
             "CUC",
-            "peso bihurgarri kubatarra"
+            "Kubako peso trukakorra"
         ],
         "CUP": [
             "CUP",
-            "peso kubatarra"
+            "Kubako pesoa"
         ],
         "CVE": [
             "CVE",
-            "ezkutu caboverdetarra"
+            "Cabo Verdeko ezkutua"
         ],
         "CZK": [
             "CZK",
-            "koroa txekiarra"
+            "Txekiar Errepublikako koroa"
         ],
         "DJF": [
             "DJF",
-            "franko djibutiarra"
+            "Djibutiko frankoa"
         ],
         "DKK": [
             "DKK",
-            "koroa danimarkarra"
+            "Danimarkako koroa"
         ],
         "DOP": [
             "DOP",
-            "peso dominikarra"
+            "Dominikar Errepublikako pesoa"
         ],
         "DZD": [
             "DZD",
-            "dinar aljeriarra"
+            "Aljeriako dinarra"
         ],
         "EGP": [
             "EGP",
-            "libera egiptoarra"
+            "Egiptoko libera"
         ],
         "ERN": [
             "ERN",
-            "nakfa eritrearra"
+            "Eritreako nakfa"
         ],
         "ESP": [
             "₧",
@@ -183,7 +184,7 @@
         ],
         "ETB": [
             "ETB",
-            "birr etiopiarra"
+            "Etiopiako birra"
         ],
         "EUR": [
             "€",
@@ -191,87 +192,87 @@
         ],
         "FJD": [
             "FJD",
-            "dolar fijiarra"
+            "Fijiko dolarra"
         ],
         "FKP": [
             "FKP",
-            "libera falklandarra"
+            "Falkland uharteetako libera"
         ],
         "GBP": [
             "£",
-            "libera esterlina"
+            "Libera esterlina"
         ],
         "GEL": [
             "GEL",
-            "lari georgiarra"
+            "Georgiako laria"
         ],
         "GHS": [
             "GHS",
-            "cedi ghanatarra"
+            "Ghanako cedia"
         ],
         "GIP": [
             "GIP",
-            "libera gibraltartarra"
+            "Gibraltarreko libera"
         ],
         "GMD": [
             "GMD",
-            "dalasi ganbiarra"
+            "Ganbiako dalasia"
         ],
         "GNF": [
             "GNF",
-            "franko ginearra"
+            "Gineako frankoa"
         ],
         "GTQ": [
             "GTQ",
-            "ketzal guatemalarra"
+            "Guatemalako quetzala"
         ],
         "GYD": [
             "GYD",
-            "dolar guyanarra"
+            "Guyanako dolarra"
         ],
         "HKD": [
             "HK$",
-            "dolar hongkongtarra"
+            "Hong Kongeko dolarra"
         ],
         "HNL": [
             "HNL",
-            "lempira hodurastarra"
+            "Hondurasko lempira"
         ],
         "HRK": [
             "HRK",
-            "kuna kroaziarra"
+            "Kroaziako kuna"
         ],
         "HTG": [
             "HTG",
-            "gourde haitiarra"
+            "Haitiko gourdea"
         ],
         "HUF": [
             "HUF",
-            "florin hungariarra"
+            "Hungariako florina"
         ],
         "IDR": [
             "IDR",
-            "errupia indonesiarra"
+            "Indonesiako errupia"
         ],
         "ILS": [
             "₪",
-            "shekel israeldar berria"
+            "Israelgo shekel berria"
         ],
         "INR": [
             "₹",
-            "errupia indiarra"
+            "Indiako errupia"
         ],
         "IQD": [
             "IQD",
-            "dinar irakiarra"
+            "Irakeko dinarra"
         ],
         "IRR": [
             "IRR",
-            "rial irandarra"
+            "Irango riala"
         ],
         "ISK": [
             "ISK",
-            "koroa islandiarra"
+            "Islandiako koroa"
         ],
         "JMD": [
             "JMD",
@@ -279,63 +280,63 @@
         ],
         "JOD": [
             "JOD",
-            "dinar jordaniarra"
+            "Jordaniako dinarra"
         ],
         "JPY": [
             "JP¥",
-            "yen japoniarra"
+            "Japoniako yena"
         ],
         "KES": [
             "KES",
-            "txelin kenyarra"
+            "Kenyako txelina"
         ],
         "KGS": [
             "KGS",
-            "som kirgizistandarra"
+            "Kirgizistango soma"
         ],
         "KHR": [
             "KHR",
-            "riel kanbodiarra"
+            "Kanbodiako riela"
         ],
         "KMF": [
             "KMF",
-            "franko komoretarra"
+            "Komoreetako frankoa"
         ],
         "KPW": [
             "KPW",
-            "won iparkorearra"
+            "Ipar Koreako wona"
         ],
         "KRW": [
             "₩",
-            "won hegokorearra"
+            "Hego Koreako wona"
         ],
         "KWD": [
             "KWD",
-            "dinar kuwaitarra"
+            "Kuwaiteko dinarra"
         ],
         "KYD": [
             "KYD",
-            "dolar kaimandarra"
+            "Kaiman uharteetako dolarra"
         ],
         "KZT": [
             "KZT",
-            "tenge kazakhstandarra"
+            "Kazakhstango tengea"
         ],
         "LAK": [
             "LAK",
-            "kip laostarra"
+            "Laoseko kipa"
         ],
         "LBP": [
             "LBP",
-            "libera libanoarra"
+            "Libanoko libera"
         ],
         "LKR": [
             "LKR",
-            "errupia srilankarra"
+            "Sri Lankako errupia"
         ],
         "LRD": [
             "LRD",
-            "dolar liberiarra"
+            "Liberiako dolarra"
         ],
         "LSL": [
             "LSL",
@@ -351,35 +352,35 @@
         ],
         "LYD": [
             "LYD",
-            "dinar libiarra"
+            "Libiako dinarra"
         ],
         "MAD": [
             "MAD",
-            "dirham marokoarra"
+            "Marokoko dirhama"
         ],
         "MDL": [
             "MDL",
-            "leu moldaviarra"
+            "Moldaviako leua"
         ],
         "MGA": [
             "MGA",
-            "ariary madagaskartarra"
+            "Madagaskarreko ariarya"
         ],
         "MKD": [
             "MKD",
-            "dinar mazedoniarra"
+            "Mazedoniako dinarra"
         ],
         "MMK": [
             "MMK",
-            "kyat myanmartarra"
+            "Myanmarreko kyata"
         ],
         "MNT": [
             "MNT",
-            "tugrik mongoliarra"
+            "Mongoliako tugrika"
         ],
         "MOP": [
             "MOP",
-            "pataca macauarra"
+            "Macanako pataca"
         ],
         "MRO": [
             "MRO",
@@ -387,131 +388,131 @@
         ],
         "MRU": [
             "MRU",
-            "uguiya mauritaniarra"
+            "Mauritaniako ouguiya"
         ],
         "MUR": [
             "MUR",
-            "errupia mauriziarra"
+            "Maurizio uharteetako errupia"
         ],
         "MVR": [
             "MVR",
-            "errupia maldivarra"
+            "Maldivetako rufiyaa"
         ],
         "MWK": [
             "MWK",
-            "kwacha malawiarra"
+            "Malawiko kwacha"
         ],
         "MXN": [
             "MX$",
-            "peso mexikarra"
+            "Mexikoko pesoa"
         ],
         "MYR": [
             "MYR",
-            "ringgit malaysiarra"
+            "Malaysiako ringgita"
         ],
         "MZN": [
             "MZN",
-            "metical mozambiketarra"
+            "Mozambikeko metikala"
         ],
         "NAD": [
             "NAD",
-            "dolar namibiarra"
+            "Namibiako dolarra"
         ],
         "NGN": [
             "NGN",
-            "naira nigeriarra"
+            "Nigeriako naira"
         ],
         "NIO": [
             "NIO",
-            "córdoba nikaraguarra"
+            "Nikaraguako cordoba"
         ],
         "NOK": [
             "NOK",
-            "koroa norvegiarra"
+            "Norvegiako koroa"
         ],
         "NPR": [
             "NPR",
-            "errupia nepaldarra"
+            "Nepalgo errupia"
         ],
         "NZD": [
             "NZ$",
-            "dolar zeelandaberritarra"
+            "Zeelanda Berriko dolarra"
         ],
         "OMR": [
             "OMR",
-            "rial omandarra"
+            "Omango riala"
         ],
         "PAB": [
             "PAB",
-            "balboa panamarra"
+            "Panamako balboa"
         ],
         "PEN": [
             "PEN",
-            "sol perutarra"
+            "Peruko sol"
         ],
         "PGK": [
             "PGK",
-            "kina gineaberriarra"
+            "Papua Ginea Berriko kina"
         ],
         "PHP": [
             "PHP",
-            "peso filipinarra"
+            "Filipinetako pesoa"
         ],
         "PKR": [
             "PKR",
-            "errupia pakistandarra"
+            "Pakistango errupia"
         ],
         "PLN": [
             "PLN",
-            "zloty poloniarra"
+            "Poloniako zlotya"
         ],
         "PYG": [
             "PYG",
-            "guarani paraguaitarra"
+            "Paraguaiko guarania"
         ],
         "QAR": [
             "QAR",
-            "riyal qatartarra"
+            "Qatarreko riala"
         ],
         "RON": [
             "RON",
-            "leu errumaniarra"
+            "Errumaniako leua"
         ],
         "RSD": [
             "RSD",
-            "dinar serbiarra"
+            "Serbiako dinarra"
         ],
         "RUB": [
             "RUB",
-            "errublo errusiarra"
+            "Errusiako errubloa"
         ],
         "RWF": [
             "RWF",
-            "franko ruandarra"
+            "Ruandako frankoa"
         ],
         "SAR": [
             "SAR",
-            "riyal saudiarabiarra"
+            "Arabia Saudiko riala"
         ],
         "SBD": [
             "SBD",
-            "dolar salomondarra"
+            "Salomon uharteetako dolarra"
         ],
         "SCR": [
             "SCR",
-            "errupia seychelletarra"
+            "Seychelleetako errupia"
         ],
         "SDG": [
             "SDG",
-            "libera sudandarra"
+            "Sudango libera"
         ],
         "SEK": [
             "SEK",
-            "koroa suediarra"
+            "Suediako koroa"
         ],
         "SGD": [
             "SGD",
-            "dolar singapurtarra"
+            "Singapurreko dolarra"
         ],
         "SHP": [
             "SHP",
@@ -519,19 +520,19 @@
         ],
         "SLL": [
             "SLL",
-            "leone sierraleonarra"
+            "Sierra Leonako leona"
         ],
         "SOS": [
             "SOS",
-            "txelin somaliarra"
+            "Somaliako txelina"
         ],
         "SRD": [
             "SRD",
-            "dolar surinamdarra"
+            "Surinameko dolarra"
         ],
         "SSP": [
             "SSP",
-            "libera hegosudandarra"
+            "Hego Sudango libera"
         ],
         "STD": [
             "STD",
@@ -539,31 +540,31 @@
         ],
         "STN": [
             "STN",
-            "dobra saotometarra"
+            "Sao Tome eta Principeko dobra"
         ],
         "SYP": [
             "SYP",
-            "libera siriarra"
+            "Siriako libera"
         ],
         "SZL": [
             "SZL",
-            "lilangeni swazilandiarra"
+            "Swazilandiako lilangenia"
         ],
         "THB": [
             "฿",
-            "baht thailandiarra"
+            "Thailandiako bahta"
         ],
         "TJS": [
             "TJS",
-            "somoni tajikistandarra"
+            "Tajikistango somonia"
         ],
         "TMT": [
             "TMT",
-            "manat turkmenistandarra"
+            "Turkmenistango manata"
         ],
         "TND": [
             "TND",
-            "dinar tunisiarra"
+            "Tunisiako dinarra"
         ],
         "TOP": [
             "TOP",
@@ -571,7 +572,7 @@
         ],
         "TRY": [
             "TRY",
-            "lira turkiarra"
+            "Turkiako lira"
         ],
         "TTD": [
             "TTD",
@@ -579,11 +580,11 @@
         ],
         "TWD": [
             "NT$",
-            "dolar taiwandar berria"
+            "Taiwango dolar berria"
         ],
         "TZS": [
             "TZS",
-            "txelin tanzaniarra"
+            "Tanzaniako txelina"
         ],
         "UAH": [
             "UAH",
@@ -591,19 +592,19 @@
         ],
         "UGX": [
             "UGX",
-            "txelin ugandarra"
+            "Ugandako txelina"
         ],
         "USD": [
             "US$",
-            "dolar estatubatuarra"
+            "AEBko dolarra"
         ],
         "UYU": [
             "UYU",
-            "peso uruguaitarra"
+            "Uruguaiko pesoa"
         ],
         "UZS": [
             "UZS",
-            "sum uzbekistandarra"
+            "Uzbekistango soma"
         ],
         "VEF": [
             "VEF",
@@ -611,19 +612,19 @@
         ],
         "VES": [
             "VES",
-            "bolivar venezuelarra"
+            "Venezuelako bolivarra"
         ],
         "VND": [
             "₫",
-            "dong vietnamdarra"
+            "Vietnameko donga"
         ],
         "VUV": [
             "VUV",
-            "vatu vanuatuarra"
+            "Vanuatuko vatua"
         ],
         "WST": [
             "WST",
-            "tala samoarra"
+            "Samoko tala"
         ],
         "XAF": [
             "FCFA",
@@ -643,11 +644,11 @@
         ],
         "YER": [
             "YER",
-            "rial yemendarra"
+            "Yemengo riala"
         ],
         "ZAR": [
             "ZAR",
-            "rand hegoafrikarra"
+            "Hegoafrikako randa"
         ],
         "ZMK": [
             "ZMK",
@@ -655,7 +656,7 @@
         ],
         "ZMW": [
             "ZMW",
-            "kwacha zambiarra"
+            "Zambiako kwacha"
         ]
     }
 }

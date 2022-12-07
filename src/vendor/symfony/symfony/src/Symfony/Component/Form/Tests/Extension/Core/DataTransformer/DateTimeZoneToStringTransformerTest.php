@@ -38,15 +38,19 @@ class DateTimeZoneToStringTransformerTest extends TestCase
         $this->assertEquals([new \DateTimeZone('Europe/Amsterdam')], $transformer->reverseTransform(['Europe/Amsterdam']));
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\TransformationFailedException
+     */
     public function testInvalidTimezone()
     {
-        $this->expectException('Symfony\Component\Form\Exception\TransformationFailedException');
         (new DateTimeZoneToStringTransformer())->transform(1);
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\TransformationFailedException
+     */
     public function testUnknownTimezone()
     {
-        $this->expectException('Symfony\Component\Form\Exception\TransformationFailedException');
         (new DateTimeZoneToStringTransformer(true))->reverseTransform(['Foo/Bar']);
     }
 }

@@ -27,17 +27,15 @@
 
 namespace PrestaShop\TranslationToolsBundle\Translation\Extractor;
 
-use PrestaShop\TranslationToolsBundle\Translation\Manager\OriginalStringManager;
-use PrestaShop\TranslationToolsBundle\Translation\Parser\CrowdinPhpParser;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Translation\Extractor\AbstractFileExtractor;
 use Symfony\Component\Translation\Extractor\ExtractorInterface;
 use Symfony\Component\Translation\MessageCatalogue;
+use PrestaShop\TranslationToolsBundle\Translation\Manager\OriginalStringManager;
+use PrestaShop\TranslationToolsBundle\Translation\Parser\CrowdinPhpParser;
 
 class CrowdinPhpExtractor extends AbstractFileExtractor implements ExtractorInterface
 {
-    use TraitExtractor;
-
     /**
      * Prefix for new found message.
      *
@@ -45,10 +43,10 @@ class CrowdinPhpExtractor extends AbstractFileExtractor implements ExtractorInte
      */
     private $prefix = '';
 
-    /** @var CrowdinPhpParser */
+    /** @var CrowdinPhpParser $crodwinPhpParser */
     private $crodwinPhpParser;
 
-    /** @var OriginalStringManager */
+    /** @var OriginalStringManager $originalStringManager */
     private $originalStringManager;
 
     public function __construct(CrowdinPhpParser $crodwinPhpParser, OriginalStringManager $originalStringManager)
@@ -115,9 +113,6 @@ class CrowdinPhpExtractor extends AbstractFileExtractor implements ExtractorInte
     {
         $finder = new Finder();
 
-        return $finder->files()
-            ->name('*.php')
-            ->in($directory)
-            ->exclude($this->getExcludedDirectories());
+        return $finder->files()->name('*.php')->in($directory);
     }
 }

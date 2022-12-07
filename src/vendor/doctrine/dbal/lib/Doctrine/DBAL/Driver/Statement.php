@@ -1,14 +1,34 @@
 <?php
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the MIT license. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\DBAL\Driver;
-
-use Doctrine\DBAL\ParameterType;
 
 /**
  * Statement interface.
  * Drivers must implement this interface.
  *
  * This resembles (a subset of) the PDOStatement interface.
+ *
+ * @author Konsta Vesterinen <kvesteri@cc.hut.fi>
+ * @author Roman Borschel <roman@code-factory.org>
+ * @link   www.doctrine-project.org
+ * @since  2.0
  */
 interface Statement extends ResultStatement
 {
@@ -19,16 +39,16 @@ interface Statement extends ResultStatement
      * As mentioned above, the named parameters are not natively supported by the mysqli driver, use executeQuery(),
      * fetchAll(), fetchArray(), fetchColumn(), fetchAssoc() methods to have the named parameter emulated by doctrine.
      *
-     * @param mixed $param Parameter identifier. For a prepared statement using named placeholders,
-     *                     this will be a parameter name of the form :name. For a prepared statement
-     *                     using question mark placeholders, this will be the 1-indexed position of the parameter.
-     * @param mixed $value The value to bind to the parameter.
-     * @param int   $type  Explicit data type for the parameter using the {@link \Doctrine\DBAL\ParameterType}
-     *                     constants.
+     * @param mixed   $param Parameter identifier. For a prepared statement using named placeholders,
+     *                       this will be a parameter name of the form :name. For a prepared statement
+     *                       using question mark placeholders, this will be the 1-indexed position of the parameter.
+     * @param mixed   $value The value to bind to the parameter.
+     * @param integer $type  Explicit data type for the parameter using the PDO::PARAM_* constants.
      *
-     * @return bool TRUE on success or FALSE on failure.
+     * @return boolean TRUE on success or FALSE on failure.
      */
-    public function bindValue($param, $value, $type = ParameterType::STRING);
+    function bindValue($param, $value, $type = null);
+
 
     /**
      * Binds a PHP variable to a corresponding named (not supported by mysqli driver, see comment below) or question
@@ -44,35 +64,37 @@ interface Statement extends ResultStatement
      * of stored procedures that return data as output parameters, and some also as input/output
      * parameters that both send in data and are updated to receive it.
      *
-     * @param mixed    $column   Parameter identifier. For a prepared statement using named placeholders,
-     *                           this will be a parameter name of the form :name. For a prepared statement using
-     *                           question mark placeholders, this will be the 1-indexed position of the parameter.
-     * @param mixed    $variable Name of the PHP variable to bind to the SQL statement parameter.
-     * @param int|null $type     Explicit data type for the parameter using the {@link \Doctrine\DBAL\ParameterType}
-     *                           constants. To return an INOUT parameter from a stored procedure, use the bitwise
-     *                           OR operator to set the PDO::PARAM_INPUT_OUTPUT bits for the data_type parameter.
-     * @param int|null $length   You must specify maxlength when using an OUT bind
-     *                           so that PHP allocates enough memory to hold the returned value.
+     * @param mixed        $column   Parameter identifier. For a prepared statement using named placeholders,
+     *                               this will be a parameter name of the form :name. For a prepared statement using
+     *                               question mark placeholders, this will be the 1-indexed position of the parameter.
+     * @param mixed        $variable Name of the PHP variable to bind to the SQL statement parameter.
+     * @param integer|null $type     Explicit data type for the parameter using the PDO::PARAM_* constants. To return
+     *                               an INOUT parameter from a stored procedure, use the bitwise OR operator to set the
+     *                               PDO::PARAM_INPUT_OUTPUT bits for the data_type parameter.
+     * @param integer|null $length   You must specify maxlength when using an OUT bind
+     *                               so that PHP allocates enough memory to hold the returned value.
      *
-     * @return bool TRUE on success or FALSE on failure.
+     * @return boolean TRUE on success or FALSE on failure.
      */
-    public function bindParam($column, &$variable, $type = ParameterType::STRING, $length = null);
+    function bindParam($column, &$variable, $type = null, $length = null);
 
     /**
      * Fetches the SQLSTATE associated with the last operation on the statement handle.
      *
      * @see Doctrine_Adapter_Interface::errorCode()
      *
-     * @return string|int|bool The error code string.
+     * @return string The error code string.
      */
-    public function errorCode();
+    function errorCode();
 
     /**
      * Fetches extended error information associated with the last operation on the statement handle.
      *
-     * @return mixed[] The error info array.
+     * @see Doctrine_Adapter_Interface::errorInfo()
+     *
+     * @return array The error info array.
      */
-    public function errorInfo();
+    function errorInfo();
 
     /**
      * Executes a prepared statement
@@ -83,12 +105,13 @@ interface Statement extends ResultStatement
      * if any, of their associated parameter markers or pass an array of input-only
      * parameter values.
      *
-     * @param mixed[]|null $params An array of values with as many elements as there are
-     *                             bound parameters in the SQL statement being executed.
      *
-     * @return bool TRUE on success or FALSE on failure.
+     * @param array|null $params An array of values with as many elements as there are
+     *                           bound parameters in the SQL statement being executed.
+     *
+     * @return boolean TRUE on success or FALSE on failure.
      */
-    public function execute($params = null);
+    function execute($params = null);
 
     /**
      * Returns the number of rows affected by the last DELETE, INSERT, or UPDATE statement
@@ -99,7 +122,7 @@ interface Statement extends ResultStatement
      * this behaviour is not guaranteed for all databases and should not be
      * relied on for portable applications.
      *
-     * @return int The number of rows.
+     * @return integer The number of rows.
      */
-    public function rowCount();
+    function rowCount();
 }

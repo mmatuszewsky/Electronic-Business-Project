@@ -16,9 +16,11 @@ use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\PhpArrayAdapter;
 use Symfony\Component\Cache\Adapter\ProxyAdapter;
-use Symfony\Component\Config\Resource\ClassExistenceResource;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 
+/**
+ * @internal
+ */
 abstract class AbstractPhpFileCacheWarmer implements CacheWarmerInterface
 {
     private $phpArrayFile;
@@ -52,13 +54,13 @@ abstract class AbstractPhpFileCacheWarmer implements CacheWarmerInterface
     {
         $arrayAdapter = new ArrayAdapter();
 
-        spl_autoload_register([ClassExistenceResource::class, 'throwOnRequiredClass']);
+        spl_autoload_register([PhpArrayAdapter::class, 'throwOnRequiredClass']);
         try {
             if (!$this->doWarmUp($cacheDir, $arrayAdapter)) {
                 return;
             }
         } finally {
-            spl_autoload_unregister([ClassExistenceResource::class, 'throwOnRequiredClass']);
+            spl_autoload_unregister([PhpArrayAdapter::class, 'throwOnRequiredClass']);
         }
 
         // the ArrayAdapter stores the values serialized
@@ -81,18 +83,8 @@ abstract class AbstractPhpFileCacheWarmer implements CacheWarmerInterface
     }
 
     /**
-     * @internal
-     */
-    final protected function ignoreAutoloadException($class, \Exception $exception)
-    {
-        try {
-            ClassExistenceResource::throwOnRequiredClass($class, $exception);
-        } catch (\ReflectionException $e) {
-        }
-    }
-
-    /**
-     * @param string $cacheDir
+     * @param string       $cacheDir
+     * @param ArrayAdapter $arrayAdapter
      *
      * @return bool false if there is nothing to warm-up
      */

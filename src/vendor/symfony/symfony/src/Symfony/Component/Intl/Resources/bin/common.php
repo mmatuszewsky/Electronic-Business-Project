@@ -62,19 +62,13 @@ function get_icu_version_from_genrb($genrb)
     }
 
     if (!preg_match('/ICU version ([\d\.]+)/', implode('', $output), $matches)) {
-        return null;
+        return;
     }
 
     return $matches[1];
 }
 
-error_reporting(\E_ALL);
-
-set_error_handler(function ($type, $msg, $file, $line) {
-    throw new \ErrorException($msg, 0, $type, $file, $line);
-});
-
-set_exception_handler(function (Throwable $exception) {
+set_exception_handler(function (\Throwable $exception) {
     echo "\n";
 
     $cause = $exception;
@@ -88,7 +82,10 @@ set_exception_handler(function (Throwable $exception) {
         echo get_class($cause).': '.$cause->getMessage()."\n";
         echo "\n";
         echo $cause->getFile().':'.$cause->getLine()."\n";
-        echo $cause->getTraceAsString()."\n";
+        foreach ($cause->getTrace() as $trace) {
+            echo $trace['file'].':'.$trace['line']."\n";
+        }
+        echo "\n";
 
         $cause = $cause->getPrevious();
         $root = false;

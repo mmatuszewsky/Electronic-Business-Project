@@ -19,13 +19,12 @@
 
 namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
-use Doctrine\Common\Cache\ApcCache;
-use Doctrine\Common\Cache\XcacheCache;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use Doctrine\Common\Cache\ApcCache;
+use Doctrine\Common\Cache\XcacheCache;
 
 /**
  * Command to clear the result cache of the various cache drivers.
@@ -44,10 +43,17 @@ class ResultCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('orm:clear-cache:result')
-             ->setDescription('Clear all result cache of the various cache drivers')
-             ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, cache entries will be flushed instead of deleted/invalidated.')
-             ->setHelp(<<<EOT
+        $this
+        ->setName('orm:clear-cache:result')
+        ->setDescription('Clear all result cache of the various cache drivers.')
+        ->setDefinition(array(
+            new InputOption(
+                'flush', null, InputOption::VALUE_NONE,
+                'If defined, cache entries will be flushed instead of deleted/invalidated.'
+            )
+        ));
+
+        $this->setHelp(<<<EOT
 The <info>%command.name%</info> command is meant to clear the result cache of associated Entity Manager.
 It is possible to invalidate all cache entries at once - called delete -, or flushes the cache provider
 instance completely.
@@ -64,7 +70,7 @@ Alternatively, if you want to flush the cache provider using this command:
 Finally, be aware that if <info>--flush</info> option is passed, not all cache providers are able to flush entries,
 because of a limitation of its execution nature.
 EOT
-             );
+        );
     }
 
     /**
@@ -72,8 +78,6 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $ui = new SymfonyStyle($input, $output);
-
         $em = $this->getHelper('em')->getEntityManager();
         $cacheDriver = $em->getConfiguration()->getResultCacheImpl();
 
@@ -88,8 +92,8 @@ EOT
         if ($cacheDriver instanceof XcacheCache) {
             throw new \LogicException("Cannot clear XCache Cache from Console, its shared in the Webserver memory and not accessible from the CLI.");
         }
-
-        $ui->comment('Clearing <info>all</info> Result cache entries');
+        
+        $output->writeln('Clearing ALL Result cache entries');
 
         $result  = $cacheDriver->deleteAll();
         $message = ($result) ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
@@ -99,14 +103,6 @@ EOT
             $message = ($result) ? 'Successfully flushed cache entries.' : $message;
         }
 
-        if ( ! $result) {
-            $ui->error($message);
-
-            return 1;
-        }
-
-        $ui->success($message);
-
-        return 0;
+        $output->writeln($message);
     }
 }

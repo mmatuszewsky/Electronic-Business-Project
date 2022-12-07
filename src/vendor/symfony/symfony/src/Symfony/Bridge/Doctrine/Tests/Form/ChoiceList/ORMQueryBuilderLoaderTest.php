@@ -37,10 +37,6 @@ class ORMQueryBuilderLoaderTest extends TestCase
             ->setMethods(['setParameter', 'getResult', 'getSql', '_doExecute'])
             ->getMock();
 
-        $query
-            ->method('getResult')
-            ->willReturn([]);
-
         $query->expects($this->once())
             ->method('setParameter')
             ->with('ORMQueryBuilderLoader_getEntitiesByIds_id', [1, 2], $expectedType)
@@ -69,10 +65,6 @@ class ORMQueryBuilderLoaderTest extends TestCase
         $query = $this->getMockBuilder('QueryMock')
             ->setMethods(['setParameter', 'getResult', 'getSql', '_doExecute'])
             ->getMock();
-
-        $query
-            ->method('getResult')
-            ->willReturn([]);
 
         $query->expects($this->once())
             ->method('setParameter')
@@ -105,10 +97,6 @@ class ORMQueryBuilderLoaderTest extends TestCase
         $query = $this->getMockBuilder('QueryMock')
             ->setMethods(['setParameter', 'getResult', 'getSql', '_doExecute'])
             ->getMock();
-
-        $query
-            ->method('getResult')
-            ->willReturn([]);
 
         $query->expects($this->once())
             ->method('setParameter')
@@ -144,10 +132,6 @@ class ORMQueryBuilderLoaderTest extends TestCase
         $query = $this->getMockBuilder('QueryMock')
             ->setMethods(['setParameter', 'getResult', 'getSql', '_doExecute'])
             ->getMock();
-
-        $query
-            ->method('getResult')
-            ->willReturn([]);
 
         $query->expects($this->once())
             ->method('setParameter')

@@ -42,7 +42,7 @@ class InExpression extends Node
     /**
      * @var array
      */
-    public $literals = [];
+    public $literals = array();
 
     /**
      * @var Subselect|null

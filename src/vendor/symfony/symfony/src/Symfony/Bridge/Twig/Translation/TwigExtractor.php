@@ -12,6 +12,7 @@
 namespace Symfony\Bridge\Twig\Translation;
 
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Translation\Extractor\AbstractFileExtractor;
 use Symfony\Component\Translation\Extractor\ExtractorInterface;
 use Symfony\Component\Translation\MessageCatalogue;
@@ -57,7 +58,17 @@ class TwigExtractor extends AbstractFileExtractor implements ExtractorInterface
             try {
                 $this->extractTemplate(file_get_contents($file->getPathname()), $catalogue);
             } catch (Error $e) {
-                // ignore errors, these should be fixed by using the linter
+                if ($file instanceof \SplFileInfo) {
+                    $path = $file->getRealPath() ?: $file->getPathname();
+                    $name = $file instanceof SplFileInfo ? $file->getRelativePathname() : $path;
+                    if (method_exists($e, 'setSourceContext')) {
+                        $e->setSourceContext(new Source('', $name, $path));
+                    } else {
+                        $e->setTemplateName($name);
+                    }
+                }
+
+                throw $e;
             }
         }
     }
@@ -91,11 +102,13 @@ class TwigExtractor extends AbstractFileExtractor implements ExtractorInterface
      */
     protected function canBeExtracted($file)
     {
-        return $this->isFile($file) && 'twig' === pathinfo($file, \PATHINFO_EXTENSION);
+        return $this->isFile($file) && 'twig' === pathinfo($file, PATHINFO_EXTENSION);
     }
 
     /**
-     * {@inheritdoc}
+     * @param string|array $directory
+     *
+     * @return array
      */
     protected function extractFromDirectory($directory)
     {

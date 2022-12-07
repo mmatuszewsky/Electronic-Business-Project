@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\FormPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Form\AbstractType;
 
 /**
  * @group legacy
@@ -124,10 +125,12 @@ class FormPassTest extends TestCase
         ];
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage extended-type attribute, none was configured for the "my.type_extension" service
+     */
     public function testAddTaggedFormTypeExtensionWithoutExtendedTypeAttribute()
     {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('extended-type attribute, none was configured for the "my.type_extension" service');
         $container = new ContainerBuilder();
         $container->addCompilerPass(new FormPass());
 
@@ -210,4 +213,12 @@ class FormPassTest extends TestCase
             ['my.guesser', 'form.type_guesser'],
         ];
     }
+}
+
+class FormPassTest_Type1 extends AbstractType
+{
+}
+
+class FormPassTest_Type2 extends AbstractType
+{
 }

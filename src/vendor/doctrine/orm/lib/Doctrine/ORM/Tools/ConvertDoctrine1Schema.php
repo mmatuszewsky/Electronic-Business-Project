@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
-use Doctrine\Common\Inflector\Inflector;
+use Doctrine\Common\Util\Inflector;
 use Doctrine\DBAL\Types\Type;
 use Symfony\Component\Yaml\Yaml;
 
@@ -44,12 +44,12 @@ class ConvertDoctrine1Schema
     /**
      * @var array
      */
-    private $legacyTypeMap = [
+    private $legacyTypeMap = array(
         // TODO: This list may need to be updated
         'clob' => 'text',
         'timestamp' => 'datetime',
         'enum' => 'string'
-    ];
+    );
 
     /**
      * Constructor passes the directory or array of directories
@@ -68,13 +68,11 @@ class ConvertDoctrine1Schema
      * Gets an array of ClassMetadataInfo instances from the passed
      * Doctrine 1 schema.
      *
-     * @return ClassMetadataInfo[] An array of ClassMetadataInfo instances
-     *
-     * @psalm-return list<ClassMetadataInfo>
+     * @return array An array of ClassMetadataInfo instances
      */
     public function getMetadata()
     {
-        $schema = [];
+        $schema = array();
         foreach ($this->from as $path) {
             if (is_dir($path)) {
                 $files = glob($path . '/*.yml');
@@ -86,7 +84,7 @@ class ConvertDoctrine1Schema
             }
         }
 
-        $metadatas = [];
+        $metadatas = array();
         foreach ($schema as $className => $mappingInformation) {
             $metadatas[] = $this->convertToClassMetadataInfo($className, $mappingInformation);
         }
@@ -155,12 +153,12 @@ class ConvertDoctrine1Schema
         }
 
         if ( ! $id) {
-            $fieldMapping = [
+            $fieldMapping = array(
                 'fieldName' => 'id',
                 'columnName' => 'id',
                 'type' => 'integer',
                 'id' => true
-            ];
+            );
             $metadata->mapField($fieldMapping);
             $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
         }
@@ -172,7 +170,7 @@ class ConvertDoctrine1Schema
      * @param string|array      $column
      * @param ClassMetadataInfo $metadata
      *
-     * @return mixed[]
+     * @return array
      *
      * @throws ToolsException
      */
@@ -180,7 +178,7 @@ class ConvertDoctrine1Schema
     {
         if (is_string($column)) {
             $string = $column;
-            $column = [];
+            $column = array();
             $column['type'] = $string;
         }
 
@@ -210,13 +208,13 @@ class ConvertDoctrine1Schema
             throw ToolsException::couldNotMapDoctrine1Type($column['type']);
         }
 
-        $fieldMapping = [];
+        $fieldMapping = array();
 
         if (isset($column['primary'])) {
             $fieldMapping['id'] = true;
         }
 
-        $fieldMapping['fieldName'] = $column['alias'] ?? $name;
+        $fieldMapping['fieldName'] = isset($column['alias']) ? $column['alias'] : $name;
         $fieldMapping['columnName'] = $column['name'];
         $fieldMapping['type'] = $column['type'];
 
@@ -224,7 +222,7 @@ class ConvertDoctrine1Schema
             $fieldMapping['length'] = $column['length'];
         }
 
-        $allowed = ['precision', 'scale', 'unique', 'options', 'notnull', 'version'];
+        $allowed = array('precision', 'scale', 'unique', 'options', 'notnull', 'version');
 
         foreach ($column as $key => $value) {
             if (in_array($key, $allowed)) {
@@ -239,9 +237,9 @@ class ConvertDoctrine1Schema
         } elseif (isset($column['sequence'])) {
             $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
 
-            $definition = [
+            $definition = array(
                 'sequenceName' => is_array($column['sequence']) ? $column['sequence']['name']:$column['sequence']
-            ];
+            );
 
             if (isset($column['sequence']['size'])) {
                 $definition['allocationSize'] = $column['sequence']['size'];
@@ -274,9 +272,9 @@ class ConvertDoctrine1Schema
             $type = (isset($index['type']) && $index['type'] == 'unique')
                 ? 'uniqueConstraints' : 'indexes';
 
-            $metadata->table[$type][$name] = [
+            $metadata->table[$type][$name] = array(
                 'columns' => $index['fields']
-            ];
+            );
         }
     }
 
@@ -313,17 +311,17 @@ class ConvertDoctrine1Schema
             if (isset($relation['refClass'])) {
                 $type = 'many';
                 $foreignType = 'many';
-                $joinColumns = [];
+                $joinColumns = array();
             } else {
-                $type = $relation['type'] ?? 'one';
-                $foreignType = $relation['foreignType'] ?? 'many';
-                $joinColumns = [
-                    [
+                $type = isset($relation['type']) ? $relation['type'] : 'one';
+                $foreignType = isset($relation['foreignType']) ? $relation['foreignType'] : 'many';
+                $joinColumns = array(
+                    array(
                         'name' => $relation['local'],
                         'referencedColumnName' => $relation['foreign'],
-                        'onDelete' => $relation['onDelete'] ?? null,
-                    ]
-                ];
+                        'onDelete' => isset($relation['onDelete']) ? $relation['onDelete'] : null,
+                    )
+                );
             }
 
             if ($type == 'one' && $foreignType == 'one') {
@@ -334,7 +332,7 @@ class ConvertDoctrine1Schema
                 $method = 'mapOneToMany';
             }
 
-            $associationMapping = [];
+            $associationMapping = array();
             $associationMapping['fieldName'] = $relation['alias'];
             $associationMapping['targetEntity'] = $relation['class'];
             $associationMapping['mappedBy'] = $relation['foreignAlias'];

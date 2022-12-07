@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,32 +16,29 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Twig;
 
 use Doctrine\Common\Util\Inflector;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Translation\TranslatorInterface;
-use Twig_Extension;
-use Twig_SimpleFunction;
 
-class TranslationsExtension extends Twig_Extension
+class TranslationsExtension extends \Twig_Extension
 {
     /**
-     * @var TranslatorInterface
+     * @var \Symfony\Component\Translation\TranslatorInterface
      */
     public $translator;
 
     /**
-     * @var LoggerInterface
+     * @var \Psr\Log\LoggerInterface
      */
     public $logger;
 
@@ -74,17 +70,17 @@ class TranslationsExtension extends Twig_Extension
      */
     public function getFunctions()
     {
-        return [
-            new Twig_SimpleFunction('getTranslationsTree', [$this, 'getTranslationsTree']),
-            new Twig_SimpleFunction('getTranslationsForms', [$this, 'getTranslationsForms']),
-        ];
+        return array(
+            new \Twig_SimpleFunction('getTranslationsTree', array($this, 'getTranslationsTree')),
+            new \Twig_SimpleFunction('getTranslationsForms', array($this, 'getTranslationsForms')),
+        );
     }
 
     /**
      * Returns concatenated edit translation forms.
      *
      * @param array $translationsTree
-     * @param string|null $themeName
+     * @param null $themeName
      *
      * @return string
      */
@@ -136,7 +132,7 @@ class TranslationsExtension extends Twig_Extension
      * Returns a tree of translations key values.
      *
      * @param array $translationsTree
-     * @param string|null $themeName
+     * @param null $themeName
      *
      * @return string
      */
@@ -154,7 +150,7 @@ class TranslationsExtension extends Twig_Extension
     }
 
     /**
-     * @param array $tree
+     * @param $tree
      * @param int $level
      *
      * @return string
@@ -215,25 +211,25 @@ class TranslationsExtension extends Twig_Extension
      */
     protected function getSharedEditFormViewProperties()
     {
-        return [
+        return array(
             'action' => $this->router->generate('admin_international_translations_edit'),
-            'label_edit' => $this->translator->trans('Save', [], 'Admin.Actions'),
-            'label_reset' => $this->translator->trans('Reset', [], 'Admin.Actions'),
+            'label_edit' => $this->translator->trans('Save', array(), 'Admin.Actions'),
+            'label_reset' => $this->translator->trans('Reset', array(), 'Admin.Actions'),
             'notification_success' => $this->translator->trans(
                 'Translation successfully updated',
-                [],
+                array(),
                 'Admin.International.Notification'
             ),
             'notification_error' => $this->translator->trans(
                 'Failed to update translation',
-                [],
+                array(),
                 'Admin.International.Notification'
             ),
-        ];
+        );
     }
 
     /**
-     * @param array $properties
+     * @param $properties
      *
      * @return mixed|string
      */
@@ -258,7 +254,7 @@ class TranslationsExtension extends Twig_Extension
 
         return $this->container->get('templating')->render(
             '@PrestaShop/Admin/Translations/include/form-edit-message.html.twig',
-            [
+            array(
                 'default_translation_value' => $defaultTranslationValue,
                 'domain' => $domain,
                 'edited_translation_value' => $translationValue,
@@ -274,7 +270,7 @@ class TranslationsExtension extends Twig_Extension
                 'theme' => $this->theme,
                 'breadcrumb_parts' => $breadcrumbParts,
                 'is_search_results' => $isSearchResults,
-            ]
+            )
         );
     }
 
@@ -284,16 +280,16 @@ class TranslationsExtension extends Twig_Extension
     }
 
     /**
-     * @param string $translationKey
-     * @param string $domain
-     * @param string $locale
-     * @param array $translationValue
+     * @param $translationKey
+     * @param $domain
+     * @param $locale
+     * @param $translationValue
      *
      * @return array
      */
     protected function getDefaultTranslationValue($translationKey, $domain, $locale, $translationValue)
     {
-        $defaultTranslationValue = $this->translator->trans($translationKey, [], $domain, $locale);
+        $defaultTranslationValue = $this->translator->trans($translationKey, array(), $domain, $locale);
 
         // Extract default translation value from xliff files for reset
         if (is_array($translationValue)) {
@@ -304,7 +300,7 @@ class TranslationsExtension extends Twig_Extension
     }
 
     /**
-     * @param array $translation
+     * @param $translation
      *
      * @return mixed
      */
@@ -314,7 +310,7 @@ class TranslationsExtension extends Twig_Extension
     }
 
     /**
-     * @param array $tree
+     * @param $tree
      *
      * @return bool
      */
@@ -334,8 +330,8 @@ class TranslationsExtension extends Twig_Extension
     }
 
     /**
-     * @param string $subdomain
-     * @param array $subtree
+     * @param $subdomain
+     * @param $subtree
      * @param int $level
      *
      * @return string
@@ -355,7 +351,7 @@ class TranslationsExtension extends Twig_Extension
         if (!$hasMessagesSubtree) {
             $output = str_replace(
                 '{{ missing translations warning }}',
-                $this->translator->trans('%d missing', [], 'Admin.International.Feature'),
+                $this->translator->trans('%d missing', array(), 'Admin.International.Feature'),
                 $output
             );
         } else {
@@ -365,10 +361,10 @@ class TranslationsExtension extends Twig_Extension
         if ($hasMessagesSubtree) {
             $output .= $this->container->get('templating')->render(
                 '@PrestaShop/Admin/Translations/include/button-toggle-messages-visibility.html.twig',
-                [
-                    'label_show_messages' => $this->translator->trans('Show messages', [], 'Admin.International.Feature'),
-                    'label_hide_messages' => $this->translator->trans('Hide messages', [], 'Admin.International.Feature'),
-                ]
+                array(
+                    'label_show_messages' => $this->translator->trans('Show messages', array(), 'Admin.International.Feature'),
+                    'label_hide_messages' => $this->translator->trans('Hide messages', array(), 'Admin.International.Feature'),
+                )
             );
 
             $output .= $this->getNavigation($this->parseDomain($subtree));
@@ -377,10 +373,10 @@ class TranslationsExtension extends Twig_Extension
         $formStart = $this->getTranslationsFormStart($subtree, $output);
         $output = $this->container->get('templating')->render(
             '@PrestaShop/Admin/Translations/include/translations-form-end.html.twig',
-            [
+            array(
                 'form_start' => $formStart,
                 'subtree' => $this->makeSubtree($subtree, $level + 1),
-            ]
+            )
         );
 
         if ($hasMessagesSubtree) {
@@ -398,8 +394,8 @@ class TranslationsExtension extends Twig_Extension
     }
 
     /**
-     * @param array $subtree
-     * @param string $output
+     * @param $subtree
+     * @param $output
      *
      * @return string
      */
@@ -425,7 +421,7 @@ class TranslationsExtension extends Twig_Extension
             $totalTranslations = count(array_values($subtree['__messages'])[0]);
             $totalTranslationsAttribute = ' data-total-translations="' . $this->translator->trans(
                 '%nb_translations% expressions',
-                    ['%nb_translations%' => $totalTranslations],
+                    array('%nb_translations%' => $totalTranslations),
                     'Admin.International.Feature'
                 ) . '"';
         }
@@ -439,20 +435,20 @@ class TranslationsExtension extends Twig_Extension
 
         return $this->container->get('templating')->render(
             '@PrestaShop/Admin/Translations/include/translations-form-start.html.twig',
-            [
+            array(
                 'id' => $id,
                 'domain' => $domainAttribute,
                 'parent' => $parentAttribute,
                 'total_translations' => $totalTranslationsAttribute,
                 'missing_translations' => $missingTranslationsAttribute,
                 'title' => $output,
-            ]
+            )
         );
     }
 
     /**
-     * @param string $output
-     * @param array $subtree
+     * @param $output
+     * @param $subtree
      *
      * @return string
      */
@@ -469,7 +465,7 @@ class TranslationsExtension extends Twig_Extension
                 '<div class="missing-translations-short-message pull-right hide">' .
                 $this->translator->trans(
                     '%nb_translations% missing',
-                    ['%nb_translations%' => $missingTranslationsCount],
+                    array('%nb_translations%' => $missingTranslationsCount),
                     'Admin.International.Feature'
                 ) .
                 '</div>';
@@ -477,10 +473,10 @@ class TranslationsExtension extends Twig_Extension
                 '<div class="missing-translations-long-message hide">' .
                 $this->translator->trans(
                     '%nb_translations% translations are missing in %domain%',
-                    [
+                    array(
                         '%nb_translations%' => $missingTranslationsCount,
                         '%domain%' => $domain,
-                    ],
+                    ),
                     'Admin.International.Feature'
                 ) .
                 '</div>';
@@ -488,34 +484,34 @@ class TranslationsExtension extends Twig_Extension
         }
 
         $warning = str_replace(
-            [
+            array(
                 '{{ missing translations message }}',
                 '{{ missing translations long message }}',
-            ],
-            [
+            ),
+            array(
                 $missingTranslationsMessage,
                 $missingTranslationsLongMessage,
-            ],
+            ),
             '{{ missing translations message }}{{ missing translations long message }}'
         );
 
         return str_replace(
-            [
+            array(
                 '{{ missing translations warning }}',
                 '{{ missing translations class }}',
-            ],
-            [
+            ),
+            array(
                 $warning,
                 $missingTranslationsClass,
-            ],
+            ),
             $output
         );
     }
 
     /**
-     * @param array $subtree
+     * @param $subtree
      *
-     * @return string
+     * @return mixed
      */
     protected function parseDomain($subtree)
     {
@@ -526,7 +522,7 @@ class TranslationsExtension extends Twig_Extension
     }
 
     /**
-     * @param mixed $id
+     * @param $id
      *
      * @return string
      */
@@ -534,14 +530,14 @@ class TranslationsExtension extends Twig_Extension
     {
         return $this->container->get('templating')->render(
             '@PrestaShop/Admin/Translations/include/pagination-bar.html.twig',
-            ['page_id' => $id]
+            array('page_id' => $id)
         );
     }
 
     /**
-     * @param string $subject
-     * @param bool $isLastChild
-     * @param string|null $id
+     * @param $subject
+     * @param $isLastChild
+     * @param null $id
      *
      * @return string
      */

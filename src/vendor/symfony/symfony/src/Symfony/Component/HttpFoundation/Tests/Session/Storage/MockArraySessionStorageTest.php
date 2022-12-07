@@ -121,9 +121,11 @@ class MockArraySessionStorageTest extends TestCase
         $this->assertTrue($storage->isStarted());
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
     public function testUnstartedSave()
     {
-        $this->expectException('RuntimeException');
         $this->storage->save();
     }
 }

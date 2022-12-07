@@ -17,7 +17,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\Argument\IteratorArgument;
 use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
-use Symfony\Component\DependencyInjection\Argument\TaggedIteratorArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
@@ -33,6 +32,9 @@ use Symfony\Component\Routing\RouteCollection;
  */
 class TextDescriptor extends Descriptor
 {
+    /**
+     * {@inheritdoc}
+     */
     protected function describeRouteCollection(RouteCollection $routes, array $options = [])
     {
         $showControllers = isset($options['show_controllers']) && $options['show_controllers'];
@@ -69,6 +71,9 @@ class TextDescriptor extends Descriptor
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function describeRoute(Route $route, array $options = [])
     {
         $tableHeaders = ['Property', 'Value'];
@@ -94,6 +99,9 @@ class TextDescriptor extends Descriptor
         $table->render();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function describeContainerParameters(ParameterBag $parameters, array $options = [])
     {
         $tableHeaders = ['Parameter', 'Value'];
@@ -107,6 +115,9 @@ class TextDescriptor extends Descriptor
         $options['output']->table($tableHeaders, $tableRows);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function describeContainerTags(ContainerBuilder $builder, array $options = [])
     {
         $showPrivate = isset($options['show_private']) && $options['show_private'];
@@ -240,6 +251,9 @@ class TextDescriptor extends Descriptor
         $options['output']->table($tableHeaders, $tableRows);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function describeContainerDefinition(Definition $definition, array $options = [])
     {
         if (isset($options['id'])) {
@@ -325,11 +339,7 @@ class TextDescriptor extends Descriptor
                 if ($argument instanceof Reference) {
                     $argumentsInformation[] = sprintf('Service(%s)', (string) $argument);
                 } elseif ($argument instanceof IteratorArgument) {
-                    if ($argument instanceof TaggedIteratorArgument) {
-                        $argumentsInformation[] = sprintf('Tagged Iterator for "%s"%s', $argument->getTag(), $options['is_debug'] ? '' : sprintf(' (%d element(s))', \count($argument->getValues())));
-                    } else {
-                        $argumentsInformation[] = sprintf('Iterator (%d element(s))', \count($argument->getValues()));
-                    }
+                    $argumentsInformation[] = sprintf('Iterator (%d element(s))', \count($argument->getValues()));
                 } elseif ($argument instanceof Definition) {
                     $argumentsInformation[] = 'Inlined Service';
                 } else {
@@ -343,6 +353,9 @@ class TextDescriptor extends Descriptor
         $options['output']->table($tableHeaders, $tableRows);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function describeContainerAlias(Alias $alias, array $options = [], ContainerBuilder $builder = null)
     {
         $options['output']->comment(sprintf('This service is an alias for the service <info>%s</info>', (string) $alias));
@@ -351,9 +364,12 @@ class TextDescriptor extends Descriptor
             return;
         }
 
-        $this->describeContainerDefinition($builder->getDefinition((string) $alias), array_merge($options, ['id' => (string) $alias]));
+        return $this->describeContainerDefinition($builder->getDefinition((string) $alias), array_merge($options, ['id' => (string) $alias]));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function describeContainerParameter($parameter, array $options = [])
     {
         $options['output']->table(
@@ -404,6 +420,7 @@ class TextDescriptor extends Descriptor
         $tableHeaders = ['Order', 'Callable', 'Priority'];
         $tableRows = [];
 
+        $order = 1;
         foreach ($eventListeners as $order => $listener) {
             $tableRows[] = [sprintf('#%d', $order + 1), $this->formatCallable($listener), $eventDispatcher->getListenerPriority($event, $listener)];
         }
@@ -412,6 +429,8 @@ class TextDescriptor extends Descriptor
     }
 
     /**
+     * @param array $config
+     *
      * @return string
      */
     private function formatRouterConfig(array $config)
@@ -470,6 +489,7 @@ class TextDescriptor extends Descriptor
 
     /**
      * @param string $content
+     * @param array  $options
      */
     private function writeText($content, array $options = [])
     {

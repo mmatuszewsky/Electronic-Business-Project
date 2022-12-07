@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bundle\FrameworkBundle\Tests\DependencyInjection\Fixtures\CustomPathBundle;
+namespace Symfony\Bundle\FrameworkBundle\Tests;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

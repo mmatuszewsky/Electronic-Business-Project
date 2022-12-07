@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.42",
     "Names": {
         "aa": "afar",
         "ab": "abcázio",
@@ -71,7 +72,7 @@
         "car": "caribe",
         "cay": "cayuga",
         "cch": "atsam",
-        "ccp": "chakma",
+        "ccp": "Chakma",
         "ce": "checheno",
         "ceb": "cebuano",
         "cgg": "chiga",
@@ -131,7 +132,6 @@
         "eu": "basco",
         "ewo": "ewondo",
         "fa": "persa",
-        "fa_AF": "dari",
         "fan": "fangue",
         "fat": "fanti",
         "ff": "fula",

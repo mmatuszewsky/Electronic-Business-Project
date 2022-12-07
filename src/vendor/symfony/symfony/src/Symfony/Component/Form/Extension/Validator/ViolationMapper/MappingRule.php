@@ -24,8 +24,9 @@ class MappingRule
     private $targetPath;
 
     /**
-     * @param string $propertyPath
-     * @param string $targetPath
+     * @param FormInterface $origin
+     * @param string        $propertyPath
+     * @param string        $targetPath
      */
     public function __construct(FormInterface $origin, $propertyPath, $targetPath)
     {
@@ -54,7 +55,9 @@ class MappingRule
      */
     public function match($propertyPath)
     {
-        return $propertyPath === $this->propertyPath ? $this->getTarget() : null;
+        if ($propertyPath === $this->propertyPath) {
+            return $this->getTarget();
+        }
     }
 
     /**

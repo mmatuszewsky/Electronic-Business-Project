@@ -44,8 +44,9 @@ class DoctrineValidationPass implements CompilerPassInterface
      * Gets the validation mapping files for the format and extends them with
      * files matching a doctrine search pattern (Resources/config/validation.orm.xml).
      *
-     * @param string $mapping
-     * @param string $extension
+     * @param ContainerBuilder $container
+     * @param string           $mapping
+     * @param string           $extension
      */
     private function updateValidatorMappingFiles(ContainerBuilder $container, $mapping, $extension)
     {

@@ -36,7 +36,7 @@ class OptimisticLockException extends ORMException
 
     /**
      * @param string $msg
-     * @param object|null $entity
+     * @param object $entity
      */
     public function __construct($msg, $entity)
     {
@@ -75,12 +75,11 @@ class OptimisticLockException extends ORMException
     {
         $expectedLockVersion = ($expectedLockVersion instanceof \DateTime) ? $expectedLockVersion->getTimestamp() : $expectedLockVersion;
         $actualLockVersion = ($actualLockVersion instanceof \DateTime) ? $actualLockVersion->getTimestamp() : $actualLockVersion;
-
         return new self("The optimistic lock failed, version " . $expectedLockVersion . " was expected, but is actually ".$actualLockVersion, $entity);
     }
 
     /**
-     * @param string $entityName
+     * @param  string $entityName
      *
      * @return OptimisticLockException
      */

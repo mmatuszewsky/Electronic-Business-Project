@@ -1,24 +1,17 @@
 {
+    "Version": "2.1.47.86",
     "Names": {
-        "BDT": [
-            "BDT",
-            "taka bangladesí"
-        ],
-        "BTN": [
-            "BTN",
-            "ngultrum butanés"
+        "AMD": [
+            "AMD",
+            "dram"
         ],
         "JPY": [
             "¥",
             "yen"
         ],
-        "KGS": [
-            "KGS",
-            "som kirguís"
-        ],
-        "LAK": [
-            "LAK",
-            "kip laosiano"
+        "MYR": [
+            "MYR",
+            "ringit"
         ],
         "STN": [
             "STN",
@@ -36,17 +29,13 @@
             "UZS",
             "sum"
         ],
-        "VND": [
-            "VND",
-            "dong vietnamita"
-        ],
         "XAF": [
             "XAF",
             "franco CFA de África central"
         ],
-        "ZMW": [
-            "ZMW",
-            "kwacha zambiano"
+        "XOF": [
+            "XOF",
+            "franco CFA de África Occidental"
         ]
     }
 }

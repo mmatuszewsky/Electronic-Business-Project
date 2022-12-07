@@ -15,7 +15,6 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\SessionBagProxy;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 /**
@@ -262,27 +261,13 @@ class SessionTest extends TestCase
         $this->assertTrue($this->session->isEmpty());
     }
 
-    public function testGetBagWithBagImplementingGetBag()
+    public function testSaveIfNotStarted()
     {
-        $bag = new AttributeBag();
-        $bag->setName('foo');
+        $storage = $this->getMockBuilder('Symfony\Component\HttpFoundation\Session\Storage\SessionStorageInterface')->getMock();
+        $session = new Session($storage);
 
-        $storage = new MockArraySessionStorage();
-        $storage->registerBag($bag);
-
-        $this->assertSame($bag, (new Session($storage))->getBag('foo'));
-    }
-
-    public function testGetBagWithBagNotImplementingGetBag()
-    {
-        $data = [];
-
-        $bag = new AttributeBag();
-        $bag->setName('foo');
-
-        $storage = new MockArraySessionStorage();
-        $storage->registerBag(new SessionBagProxy($bag, $data, $usageIndex));
-
-        $this->assertSame($bag, (new Session($storage))->getBag('foo'));
+        $storage->expects($this->once())->method('isStarted')->willReturn(false);
+        $storage->expects($this->never())->method('save');
+        $session->save();
     }
 }

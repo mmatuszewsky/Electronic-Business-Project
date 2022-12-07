@@ -11,7 +11,6 @@
 
 namespace Symfony\Component\EventDispatcher;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -42,12 +41,12 @@ class ContainerAwareEventDispatcher extends EventDispatcher
     {
         $this->container = $container;
 
-        $class = static::class;
-        if ($this instanceof \PHPUnit_Framework_MockObject_MockObject || $this instanceof MockObject || $this instanceof \Prophecy\Doubler\DoubleInterface) {
+        $class = \get_class($this);
+        if ($this instanceof \PHPUnit_Framework_MockObject_MockObject || $this instanceof \Prophecy\Doubler\DoubleInterface) {
             $class = get_parent_class($class);
         }
         if (__CLASS__ !== $class) {
-            @trigger_error(sprintf('The %s class is deprecated since Symfony 3.3 and will be removed in 4.0. Use EventDispatcher with closure factories instead.', __CLASS__), \E_USER_DEPRECATED);
+            @trigger_error(sprintf('The %s class is deprecated since Symfony 3.3 and will be removed in 4.0. Use EventDispatcher with closure factories instead.', __CLASS__), E_USER_DEPRECATED);
         }
     }
 
@@ -65,10 +64,10 @@ class ContainerAwareEventDispatcher extends EventDispatcher
      */
     public function addListenerService($eventName, $callback, $priority = 0)
     {
-        @trigger_error(sprintf('The %s class is deprecated since Symfony 3.3 and will be removed in 4.0. Use EventDispatcher with closure factories instead.', __CLASS__), \E_USER_DEPRECATED);
+        @trigger_error(sprintf('The %s class is deprecated since Symfony 3.3 and will be removed in 4.0. Use EventDispatcher with closure factories instead.', __CLASS__), E_USER_DEPRECATED);
 
         if (!\is_array($callback) || 2 !== \count($callback)) {
-            throw new \InvalidArgumentException('Expected an ["service", "method"] argument.');
+            throw new \InvalidArgumentException('Expected an ["service", "method"] argument');
         }
 
         $this->listenerIds[$eventName][] = [$callback[0], $callback[1], $priority];
@@ -147,7 +146,7 @@ class ContainerAwareEventDispatcher extends EventDispatcher
      */
     public function addSubscriberService($serviceId, $class)
     {
-        @trigger_error(sprintf('The %s class is deprecated since Symfony 3.3 and will be removed in 4.0. Use EventDispatcher with closure factories instead.', __CLASS__), \E_USER_DEPRECATED);
+        @trigger_error(sprintf('The %s class is deprecated since Symfony 3.3 and will be removed in 4.0. Use EventDispatcher with closure factories instead.', __CLASS__), E_USER_DEPRECATED);
 
         foreach ($class::getSubscribedEvents() as $eventName => $params) {
             if (\is_string($params)) {
@@ -164,7 +163,7 @@ class ContainerAwareEventDispatcher extends EventDispatcher
 
     public function getContainer()
     {
-        @trigger_error('The '.__METHOD__.'() method is deprecated since Symfony 3.3 as its class will be removed in 4.0. Inject the container or the services you need in your listeners/subscribers instead.', \E_USER_DEPRECATED);
+        @trigger_error('The '.__METHOD__.'() method is deprecated since Symfony 3.3 as its class will be removed in 4.0. Inject the container or the services you need in your listeners/subscribers instead.', E_USER_DEPRECATED);
 
         return $this->container;
     }

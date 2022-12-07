@@ -60,19 +60,16 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
      */
     protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
-        $tableAlias   = $alias == 'r' ? '' : $alias;
-        $fieldMapping = $class->fieldMappings[$field];
-        $columnAlias  = $this->getSQLColumnAlias($fieldMapping['columnName']);
-        $sql          = sprintf(
-            '%s.%s',
-            $this->getSQLTableAlias($class->name, $tableAlias),
-            $this->quoteStrategy->getColumnName($field, $class, $this->platform)
-        );
+        $tableAlias  = $alias == 'r' ? '' : $alias;
+        $columnName  = $class->columnNames[$field];
+        $columnAlias = $this->getSQLColumnAlias($columnName);
+        $sql         = $this->getSQLTableAlias($class->name, $tableAlias) . '.'
+                            . $this->quoteStrategy->getColumnName($field, $class, $this->platform);
 
         $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
 
-        if (isset($fieldMapping['requireSQLConversion'])) {
-            $type   = Type::getType($fieldMapping['type']);
+        if (isset($class->fieldMappings[$field]['requireSQLConversion'])) {
+            $type   = Type::getType($class->getTypeOfField($field));
             $sql    = $type->convertToPHPValueSQL($sql, $this->platform);
         }
 
@@ -82,18 +79,17 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     /**
      * @param string $tableAlias
      * @param string $joinColumnName
-     * @param string $quotedColumnName
-     *
+     * @param string $className
      * @param string $type
      *
      * @return string
      */
-    protected function getSelectJoinColumnSQL($tableAlias, $joinColumnName, $quotedColumnName, $type)
+    protected function getSelectJoinColumnSQL($tableAlias, $joinColumnName, $className, $type)
     {
         $columnAlias = $this->getSQLColumnAlias($joinColumnName);
 
         $this->currentPersisterContext->rsm->addMetaResult('r', $columnAlias, $joinColumnName, false, $type);
 
-        return $tableAlias . '.' . $quotedColumnName . ' AS ' . $columnAlias;
+        return $tableAlias . '.' . $joinColumnName . ' AS ' . $columnAlias;
     }
 }

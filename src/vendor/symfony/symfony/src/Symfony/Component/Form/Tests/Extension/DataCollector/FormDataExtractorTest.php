@@ -11,11 +11,9 @@
 
 namespace Symfony\Component\Form\Tests\Extension\DataCollector;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Exception\TransformationFailedException;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\DataCollector\FormDataExtractor;
 use Symfony\Component\Form\FormBuilder;
 use Symfony\Component\Form\FormError;
@@ -37,12 +35,12 @@ class FormDataExtractorTest extends TestCase
     private $dataExtractor;
 
     /**
-     * @var MockObject
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
     private $dispatcher;
 
     /**
-     * @var MockObject
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
     private $factory;
 
@@ -58,7 +56,7 @@ class FormDataExtractorTest extends TestCase
         $type = $this->getMockBuilder('Symfony\Component\Form\ResolvedFormTypeInterface')->getMock();
         $type->expects($this->any())
             ->method('getInnerType')
-            ->willReturn(new HiddenType());
+            ->will($this->returnValue(new \stdClass()));
 
         $form = $this->createBuilder('name')
             ->setType($type)
@@ -67,7 +65,7 @@ class FormDataExtractorTest extends TestCase
         $this->assertSame([
             'id' => 'name',
             'name' => 'name',
-            'type_class' => HiddenType::class,
+            'type_class' => 'stdClass',
             'synchronized' => true,
             'passed_options' => [],
             'resolved_options' => [],
@@ -79,7 +77,7 @@ class FormDataExtractorTest extends TestCase
         $type = $this->getMockBuilder('Symfony\Component\Form\ResolvedFormTypeInterface')->getMock();
         $type->expects($this->any())
             ->method('getInnerType')
-            ->willReturn(new HiddenType());
+            ->will($this->returnValue(new \stdClass()));
 
         $options = [
             'b' => 'foo',
@@ -97,7 +95,7 @@ class FormDataExtractorTest extends TestCase
         $this->assertSame([
             'id' => 'name',
             'name' => 'name',
-            'type_class' => HiddenType::class,
+            'type_class' => 'stdClass',
             'synchronized' => true,
             'passed_options' => [
                 'a' => 'bar',
@@ -113,7 +111,7 @@ class FormDataExtractorTest extends TestCase
         $type = $this->getMockBuilder('Symfony\Component\Form\ResolvedFormTypeInterface')->getMock();
         $type->expects($this->any())
             ->method('getInnerType')
-            ->willReturn(new HiddenType());
+            ->will($this->returnValue(new \stdClass()));
 
         $options = [
             'b' => 'foo',
@@ -128,7 +126,7 @@ class FormDataExtractorTest extends TestCase
         $this->assertSame([
             'id' => 'name',
             'name' => 'name',
-            'type_class' => HiddenType::class,
+            'type_class' => 'stdClass',
             'synchronized' => true,
             'passed_options' => [],
             'resolved_options' => [
@@ -144,7 +142,7 @@ class FormDataExtractorTest extends TestCase
         $type = $this->getMockBuilder('Symfony\Component\Form\ResolvedFormTypeInterface')->getMock();
         $type->expects($this->any())
             ->method('getInnerType')
-            ->willReturn(new HiddenType());
+            ->will($this->returnValue(new \stdClass()));
 
         $grandParent = $this->createBuilder('grandParent')
             ->setCompound(true)
@@ -164,7 +162,7 @@ class FormDataExtractorTest extends TestCase
         $this->assertSame([
             'id' => 'grandParent_parent_name',
             'name' => 'name',
-            'type_class' => HiddenType::class,
+            'type_class' => 'stdClass',
             'synchronized' => true,
             'passed_options' => [],
             'resolved_options' => [],
@@ -414,6 +412,7 @@ EODUMP
 
     /**
      * @param string $name
+     * @param array  $options
      *
      * @return FormBuilder
      */

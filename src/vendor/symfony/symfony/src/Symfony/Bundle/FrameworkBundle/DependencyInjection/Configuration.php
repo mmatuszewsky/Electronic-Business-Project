@@ -20,7 +20,6 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\DependencyInjection\Exception\LogicException;
 use Symfony\Component\Form\Form;
-use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\Lock\Lock;
 use Symfony\Component\Lock\Store\SemaphoreStore;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
@@ -99,7 +98,7 @@ class Configuration implements ConfigurationInterface
                                     }
                                 }
 
-                                return !filter_var($v, \FILTER_VALIDATE_IP);
+                                return !filter_var($v, FILTER_VALIDATE_IP);
                             })
                             ->thenInvalid('Invalid proxy IP "%s"')
                         ->end()
@@ -265,7 +264,7 @@ class Configuration implements ConfigurationInterface
                     ->canBeEnabled()
                     ->beforeNormalization()
                         ->always(function ($v) {
-                            if (\is_array($v) && true === $v['enabled']) {
+                            if (true === $v['enabled']) {
                                 $workflows = $v;
                                 unset($workflows['enabled']);
 
@@ -491,7 +490,6 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('cookie_domain')->end()
                         ->booleanNode('cookie_secure')->end()
                         ->booleanNode('cookie_httponly')->defaultTrue()->end()
-                        ->enumNode('cookie_samesite')->values([null, Cookie::SAMESITE_LAX, Cookie::SAMESITE_STRICT, Cookie::SAMESITE_NONE])->defaultNull()->end()
                         ->booleanNode('use_cookies')->end()
                         ->scalarNode('gc_divisor')->end()
                         ->scalarNode('gc_probability')->defaultValue(1)->end()
@@ -931,11 +929,7 @@ class Configuration implements ConfigurationInterface
                         ->ifString()->then(function ($v) { return ['enabled' => true, 'resources' => $v]; })
                     ->end()
                     ->beforeNormalization()
-                        ->ifTrue(function ($v) { return \is_array($v) && !isset($v['enabled']); })
-                        ->then(function ($v) { return $v + ['enabled' => true]; })
-                    ->end()
-                    ->beforeNormalization()
-                        ->ifTrue(function ($v) { return \is_array($v) && !isset($v['resources']) && !isset($v['resource']); })
+                        ->ifTrue(function ($v) { return \is_array($v) && !isset($v['resources']); })
                         ->then(function ($v) {
                             $e = $v['enabled'];
                             unset($v['enabled']);
@@ -954,19 +948,7 @@ class Configuration implements ConfigurationInterface
                             ->end()
                             ->beforeNormalization()
                                 ->ifTrue(function ($v) { return \is_array($v) && array_keys($v) === range(0, \count($v) - 1); })
-                                ->then(function ($v) {
-                                    $resources = [];
-                                    foreach ($v as $resource) {
-                                        $resources = array_merge_recursive(
-                                            $resources,
-                                            \is_array($resource) && isset($resource['name'])
-                                                ? [$resource['name'] => $resource['value']]
-                                                : ['default' => $resource]
-                                        );
-                                    }
-
-                                    return $resources;
-                                })
+                                ->then(function ($v) { return ['default' => $v]; })
                             ->end()
                             ->prototype('array')
                                 ->beforeNormalization()->ifString()->then(function ($v) { return [$v]; })->end()

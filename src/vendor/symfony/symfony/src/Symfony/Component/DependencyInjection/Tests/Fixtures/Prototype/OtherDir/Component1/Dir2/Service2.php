@@ -4,4 +4,5 @@ namespace Symfony\Component\DependencyInjection\Tests\Fixtures\Prototype\OtherDi
 
 class Service2
 {
+
 }

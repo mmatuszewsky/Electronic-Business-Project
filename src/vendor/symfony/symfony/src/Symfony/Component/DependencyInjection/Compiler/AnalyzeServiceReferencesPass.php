@@ -122,7 +122,7 @@ class AnalyzeServiceReferencesPass extends AbstractRecursivePass implements Repe
         $this->lazy = false;
 
         $byConstructor = $this->byConstructor;
-        $this->byConstructor = $isRoot || $byConstructor;
+        $this->byConstructor = true;
         $this->processValue($value->getFactory());
         $this->processValue($value->getArguments());
         $this->byConstructor = $byConstructor;
@@ -156,7 +156,7 @@ class AnalyzeServiceReferencesPass extends AbstractRecursivePass implements Repe
         }
 
         if (!$this->container->hasDefinition($id)) {
-            return null;
+            return;
         }
 
         return $this->container->normalizeId($id);

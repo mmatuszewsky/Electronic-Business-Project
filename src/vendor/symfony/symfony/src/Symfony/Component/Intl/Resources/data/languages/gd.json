@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.86",
     "Names": {
         "aa": "Afar",
         "ab": "Abchasais",
@@ -60,7 +61,7 @@
         "bho": "Bhojpuri",
         "bi": "Bislama",
         "bik": "Bikol",
-        "bin": "Edo",
+        "bin": "Bini",
         "bjn": "Banjar",
         "bkm": "Kom",
         "bla": "Siksika",
@@ -85,7 +86,6 @@
         "car": "Carib",
         "cay": "Cayuga",
         "cch": "Atsam",
-        "ccp": "Chakma",
         "ce": "Deideanais",
         "ceb": "Cebuano",
         "cgg": "Chiga",
@@ -157,7 +157,6 @@
         "ewo": "Ewondo",
         "ext": "Cànan na h-Extremadura",
         "fa": "Peirsis",
-        "fa_AF": "Dari",
         "fan": "Fang",
         "fat": "Fanti",
         "ff": "Fulah",

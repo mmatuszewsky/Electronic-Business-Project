@@ -38,8 +38,11 @@ class FormBuilder extends FormConfigBuilder implements \IteratorAggregate, FormB
     private $unresolvedChildren = [];
 
     /**
-     * @param string      $name
-     * @param string|null $dataClass
+     * @param string                   $name
+     * @param string|null              $dataClass
+     * @param EventDispatcherInterface $dispatcher
+     * @param FormFactoryInterface     $factory
+     * @param array                    $options
      */
     public function __construct($name, $dataClass, EventDispatcherInterface $dispatcher, FormFactoryInterface $factory, array $options = [])
     {
@@ -67,7 +70,7 @@ class FormBuilder extends FormConfigBuilder implements \IteratorAggregate, FormB
         }
 
         if (!\is_string($child) && !\is_int($child)) {
-            throw new UnexpectedTypeException($child, 'string or Symfony\Component\Form\FormBuilderInterface');
+            throw new UnexpectedTypeException($child, 'string, integer or Symfony\Component\Form\FormBuilderInterface');
         }
 
         if (null !== $type && !\is_string($type) && !$type instanceof FormTypeInterface) {

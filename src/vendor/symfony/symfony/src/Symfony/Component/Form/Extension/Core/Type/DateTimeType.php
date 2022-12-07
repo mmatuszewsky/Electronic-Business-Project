@@ -107,17 +107,7 @@ class DateTimeType extends AbstractType
                 'invalid_message_parameters',
             ]));
 
-            if ($emptyData instanceof \Closure) {
-                $lazyEmptyData = static function ($option) use ($emptyData) {
-                    return static function (FormInterface $form) use ($emptyData, $option) {
-                        $emptyData = $emptyData($form->getParent());
-
-                        return isset($emptyData[$option]) ? $emptyData[$option] : '';
-                    };
-                };
-
-                $dateOptions['empty_data'] = $lazyEmptyData('date');
-            } elseif (isset($emptyData['date'])) {
+            if (isset($emptyData['date'])) {
                 $dateOptions['empty_data'] = $emptyData['date'];
             }
 
@@ -136,9 +126,7 @@ class DateTimeType extends AbstractType
                 'invalid_message_parameters',
             ]));
 
-            if ($emptyData instanceof \Closure) {
-                $timeOptions['empty_data'] = $lazyEmptyData('time');
-            } elseif (isset($emptyData['time'])) {
+            if (isset($emptyData['time'])) {
                 $timeOptions['empty_data'] = $emptyData['time'];
             }
 
@@ -170,8 +158,8 @@ class DateTimeType extends AbstractType
                         'time' => $timeParts,
                     ]),
                 ]))
-                ->add('date', DateType::class, $dateOptions)
-                ->add('time', TimeType::class, $timeOptions)
+                ->add('date', __NAMESPACE__.'\DateType', $dateOptions)
+                ->add('time', __NAMESPACE__.'\TimeType', $timeOptions)
             ;
         }
 
@@ -203,14 +191,6 @@ class DateTimeType extends AbstractType
         //  * the html5 is set to true
         if ($options['html5'] && 'single_text' === $options['widget'] && self::HTML5_FORMAT === $options['format']) {
             $view->vars['type'] = 'datetime-local';
-
-            // we need to force the browser to display the seconds by
-            // adding the HTML attribute step if not already defined.
-            // Otherwise the browser will not display and so not send the seconds
-            // therefore the value will always be considered as invalid.
-            if ($options['with_seconds'] && !isset($view->vars['attr']['step'])) {
-                $view->vars['attr']['step'] = 1;
-            }
         }
     }
 

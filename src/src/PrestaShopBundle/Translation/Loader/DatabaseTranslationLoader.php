@@ -1,13 +1,12 @@
 <?php
 
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -18,28 +17,23 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Translation\Loader;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use PrestaShopBundle\Entity\Lang;
 use PrestaShopBundle\Entity\Translation;
 use Symfony\Component\Translation\Loader\LoaderInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 
-/**
- * The user translated catalogue is stored in database.
- * This class is a helper to build the query for retrieving the translations.
- * They depend on parameters like locale, theme or domain.
- */
 class DatabaseTranslationLoader implements LoaderInterface
 {
     /** @var EntityManagerInterface */
@@ -60,7 +54,7 @@ class DatabaseTranslationLoader implements LoaderInterface
      */
     public function load($resource, $locale, $domain = 'messages', $theme = null)
     {
-        static $langs = [];
+        static $langs = array();
         $catalogue = new MessageCatalogue($locale);
 
         // do not try and load translations for a locale that cannot be saved to DB anyway
@@ -69,11 +63,13 @@ class DatabaseTranslationLoader implements LoaderInterface
         }
 
         if (!array_key_exists($locale, $langs)) {
-            $langs[$locale] = $this->entityManager->getRepository('PrestaShopBundle:Lang')->findOneBy(['locale' => $locale]);
+            $langs[$locale] = $this->entityManager
+                ->getRepository('PrestaShopBundle:Lang')
+                ->findOneByLocale($locale);
         }
 
-        /** @var EntityRepository $translationRepository */
-        $translationRepository = $this->entityManager->getRepository('PrestaShopBundle:Translation');
+        $translationRepository = $this->entityManager
+            ->getRepository('PrestaShopBundle:Translation');
 
         $queryBuilder = $translationRepository->createQueryBuilder('t');
 

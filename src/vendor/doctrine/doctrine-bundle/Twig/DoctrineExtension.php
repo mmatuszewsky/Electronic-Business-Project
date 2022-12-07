@@ -4,13 +4,13 @@ namespace Doctrine\Bundle\DoctrineBundle\Twig;
 
 use SqlFormatter;
 use Symfony\Component\VarDumper\Cloner\Data;
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
+use Twig_Extension;
+use Twig_SimpleFilter;
 
 /**
  * This class contains the needed functions in order to do the query highlighting
  */
-class DoctrineExtension extends AbstractExtension
+class DoctrineExtension extends Twig_Extension
 {
     /**
      * Number of maximum characters that one single line can hold in the interface
@@ -22,14 +22,14 @@ class DoctrineExtension extends AbstractExtension
     /**
      * Define our functions
      *
-     * @return TwigFilter[]
+     * @return Twig_SimpleFilter[]
      */
     public function getFilters()
     {
         return [
-            new TwigFilter('doctrine_minify_query', [$this, 'minifyQuery'], ['deprecated' => true]),
-            new TwigFilter('doctrine_pretty_query', [$this, 'formatQuery'], ['is_safe' => ['html']]),
-            new TwigFilter('doctrine_replace_query_parameters', [$this, 'replaceQueryParameters']),
+            new Twig_SimpleFilter('doctrine_minify_query', [$this, 'minifyQuery'], ['deprecated' => true]),
+            new Twig_SimpleFilter('doctrine_pretty_query', [$this, 'formatQuery'], ['is_safe' => ['html']]),
+            new Twig_SimpleFilter('doctrine_replace_query_parameters', [$this, 'replaceQueryParameters']),
         ];
     }
 
@@ -277,7 +277,8 @@ class DoctrineExtension extends AbstractExtension
     public function replaceQueryParameters($query, $parameters)
     {
         if ($parameters instanceof Data) {
-            $parameters = $parameters->getValue(true);
+            // VarDumper < 3.3 compatibility layer
+            $parameters = method_exists($parameters, 'getValue') ? $parameters->getValue(true) : $parameters->getRawData();
         }
 
         $i = 0;
@@ -290,7 +291,6 @@ class DoctrineExtension extends AbstractExtension
             '/\?|((?<!:):[a-z0-9_]+)/i',
             static function ($matches) use ($parameters, &$i) {
                 $key = substr($matches[0], 1);
-
                 if (! array_key_exists($i, $parameters) && ($key === false || ! array_key_exists($key, $parameters))) {
                     return $matches[0];
                 }

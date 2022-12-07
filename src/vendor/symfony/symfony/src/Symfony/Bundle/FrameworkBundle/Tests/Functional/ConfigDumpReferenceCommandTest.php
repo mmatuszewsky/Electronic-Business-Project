@@ -19,7 +19,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 /**
  * @group functional
  */
-class ConfigDumpReferenceCommandTest extends AbstractWebTestCase
+class ConfigDumpReferenceCommandTest extends WebTestCase
 {
     private $application;
 
@@ -36,8 +36,8 @@ class ConfigDumpReferenceCommandTest extends AbstractWebTestCase
         $ret = $tester->execute(['name' => 'TestBundle']);
 
         $this->assertSame(0, $ret, 'Returns 0 in case of success');
-        $this->assertStringContainsString('test:', $tester->getDisplay());
-        $this->assertStringContainsString('    custom:', $tester->getDisplay());
+        $this->assertContains('test:', $tester->getDisplay());
+        $this->assertContains('    custom:', $tester->getDisplay());
     }
 
     public function testDumpAtPath()
@@ -70,7 +70,7 @@ EOL
         ]);
 
         $this->assertSame(1, $ret);
-        $this->assertStringContainsString('[ERROR] The "path" option is only available for the "yaml" format.', $tester->getDisplay());
+        $this->assertContains('[ERROR] The "path" option is only available for the "yaml" format.', $tester->getDisplay());
     }
 
     /**

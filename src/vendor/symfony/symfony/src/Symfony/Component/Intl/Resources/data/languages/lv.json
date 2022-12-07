@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.43",
     "Names": {
         "aa": "afāru",
         "ab": "abhāzu",
@@ -131,7 +132,6 @@
         "eu": "basku",
         "ewo": "evondu",
         "fa": "persiešu",
-        "fa_AF": "darī",
         "fan": "fangu",
         "fat": "fantu",
         "ff": "fulu",
@@ -202,7 +202,7 @@
         "iu": "inuītu",
         "ja": "japāņu",
         "jbo": "ložbans",
-        "jgo": "ngomba",
+        "jgo": "jgo",
         "jmc": "mačamu",
         "jpr": "jūdpersiešu",
         "jrb": "jūdarābu",
@@ -293,7 +293,7 @@
         "mg": "malagasu",
         "mga": "vidusīru",
         "mgh": "makua",
-        "mgo": "metu",
+        "mgo": "mgo",
         "mh": "māršaliešu",
         "mi": "maoru",
         "mic": "mikmaku",

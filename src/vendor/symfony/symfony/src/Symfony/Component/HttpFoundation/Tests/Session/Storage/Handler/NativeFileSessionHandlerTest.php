@@ -41,9 +41,9 @@ class NativeFileSessionHandlerTest extends TestCase
      */
     public function testConstructSavePath($savePath, $expectedSavePath, $path)
     {
-        new NativeFileSessionHandler($savePath);
+        $handler = new NativeFileSessionHandler($savePath);
         $this->assertEquals($expectedSavePath, ini_get('session.save_path'));
-        $this->assertDirectoryExists(realpath($path));
+        $this->assertTrue(is_dir(realpath($path)));
 
         rmdir($path);
     }
@@ -59,16 +59,18 @@ class NativeFileSessionHandlerTest extends TestCase
         ];
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testConstructException()
     {
-        $this->expectException('InvalidArgumentException');
-        new NativeFileSessionHandler('something;invalid;with;too-many-args');
+        $handler = new NativeFileSessionHandler('something;invalid;with;too-many-args');
     }
 
     public function testConstructDefault()
     {
         $path = ini_get('session.save_path');
-        new NativeSessionStorage(['name' => 'TESTING'], new NativeFileSessionHandler());
+        $storage = new NativeSessionStorage(['name' => 'TESTING'], new NativeFileSessionHandler());
 
         $this->assertEquals($path, ini_get('session.save_path'));
     }

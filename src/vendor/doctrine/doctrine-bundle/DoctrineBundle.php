@@ -2,10 +2,8 @@
 
 namespace Doctrine\Bundle\DoctrineBundle;
 
-use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DbalSchemaFilterPass;
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\EntityListenerPass;
 use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\ServiceRepositoryCompilerPass;
-use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\WellKnownSchemaFilterPass;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Proxy\Autoloader;
@@ -17,6 +15,9 @@ use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
+/**
+ * Bundle.
+ */
 class DoctrineBundle extends Bundle
 {
     /** @var callable|null */
@@ -38,8 +39,6 @@ class DoctrineBundle extends Bundle
         $container->addCompilerPass(new DoctrineValidationPass('orm'));
         $container->addCompilerPass(new EntityListenerPass());
         $container->addCompilerPass(new ServiceRepositoryCompilerPass());
-        $container->addCompilerPass(new WellKnownSchemaFilterPass());
-        $container->addCompilerPass(new DbalSchemaFilterPass());
     }
 
     /**
@@ -106,7 +105,7 @@ class DoctrineBundle extends Bundle
         // Clear all entity managers to clear references to entities for GC
         if ($this->container->hasParameter('doctrine.entity_managers')) {
             foreach ($this->container->getParameter('doctrine.entity_managers') as $id) {
-                if (! $this->container->initialized($id)) {
+                if (method_exists($this->container, 'initialized') && ! $this->container->initialized($id)) {
                     continue;
                 }
 
@@ -120,7 +119,7 @@ class DoctrineBundle extends Bundle
         }
 
         foreach ($this->container->getParameter('doctrine.connections') as $id) {
-            if (! $this->container->initialized($id)) {
+            if (method_exists($this->container, 'initialized') && ! $this->container->initialized($id)) {
                 continue;
             }
 

@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.17",
     "Names": {
         "ADP": [
             "ADP",
@@ -1006,7 +1007,7 @@
         ],
         "VES": [
             "VES",
-            "Venecuelanski bolivar"
+            "venecuelanski bolivar"
         ],
         "VND": [
             "₫",

@@ -97,49 +97,49 @@ class Request
     /**
      * Custom parameters.
      *
-     * @var ParameterBag
+     * @var \Symfony\Component\HttpFoundation\ParameterBag
      */
     public $attributes;
 
     /**
      * Request body parameters ($_POST).
      *
-     * @var ParameterBag
+     * @var \Symfony\Component\HttpFoundation\ParameterBag
      */
     public $request;
 
     /**
      * Query string parameters ($_GET).
      *
-     * @var ParameterBag
+     * @var \Symfony\Component\HttpFoundation\ParameterBag
      */
     public $query;
 
     /**
      * Server and execution environment parameters ($_SERVER).
      *
-     * @var ServerBag
+     * @var \Symfony\Component\HttpFoundation\ServerBag
      */
     public $server;
 
     /**
      * Uploaded files ($_FILES).
      *
-     * @var FileBag
+     * @var \Symfony\Component\HttpFoundation\FileBag
      */
     public $files;
 
     /**
      * Cookies ($_COOKIE).
      *
-     * @var ParameterBag
+     * @var \Symfony\Component\HttpFoundation\ParameterBag
      */
     public $cookies;
 
     /**
      * Headers (taken from the $_SERVER).
      *
-     * @var HeaderBag
+     * @var \Symfony\Component\HttpFoundation\HeaderBag
      */
     public $headers;
 
@@ -199,7 +199,7 @@ class Request
     protected $format;
 
     /**
-     * @var SessionInterface
+     * @var \Symfony\Component\HttpFoundation\Session\SessionInterface
      */
     protected $session;
 
@@ -528,11 +528,7 @@ class Request
         try {
             $content = $this->getContent();
         } catch (\LogicException $e) {
-            if (\PHP_VERSION_ID >= 70400) {
-                throw $e;
-            }
-
-            return trigger_error($e, \E_USER_ERROR);
+            return trigger_error($e, E_USER_ERROR);
         }
 
         $cookieHeader = '';
@@ -603,7 +599,7 @@ class Request
         self::$trustedProxies = $proxies;
 
         if (2 > \func_num_args()) {
-            @trigger_error(sprintf('The %s() method expects a bit field of Request::HEADER_* as second argument since Symfony 3.3. Defining it will be required in 4.0. ', __METHOD__), \E_USER_DEPRECATED);
+            @trigger_error(sprintf('The %s() method expects a bit field of Request::HEADER_* as second argument since Symfony 3.3. Defining it will be required in 4.0. ', __METHOD__), E_USER_DEPRECATED);
 
             return;
         }
@@ -683,7 +679,7 @@ class Request
      */
     public static function setTrustedHeaderName($key, $value)
     {
-        @trigger_error(sprintf('The "%s()" method is deprecated since Symfony 3.3 and will be removed in 4.0. Use the $trustedHeaderSet argument of the Request::setTrustedProxies() method instead.', __METHOD__), \E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s()" method is deprecated since Symfony 3.3 and will be removed in 4.0. Use the $trustedHeaderSet argument of the Request::setTrustedProxies() method instead.', __METHOD__), E_USER_DEPRECATED);
 
         if ('forwarded' === $key) {
             $key = self::HEADER_FORWARDED;
@@ -723,7 +719,7 @@ class Request
     public static function getTrustedHeaderName($key)
     {
         if (2 > \func_num_args() || func_get_arg(1)) {
-            @trigger_error(sprintf('The "%s()" method is deprecated since Symfony 3.3 and will be removed in 4.0. Use the Request::getTrustedHeaderSet() method instead.', __METHOD__), \E_USER_DEPRECATED);
+            @trigger_error(sprintf('The "%s()" method is deprecated since Symfony 3.3 and will be removed in 4.0. Use the Request::getTrustedHeaderSet() method instead.', __METHOD__), E_USER_DEPRECATED);
         }
 
         if (!\array_key_exists($key, self::$trustedHeaders)) {
@@ -771,7 +767,7 @@ class Request
             $order[] = urldecode($keyValuePair[0]);
         }
 
-        array_multisort($order, \SORT_ASC, $parts);
+        array_multisort($order, SORT_ASC, $parts);
 
         return implode('&', $parts);
     }
@@ -919,7 +915,7 @@ class Request
      * @return string|null The client IP address
      *
      * @see getClientIps()
-     * @see https://wikipedia.org/wiki/X-Forwarded-For
+     * @see http://en.wikipedia.org/wiki/X-Forwarded-For
      */
     public function getClientIp()
     {
@@ -1041,8 +1037,8 @@ class Request
             $pos = strrpos($host, ':');
         }
 
-        if (false !== $pos && $port = substr($host, $pos + 1)) {
-            return (int) $port;
+        if (false !== $pos) {
+            return (int) substr($host, $pos + 1);
         }
 
         return 'https' === $this->getScheme() ? 443 : 80;
@@ -1208,7 +1204,7 @@ class Request
         // A reference to the same base directory or an empty subdirectory must be prefixed with "./".
         // This also applies to a segment with a colon character (e.g., "file:colon") that cannot be used
         // as the first segment of a relative-path reference, as it would be mistaken for a scheme name
-        // (see https://tools.ietf.org/html/rfc3986#section-4.2).
+        // (see http://tools.ietf.org/html/rfc3986#section-4.2).
         return !isset($path[0]) || '/' === $path[0]
             || false !== ($colonPos = strpos($path, ':')) && ($colonPos < ($slashPos = strpos($path, '/')) || false === $slashPos)
             ? "./$path" : $path;
@@ -1453,8 +1449,6 @@ class Request
                 return $format;
             }
         }
-
-        return null;
     }
 
     /**
@@ -1584,7 +1578,7 @@ class Request
         if (!\func_num_args() || func_get_arg(0)) {
             // This deprecation should be turned into a BadMethodCallException in 4.0 (without adding the argument in the signature)
             // then setting $andCacheable to false should be deprecated in 4.1
-            @trigger_error('Checking only for cacheable HTTP methods with Symfony\Component\HttpFoundation\Request::isMethodSafe() is deprecated since Symfony 3.2 and will throw an exception in 4.0. Disable checking only for cacheable methods by calling the method with `false` as first argument or use the Request::isMethodCacheable() instead.', \E_USER_DEPRECATED);
+            @trigger_error('Checking only for cacheable HTTP methods with Symfony\Component\HttpFoundation\Request::isMethodSafe() is deprecated since Symfony 3.2 and will throw an exception in 4.0. Disable checking only for cacheable methods by calling the method with `false` as first argument or use the Request::isMethodCacheable() instead.', E_USER_DEPRECATED);
 
             return \in_array($this->getMethod(), ['GET', 'HEAD']);
         }
@@ -1695,7 +1689,7 @@ class Request
      */
     public function getETags()
     {
-        return preg_split('/\s*,\s*/', $this->headers->get('if_none_match'), null, \PREG_SPLIT_NO_EMPTY);
+        return preg_split('/\s*,\s*/', $this->headers->get('if_none_match'), null, PREG_SPLIT_NO_EMPTY);
     }
 
     /**
@@ -1829,7 +1823,7 @@ class Request
      * It works if your JavaScript library sets an X-Requested-With HTTP header.
      * It is known to work with common JavaScript frameworks:
      *
-     * @see https://wikipedia.org/wiki/List_of_Ajax_frameworks#JavaScript
+     * @see http://en.wikipedia.org/wiki/List_of_Ajax_frameworks#JavaScript
      *
      * @return bool true if the request is an XMLHttpRequest, false otherwise
      */
@@ -1841,9 +1835,9 @@ class Request
     /*
      * The following methods are derived from code of the Zend Framework (1.10dev - 2010-01-24)
      *
-     * Code subject to the new BSD license (https://framework.zend.com/license).
+     * Code subject to the new BSD license (http://framework.zend.com/license/new-bsd).
      *
-     * Copyright (c) 2005-2010 Zend Technologies USA Inc. (https://www.zend.com/)
+     * Copyright (c) 2005-2010 Zend Technologies USA Inc. (http://www.zend.com)
      */
 
     protected function prepareRequestUri()
@@ -2056,7 +2050,7 @@ class Request
         }
     }
 
-    /**
+    /*
      * Returns the prefix as encoded in the string when the string starts with
      * the given prefix, false otherwise.
      *
@@ -2175,7 +2169,7 @@ class Request
                 $clientIps[$key] = $clientIp = substr($clientIp, 1, $i - 1);
             }
 
-            if (!filter_var($clientIp, \FILTER_VALIDATE_IP)) {
+            if (!filter_var($clientIp, FILTER_VALIDATE_IP)) {
                 unset($clientIps[$key]);
 
                 continue;

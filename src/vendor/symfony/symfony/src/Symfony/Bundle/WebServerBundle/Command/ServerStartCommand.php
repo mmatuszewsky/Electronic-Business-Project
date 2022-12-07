@@ -76,7 +76,7 @@ Specify your own router script via the <info>--router</info> option:
 
   <info>php %command.full_name% --router=app/config/router.php</info>
 
-See also: https://php.net/features.commandline.webserver
+See also: http://www.php.net/manual/en/features.commandline.webserver.php
 EOF
             )
         ;
@@ -155,7 +155,5 @@ EOF
 
             return 1;
         }
-
-        return null;
     }
 }

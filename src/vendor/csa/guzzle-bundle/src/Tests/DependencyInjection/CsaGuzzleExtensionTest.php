@@ -4,7 +4,6 @@
  * This file is part of the CsaGuzzleBundle package
  *
  * (c) Charles Sarrazin <charles@sarraz.in>
- * (c) PrestaShop and Contributors
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code
@@ -19,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\Yaml\Parser;
 
-class CsaGuzzleExtensionTest extends \PHPUnit\Framework\TestCase
+class CsaGuzzleExtensionTest extends \PHPUnit_Framework_TestCase
 {
     public function testClientCreated()
     {
@@ -239,64 +238,6 @@ YAML;
         $container->setDefinition('my.adapter.id', new Definition());
         $alias = $container->getAlias('csa_guzzle.default_cache_adapter');
         $this->assertSame('my.adapter.id', (string) $alias);
-    }
-
-    /**
-     * @dataProvider providerCacheServices
-     *
-     * @param string $identifier
-     */
-    public function testServicesArePresentWhenCacheIsEnabled($identifier)
-    {
-        $yaml = <<<'YAML'
-cache:
-    enabled: true
-    adapter: foo
-YAML;
-
-        $container = $this->createContainer($yaml);
-
-        $this->assertTrue($container->hasDefinition($identifier), sprintf(
-            'Failed asserting that container has a definition for a service with identifier "%s".',
-            $identifier
-        ));
-    }
-
-    /**
-     * @dataProvider providerCacheServices
-     *
-     * @param string $identifier
-     */
-    public function testServicesAreAbsentWhenCacheIsDisabled($identifier)
-    {
-        $yaml = <<<'YAML'
-cache: 
-    enabled: false
-YAML;
-
-        $container = $this->createContainer($yaml);
-
-        $this->assertFalse($container->hasDefinition($identifier), sprintf(
-            'Failed asserting that container does not have a definition for a service with identifier "%s".',
-            $identifier
-        ));
-    }
-
-    /**
-     * @return array
-     */
-    public function providerCacheServices()
-    {
-        $identifiers = [
-            'csa_guzzle.cache.adapter.doctrine',
-            'csa_guzzle.subscriber.cache',
-        ];
-
-        return array_map(function ($identifier) {
-            return [
-                $identifier,
-            ];
-        }, $identifiers);
     }
 
     public function testLegacyCacheConfiguration()

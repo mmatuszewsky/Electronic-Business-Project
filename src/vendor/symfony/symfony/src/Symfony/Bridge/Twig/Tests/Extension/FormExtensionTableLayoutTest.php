@@ -32,11 +32,10 @@ class FormExtensionTableLayoutTest extends AbstractTableLayoutTest
 
     protected static $supportedFeatureSetVersion = 304;
 
-    /**
-     * @before
-     */
-    public function doSetUp()
+    protected function setUp()
     {
+        parent::setUp();
+
         $loader = new StubFilesystemLoader([
             __DIR__.'/../../Resources/views/Form',
             __DIR__.'/Fixtures/templates/form',

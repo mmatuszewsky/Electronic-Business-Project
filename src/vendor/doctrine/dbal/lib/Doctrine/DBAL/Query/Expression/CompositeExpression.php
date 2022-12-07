@@ -1,25 +1,43 @@
 <?php
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the MIT license. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\DBAL\Query\Expression;
 
-use Countable;
-use function count;
-use function implode;
-
 /**
  * Composite expression is responsible to build a group of similar expression.
+ *
+ * @link   www.doctrine-project.org
+ * @since  2.1
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class CompositeExpression implements Countable
+class CompositeExpression implements \Countable
 {
     /**
      * Constant that represents an AND composite expression.
      */
-    public const TYPE_AND = 'AND';
+    const TYPE_AND = 'AND';
 
     /**
      * Constant that represents an OR composite expression.
      */
-    public const TYPE_OR = 'OR';
+    const TYPE_OR  = 'OR';
 
     /**
      * The instance type of composite expression.
@@ -31,15 +49,17 @@ class CompositeExpression implements Countable
     /**
      * Each expression part of the composite expression.
      *
-     * @var self[]|string[]
+     * @var array
      */
-    private $parts = [];
+    private $parts = array();
 
     /**
-     * @param string          $type  Instance type of composite expression.
-     * @param self[]|string[] $parts Composition of expressions to be joined on composite expression.
+     * Constructor.
+     *
+     * @param string $type  Instance type of composite expression.
+     * @param array  $parts Composition of expressions to be joined on composite expression.
      */
-    public function __construct($type, array $parts = [])
+    public function __construct($type, array $parts = array())
     {
         $this->type = $type;
 
@@ -49,13 +69,13 @@ class CompositeExpression implements Countable
     /**
      * Adds multiple parts to composite expression.
      *
-     * @param self[]|string[] $parts
+     * @param array $parts
      *
      * @return \Doctrine\DBAL\Query\Expression\CompositeExpression
      */
-    public function addMultiple(array $parts = [])
+    public function addMultiple(array $parts = array())
     {
-        foreach ($parts as $part) {
+        foreach ((array) $parts as $part) {
             $this->add($part);
         }
 
@@ -71,15 +91,9 @@ class CompositeExpression implements Countable
      */
     public function add($part)
     {
-        if (empty($part)) {
-            return $this;
+        if ( ! empty($part) || ($part instanceof self && $part->count() > 0)) {
+            $this->parts[] = $part;
         }
-
-        if ($part instanceof self && count($part) === 0) {
-            return $this;
-        }
-
-        $this->parts[] = $part;
 
         return $this;
     }
@@ -87,7 +101,7 @@ class CompositeExpression implements Countable
     /**
      * Retrieves the amount of expressions on composite expression.
      *
-     * @return int
+     * @return integer
      */
     public function count()
     {
@@ -101,7 +115,7 @@ class CompositeExpression implements Countable
      */
     public function __toString()
     {
-        if ($this->count() === 1) {
+        if (count($this->parts) === 1) {
             return (string) $this->parts[0];
         }
 

@@ -15,6 +15,7 @@ use Symfony\Bridge\Twig\Node\TransNode;
 use Twig\Error\SyntaxError;
 use Twig\Node\Expression\AbstractExpression;
 use Twig\Node\Expression\ArrayExpression;
+use Twig\Node\Node;
 use Twig\Node\TextNode;
 use Twig\Token;
 
@@ -26,7 +27,11 @@ use Twig\Token;
 class TransChoiceTokenParser extends TransTokenParser
 {
     /**
-     * {@inheritdoc}
+     * Parses a token and returns a node.
+     *
+     * @return Node
+     *
+     * @throws SyntaxError
      */
     public function parse(Token $token)
     {
@@ -77,7 +82,9 @@ class TransChoiceTokenParser extends TransTokenParser
     }
 
     /**
-     * {@inheritdoc}
+     * Gets the tag name associated with this token parser.
+     *
+     * @return string The tag name
      */
     public function getTag()
     {

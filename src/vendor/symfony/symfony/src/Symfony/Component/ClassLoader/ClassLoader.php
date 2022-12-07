@@ -11,7 +11,7 @@
 
 namespace Symfony\Component\ClassLoader;
 
-@trigger_error('The '.__NAMESPACE__.'\ClassLoader class is deprecated since Symfony 3.3 and will be removed in 4.0. Use Composer instead.', \E_USER_DEPRECATED);
+@trigger_error('The '.__NAMESPACE__.'\ClassLoader class is deprecated since Symfony 3.3 and will be removed in 4.0. Use Composer instead.', E_USER_DEPRECATED);
 
 /**
  * ClassLoader implements an PSR-0 class loader.
@@ -161,8 +161,6 @@ class ClassLoader
 
             return true;
         }
-
-        return null;
     }
 
     /**
@@ -205,7 +203,5 @@ class ClassLoader
         if ($this->useIncludePath && $file = stream_resolve_include_path($classPath)) {
             return $file;
         }
-
-        return null;
     }
 }

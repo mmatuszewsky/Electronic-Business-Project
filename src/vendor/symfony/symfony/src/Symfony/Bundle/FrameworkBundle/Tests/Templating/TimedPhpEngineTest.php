@@ -31,7 +31,7 @@ class TimedPhpEngineTest extends TestCase
         $stopwatch->expects($this->once())
             ->method('start')
             ->with('template.php (index.php)', 'template')
-            ->willReturn($stopwatchEvent);
+            ->will($this->returnValue($stopwatchEvent));
 
         $stopwatchEvent->expects($this->once())->method('stop');
 
@@ -56,7 +56,7 @@ class TimedPhpEngineTest extends TestCase
         $templateNameParser = $this->getMockBuilder('Symfony\Component\Templating\TemplateNameParserInterface')->getMock();
         $templateNameParser->expects($this->any())
             ->method('parse')
-            ->willReturn($templateReference);
+            ->will($this->returnValue($templateReference));
 
         return $templateNameParser;
     }
@@ -91,7 +91,7 @@ class TimedPhpEngineTest extends TestCase
         $loader = $this->getMockForAbstractClass('Symfony\Component\Templating\Loader\Loader');
         $loader->expects($this->once())
             ->method('load')
-            ->willReturn($storage);
+            ->will($this->returnValue($storage));
 
         return $loader;
     }

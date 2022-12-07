@@ -27,7 +27,7 @@ class RouterDebugCommandTest extends TestCase
         $ret = $tester->execute(['name' => null], ['decorated' => false]);
 
         $this->assertEquals(0, $ret, 'Returns 0 in case of success');
-        $this->assertStringContainsString('Name   Method   Scheme   Host   Path', $tester->getDisplay());
+        $this->assertContains('Name   Method   Scheme   Host   Path', $tester->getDisplay());
     }
 
     public function testDebugSingleRoute()
@@ -36,12 +36,14 @@ class RouterDebugCommandTest extends TestCase
         $ret = $tester->execute(['name' => 'foo'], ['decorated' => false]);
 
         $this->assertEquals(0, $ret, 'Returns 0 in case of success');
-        $this->assertStringContainsString('Route Name   | foo', $tester->getDisplay());
+        $this->assertContains('Route Name   | foo', $tester->getDisplay());
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testDebugInvalidRoute()
     {
-        $this->expectException('InvalidArgumentException');
         $this->createCommandTester()->execute(['name' => 'test']);
     }
 
@@ -58,7 +60,7 @@ class RouterDebugCommandTest extends TestCase
 
         $tester->execute([]);
 
-        $this->assertMatchesRegularExpression('/foo\s+ANY\s+ANY\s+ANY\s+\\/foo/', $tester->getDisplay());
+        $this->assertRegExp('/foo\s+ANY\s+ANY\s+ANY\s+\\/foo/', $tester->getDisplay());
     }
 
     /**
@@ -80,7 +82,7 @@ class RouterDebugCommandTest extends TestCase
         $router
             ->expects($this->any())
             ->method('getRouteCollection')
-            ->willReturn($routeCollection);
+            ->will($this->returnValue($routeCollection));
 
         return $router;
     }
@@ -91,13 +93,13 @@ class RouterDebugCommandTest extends TestCase
         $container
             ->expects($this->atLeastOnce())
             ->method('has')
-            ->willReturnCallback(function ($id) {
+            ->will($this->returnCallback(function ($id) {
                 if ('console.command_loader' === $id) {
                     return false;
                 }
 
                 return true;
-            })
+            }))
         ;
         $container
             ->expects($this->any())

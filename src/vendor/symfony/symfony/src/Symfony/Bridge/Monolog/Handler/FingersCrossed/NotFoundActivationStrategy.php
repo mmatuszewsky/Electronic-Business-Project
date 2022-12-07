@@ -23,7 +23,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class NotFoundActivationStrategy extends ErrorLevelActivationStrategy
 {
-    private $exclude;
+    private $blacklist;
     private $requestStack;
 
     public function __construct(RequestStack $requestStack, array $excludedUrls, $actionLevel)
@@ -31,7 +31,7 @@ class NotFoundActivationStrategy extends ErrorLevelActivationStrategy
         parent::__construct($actionLevel);
 
         $this->requestStack = $requestStack;
-        $this->exclude = '{('.implode('|', $excludedUrls).')}i';
+        $this->blacklist = '{('.implode('|', $excludedUrls).')}i';
     }
 
     public function isHandlerActivated(array $record)
@@ -45,7 +45,7 @@ class NotFoundActivationStrategy extends ErrorLevelActivationStrategy
             && 404 == $record['context']['exception']->getStatusCode()
             && ($request = $this->requestStack->getMasterRequest())
         ) {
-            return !preg_match($this->exclude, $request->getPathInfo());
+            return !preg_match($this->blacklist, $request->getPathInfo());
         }
 
         return $isActivated;

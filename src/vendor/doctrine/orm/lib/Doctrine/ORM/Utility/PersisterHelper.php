@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Utility;
 
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\QueryException;
@@ -39,18 +40,18 @@ class PersisterHelper
      * @param ClassMetadata          $class
      * @param EntityManagerInterface $em
      *
-     * @return array<int, string>
+     * @return array
      *
      * @throws QueryException
      */
     public static function getTypeOfField($fieldName, ClassMetadata $class, EntityManagerInterface $em)
     {
         if (isset($class->fieldMappings[$fieldName])) {
-            return [$class->fieldMappings[$fieldName]['type']];
+            return array($class->fieldMappings[$fieldName]['type']);
         }
 
         if ( ! isset($class->associationMappings[$fieldName])) {
-            return [];
+            return array();
         }
 
         $assoc = $class->associationMappings[$fieldName];
@@ -65,7 +66,7 @@ class PersisterHelper
             $joinData = $assoc;
         }
 
-        $types       = [];
+        $types       = array();
         $targetClass = $em->getClassMetadata($assoc['targetEntity']);
 
         foreach ($joinData['joinColumns'] as $joinColumn) {

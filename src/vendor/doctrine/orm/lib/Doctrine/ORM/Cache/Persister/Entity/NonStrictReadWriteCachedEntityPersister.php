@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Cache\Persister\Entity;
 
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Cache\EntityCacheKey;
 
 /**
@@ -62,7 +63,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
             $this->timestampRegion->update($this->timestampKey);
         }
 
-        $this->queuedCache = [];
+        $this->queuedCache = array();
     }
 
     /**
@@ -70,7 +71,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
      */
     public function afterTransactionRolledBack()
     {
-        $this->queuedCache = [];
+        $this->queuedCache = array();
     }
 
     /**
@@ -100,12 +101,6 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
         $this->queuedCache['update'][] = $entity;
     }
 
-    /**
-     * @param object $entity
-     * @param bool   $isChanged
-     *
-     * @return bool
-     */
     private function updateCache($entity, $isChanged)
     {
         $class      = $this->metadataFactory->getMetadataFor(get_class($entity));

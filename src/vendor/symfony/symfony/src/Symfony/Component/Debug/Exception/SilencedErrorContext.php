@@ -54,7 +54,7 @@ class SilencedErrorContext implements \JsonSerializable
         return $this->trace;
     }
 
-    public function jsonSerialize()
+    public function JsonSerialize()
     {
         return [
             'severity' => $this->severity,

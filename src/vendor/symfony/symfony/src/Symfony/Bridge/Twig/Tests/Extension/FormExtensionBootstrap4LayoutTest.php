@@ -33,11 +33,10 @@ class FormExtensionBootstrap4LayoutTest extends AbstractBootstrap4LayoutTest
      */
     private $renderer;
 
-    /**
-     * @before
-     */
-    public function doSetUp()
+    protected function setUp()
     {
+        parent::setUp();
+
         $loader = new StubFilesystemLoader([
             __DIR__.'/../../Resources/views/Form',
             __DIR__.'/Fixtures/templates/form',

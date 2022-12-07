@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.17",
     "Names": {
         "AED": [
             "AED",
@@ -24,22 +25,6 @@
             "AOA",
             "Kawansada Angola"
         ],
-        "ARA": [
-            "ARA",
-            "Argentine Austral"
-        ],
-        "ARL": [
-            "ARL",
-            "Beesada Ley ee Arjentiin (1970–1983)"
-        ],
-        "ARM": [
-            "ARM",
-            "Beesada Ley ee Arjentiin (1881–1970)"
-        ],
-        "ARP": [
-            "ARP",
-            "Beesada Ley ee Arjentiin (1883–1985)"
-        ],
         "ARS": [
             "ARS",
             "Beesada Arjentiin"
@@ -55,10 +40,6 @@
         "AZN": [
             "AZN",
             "Manaata Asarbeyjan"
-        ],
-        "BAD": [
-            "BAD",
-            "Diinaarka BBosnia-Hersogofina 1.00 konfatibal maakta Bosnia-Hersogofina 1 konfatibal maaka Bosnia-Hersogofina (1992–1994)"
         ],
         "BAM": [
             "BAM",
@@ -95,10 +76,6 @@
         "BOB": [
             "BOB",
             "Bolifiyanada Bolifiya"
-        ],
-        "BOL": [
-            "BOL",
-            "Bolifiyaabka Bolifiyaano(1863–1963)"
         ],
         "BRL": [
             "R$",
@@ -188,10 +165,6 @@
             "DZD",
             "Dinaarka Aljeriya"
         ],
-        "EEK": [
-            "EEK",
-            "Kroonka Estooniya"
-        ],
         "EGP": [
             "EGP",
             "Bowndka Masar"
@@ -207,10 +180,6 @@
         "EUR": [
             "€",
             "Yuuroo"
-        ],
-        "FIM": [
-            "FIM",
-            "Markkada Fiinishka ah"
         ],
         "FJD": [
             "FJD",
@@ -275,10 +244,6 @@
         "IDR": [
             "IDR",
             "Rubiah Indonesiya"
-        ],
-        "IEP": [
-            "IEP",
-            "baawnka Ayrishka"
         ],
         "ILS": [
             "₪",
@@ -363,10 +328,6 @@
         "LRD": [
             "LRD",
             "Doolarka Liberiya"
-        ],
-        "LVR": [
-            "LVR",
-            "Rubalka Latfiya"
         ],
         "LYD": [
             "LYD",

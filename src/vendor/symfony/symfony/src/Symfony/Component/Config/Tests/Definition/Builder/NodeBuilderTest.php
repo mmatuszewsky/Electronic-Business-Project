@@ -17,16 +17,20 @@ use Symfony\Component\Config\Definition\Builder\VariableNodeDefinition as BaseVa
 
 class NodeBuilderTest extends TestCase
 {
+    /**
+     * @expectedException \RuntimeException
+     */
     public function testThrowsAnExceptionWhenTryingToCreateANonRegisteredNodeType()
     {
-        $this->expectException('RuntimeException');
         $builder = new BaseNodeBuilder();
         $builder->node('', 'foobar');
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
     public function testThrowsAnExceptionWhenTheNodeClassIsNotFound()
     {
-        $this->expectException('RuntimeException');
         $builder = new BaseNodeBuilder();
         $builder
             ->setNodeClass('noclasstype', '\\foo\\bar\\noclass')
@@ -35,7 +39,7 @@ class NodeBuilderTest extends TestCase
 
     public function testAddingANewNodeType()
     {
-        $class = SomeNodeDefinition::class;
+        $class = __NAMESPACE__.'\\SomeNodeDefinition';
 
         $builder = new BaseNodeBuilder();
         $node = $builder
@@ -47,7 +51,7 @@ class NodeBuilderTest extends TestCase
 
     public function testOverridingAnExistingNodeType()
     {
-        $class = SomeNodeDefinition::class;
+        $class = __NAMESPACE__.'\\SomeNodeDefinition';
 
         $builder = new BaseNodeBuilder();
         $node = $builder
@@ -66,7 +70,7 @@ class NodeBuilderTest extends TestCase
 
         $this->assertInstanceOf(\get_class($node1), $node2);
 
-        $builder->setNodeClass('CuStOm', SomeNodeDefinition::class);
+        $builder->setNodeClass('CuStOm', __NAMESPACE__.'\\SomeNodeDefinition');
 
         $node1 = $builder->node('', 'CUSTOM');
         $node2 = $builder->node('', 'custom');

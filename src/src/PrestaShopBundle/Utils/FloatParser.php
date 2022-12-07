@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,31 +16,45 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShopBundle\Utils;
-
-use PrestaShop\PrestaShop\Core\Util\ArabicToLatinDigitConverter;
 
 /**
  * Converts strings into floats.
  */
 class FloatParser
 {
-    /**
-     * @var ArabicToLatinDigitConverter
-     */
-    private $arabicToLatinNumberConverter;
-
-    public function __construct(ArabicToLatinDigitConverter $arabicToLatinDigitConverter = null)
-    {
-        $this->arabicToLatinNumberConverter = $arabicToLatinDigitConverter ?? new ArabicToLatinDigitConverter();
-    }
+    private static $translationTable = array(
+        // arabic numbers
+        '٠' => '0',
+        '١' => '1',
+        '٢' => '2',
+        '٣' => '3',
+        '٤' => '4',
+        '٥' => '5',
+        '٦' => '6',
+        '٧' => '7',
+        '٨' => '8',
+        '٩' => '9',
+        // persian numbers (NOT the same UTF codes!)
+        '۰' => '0',
+        '۱' => '1',
+        '۲' => '2',
+        '۳' => '3',
+        '۴' => '4',
+        '۵' => '5',
+        '۶' => '6',
+        '۷' => '7',
+        '۸' => '8',
+        '۹' => '9',
+    );
 
     /**
      * Constructs a float value from an arbitrarily-formatted string.
@@ -76,7 +89,10 @@ class FloatParser
         }
 
         // replace arabic numbers by latin
-        $value = $this->arabicToLatinNumberConverter->convert($value);
+        $value = strtr(
+            $value,
+            self::$translationTable
+        );
 
         // remove all non-digit characters
         $split = preg_split('/[^\dE-]+/', $value);
@@ -88,7 +104,9 @@ class FloatParser
 
         foreach ($split as $part) {
             if ('' === $part) {
-                throw new \InvalidArgumentException(sprintf('Invalid argument: "%s" cannot be interpreted as a number', $value));
+                throw new \InvalidArgumentException(
+                    sprintf('Invalid argument: "%s" cannot be interpreted as a number', $value)
+                );
             }
         }
 

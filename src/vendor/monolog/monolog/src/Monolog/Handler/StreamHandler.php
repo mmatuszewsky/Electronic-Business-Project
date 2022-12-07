@@ -12,7 +12,6 @@
 namespace Monolog\Handler;
 
 use Monolog\Logger;
-use Monolog\Utils;
 
 /**
  * Stores to any stream resource
@@ -46,7 +45,7 @@ class StreamHandler extends AbstractProcessingHandler
         if (is_resource($stream)) {
             $this->stream = $stream;
         } elseif (is_string($stream)) {
-            $this->url = Utils::canonicalizePath($stream);
+            $this->url = $stream;
         } else {
             throw new \InvalidArgumentException('A stream must either be a resource or a string.');
         }
@@ -64,7 +63,6 @@ class StreamHandler extends AbstractProcessingHandler
             fclose($this->stream);
         }
         $this->stream = null;
-        $this->dirCreated = null;
     }
 
     /**
@@ -106,8 +104,7 @@ class StreamHandler extends AbstractProcessingHandler
             restore_error_handler();
             if (!is_resource($this->stream)) {
                 $this->stream = null;
-
-                throw new \UnexpectedValueException(sprintf('The stream or file "%s" could not be opened in append mode: '.$this->errorMessage, $this->url));
+                throw new \UnexpectedValueException(sprintf('The stream or file "%s" could not be opened: '.$this->errorMessage, $this->url));
             }
         }
 

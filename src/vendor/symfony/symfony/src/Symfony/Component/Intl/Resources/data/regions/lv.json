@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.43",
     "Names": {
         "AC": "Debesbraukšanas sala",
         "AD": "Andora",
@@ -149,7 +150,7 @@
         "ML": "Mali",
         "MM": "Mjanma (Birma)",
         "MN": "Mongolija",
-        "MO": "ĶTR īpašais administratīvais reģions Makao",
+        "MO": "Ķīnas īpašās pārvaldes apgabals Makao",
         "MP": "Ziemeļu Marianas salas",
         "MQ": "Martinika",
         "MR": "Mauritānija",
@@ -214,7 +215,7 @@
         "SV": "Salvadora",
         "SX": "Sintmārtena",
         "SY": "Sīrija",
-        "SZ": "Svatini",
+        "SZ": "Svazilenda",
         "TA": "Tristana da Kuņas salas",
         "TC": "Tērksas un Kaikosas salas",
         "TD": "Čada",
@@ -248,7 +249,7 @@
         "WF": "Volisa un Futunas salas",
         "WS": "Samoa",
         "XA": "pseidoakcenti",
-        "XB": "pseidodivvirzienu",
+        "XB": "pseido-Bidi",
         "XK": "Kosova",
         "YE": "Jemena",
         "YT": "Majota",

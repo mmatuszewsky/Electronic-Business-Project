@@ -47,7 +47,7 @@ class FirewallMap extends _FirewallMap implements FirewallMapInterface
     public function __get($name)
     {
         if ('map' === $name || 'container' === $name) {
-            @trigger_error(sprintf('Using the "%s::$%s" property is deprecated since Symfony 3.3 as it will be removed/private in 4.0.', __CLASS__, $name), \E_USER_DEPRECATED);
+            @trigger_error(sprintf('Using the "%s::$%s" property is deprecated since Symfony 3.3 as it will be removed/private in 4.0.', __CLASS__, $name), E_USER_DEPRECATED);
 
             if ('map' === $name && $this->map instanceof \Traversable) {
                 $this->map = iterator_to_array($this->map);
@@ -63,7 +63,7 @@ class FirewallMap extends _FirewallMap implements FirewallMapInterface
     public function __set($name, $value)
     {
         if ('map' === $name || 'container' === $name) {
-            @trigger_error(sprintf('Using the "%s::$%s" property is deprecated since Symfony 3.3 as it will be removed/private in 4.0.', __CLASS__, $name), \E_USER_DEPRECATED);
+            @trigger_error(sprintf('Using the "%s::$%s" property is deprecated since Symfony 3.3 as it will be removed/private in 4.0.', __CLASS__, $name), E_USER_DEPRECATED);
 
             $set = \Closure::bind(function ($name, $value) { $this->$name = $value; }, $this, parent::class);
             $set($name, $value);
@@ -78,7 +78,7 @@ class FirewallMap extends _FirewallMap implements FirewallMapInterface
     public function __isset($name)
     {
         if ('map' === $name || 'container' === $name) {
-            @trigger_error(sprintf('Using the "%s::$%s" property is deprecated since Symfony 3.3 as it will be removed/private in 4.0.', __CLASS__, $name), \E_USER_DEPRECATED);
+            @trigger_error(sprintf('Using the "%s::$%s" property is deprecated since Symfony 3.3 as it will be removed/private in 4.0.', __CLASS__, $name), E_USER_DEPRECATED);
         }
 
         return isset($this->$name);
@@ -90,7 +90,7 @@ class FirewallMap extends _FirewallMap implements FirewallMapInterface
     public function __unset($name)
     {
         if ('map' === $name || 'container' === $name) {
-            @trigger_error(sprintf('Using the "%s::$%s" property is deprecated since Symfony 3.3 as it will be removed/private in 4.0.', __CLASS__, $name), \E_USER_DEPRECATED);
+            @trigger_error(sprintf('Using the "%s::$%s" property is deprecated since Symfony 3.3 as it will be removed/private in 4.0.', __CLASS__, $name), E_USER_DEPRECATED);
 
             $unset = \Closure::bind(function ($name) { unset($this->$name); }, $this, parent::class);
             $unset($name);
@@ -107,11 +107,13 @@ class _FirewallMap
 {
     private $container;
     private $map;
+    private $contexts;
 
     public function __construct(ContainerInterface $container, $map)
     {
         $this->container = $container;
         $this->map = $map;
+        $this->contexts = new \SplObjectStorage();
     }
 
     public function getListeners(Request $request)
@@ -133,14 +135,14 @@ class _FirewallMap
         $context = $this->getFirewallContext($request);
 
         if (null === $context) {
-            return null;
+            return;
         }
 
         return $context->getConfig();
     }
 
     /**
-     * @return FirewallContext|null
+     * @return FirewallContext
      */
     private function getFirewallContext(Request $request)
     {
@@ -162,7 +164,5 @@ class _FirewallMap
                 return $this->container->get($contextId);
             }
         }
-
-        return null;
     }
 }

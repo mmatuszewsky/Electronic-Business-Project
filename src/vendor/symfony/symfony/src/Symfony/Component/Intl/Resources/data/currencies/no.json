@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.42",
     "Names": {
         "ADP": [
             "ADP",
@@ -635,10 +636,6 @@
         "MAF": [
             "MAF",
             "marokkanske franc"
-        ],
-        "MCF": [
-            "MCF",
-            "monegaskiske franc"
         ],
         "MDC": [
             "MDC",

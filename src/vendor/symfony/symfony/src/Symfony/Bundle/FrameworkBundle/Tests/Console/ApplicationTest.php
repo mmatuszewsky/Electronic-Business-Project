@@ -160,9 +160,9 @@ class ApplicationTest extends TestCase
         $output = $tester->getDisplay();
 
         $this->assertSame(0, $tester->getStatusCode());
-        $this->assertStringContainsString('Some commands could not be registered:', $output);
-        $this->assertStringContainsString('throwing', $output);
-        $this->assertStringContainsString('fine', $output);
+        $this->assertContains('Some commands could not be registered:', $output);
+        $this->assertContains('throwing', $output);
+        $this->assertContains('fine', $output);
     }
 
     public function testRegistrationErrorsAreDisplayedOnCommandNotFound()
@@ -188,8 +188,8 @@ class ApplicationTest extends TestCase
         $output = $tester->getDisplay();
 
         $this->assertSame(1, $tester->getStatusCode());
-        $this->assertStringContainsString('Some commands could not be registered:', $output);
-        $this->assertStringContainsString('Command "fine" is not defined.', $output);
+        $this->assertContains('Some commands could not be registered:', $output);
+        $this->assertContains('Command "fine" is not defined.', $output);
     }
 
     private function getKernel(array $bundles, $useDispatcher = false)
@@ -206,7 +206,7 @@ class ApplicationTest extends TestCase
                 ->expects($this->atLeastOnce())
                 ->method('get')
                 ->with($this->equalTo('event_dispatcher'))
-                ->willReturn($dispatcher);
+                ->will($this->returnValue($dispatcher));
         }
 
         $container
@@ -226,12 +226,12 @@ class ApplicationTest extends TestCase
         $kernel
             ->expects($this->any())
             ->method('getBundles')
-            ->willReturn($bundles)
+            ->will($this->returnValue($bundles))
         ;
         $kernel
             ->expects($this->any())
             ->method('getContainer')
-            ->willReturn($container)
+            ->will($this->returnValue($container))
         ;
 
         return $kernel;
@@ -243,9 +243,9 @@ class ApplicationTest extends TestCase
         $bundle
             ->expects($this->once())
             ->method('registerCommands')
-            ->willReturnCallback(function (Application $application) use ($commands) {
+            ->will($this->returnCallback(function (Application $application) use ($commands) {
                 $application->addCommands($commands);
-            })
+            }))
         ;
 
         return $bundle;

@@ -15,8 +15,8 @@ class ErrorHandlerThatUsesThePreviousOne
         return $handler;
     }
 
-    public function handleError()
+    public function handleError($type, $message, $file, $line, $context)
     {
-        return \call_user_func_array(self::$previous, \func_get_args());
+        return \call_user_func(self::$previous, $type, $message, $file, $line, $context);
     }
 }

@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.17",
     "Names": {
         "AED": [
             "AED",
@@ -150,7 +151,7 @@
         ],
         "CZK": [
             "CZK",
-            "koruna ya Jamhuri ya Czech"
+            "CZK"
         ],
         "DJF": [
             "DJF",

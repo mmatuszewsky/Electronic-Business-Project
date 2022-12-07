@@ -1,40 +1,25 @@
 {
+    "Version": "2.1.47.82",
     "Names": {
         "AUD": [
             "AUD$",
-            "Tola fakaʻaositelēlia"
+            "Australian Dollar"
         ],
-        "FJD": [
-            "FJD",
-            "Tola fakafisi"
+        "BRL": [
+            "R$",
+            "BRL"
         ],
         "NZD": [
             "NZD$",
-            "Tola fakanuʻusila"
-        ],
-        "PGK": [
-            "PGK",
-            "Kina fakapapuaniukini"
-        ],
-        "SBD": [
-            "SBD",
-            "Tola fakaʻotusolomone"
+            "NZD"
         ],
         "TOP": [
             "T$",
             "Paʻanga fakatonga"
         ],
-        "VUV": [
-            "VUV",
-            "Vatu fakavanuatu"
-        ],
         "WST": [
             "WST",
             "Tala fakahaʻamoa"
-        ],
-        "XPF": [
-            "CFPF",
-            "Falaniki fakapasifika"
         ]
     }
 }

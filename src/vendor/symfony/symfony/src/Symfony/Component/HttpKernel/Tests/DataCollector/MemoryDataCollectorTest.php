@@ -23,8 +23,8 @@ class MemoryDataCollectorTest extends TestCase
         $collector = new MemoryDataCollector();
         $collector->collect(new Request(), new Response());
 
-        $this->assertIsInt($collector->getMemory());
-        $this->assertIsInt($collector->getMemoryLimit());
+        $this->assertInternalType('integer', $collector->getMemory());
+        $this->assertInternalType('integer', $collector->getMemoryLimit());
         $this->assertSame('memory', $collector->getName());
     }
 

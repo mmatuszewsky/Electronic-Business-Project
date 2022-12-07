@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.42",
     "Names": {
         "AC": "Dangun Žengimo sala",
         "AD": "Andora",
@@ -247,8 +248,8 @@
         "VU": "Vanuatu",
         "WF": "Volisas ir Futūna",
         "WS": "Samoa",
-        "XA": "pseudo A",
-        "XB": "pseudo B",
+        "XA": "XA",
+        "XB": "XB",
         "XK": "Kosovas",
         "YE": "Jemenas",
         "YT": "Majotas",

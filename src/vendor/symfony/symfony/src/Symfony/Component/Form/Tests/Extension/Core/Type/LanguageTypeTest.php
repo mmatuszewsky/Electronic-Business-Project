@@ -31,9 +31,11 @@ class LanguageTypeTest extends BaseTypeTest
         $choices = $this->factory->create(static::TESTED_TYPE)
             ->createView()->vars['choices'];
 
-        $this->assertContainsEquals(new ChoiceView('en', 'en', 'English'), $choices);
-        $this->assertContainsEquals(new ChoiceView('fr', 'fr', 'French'), $choices);
-        $this->assertContainsEquals(new ChoiceView('my', 'my', 'Burmese'), $choices);
+        $this->assertContains(new ChoiceView('en', 'en', 'English'), $choices, '', false, false);
+        $this->assertContains(new ChoiceView('en_GB', 'en_GB', 'British English'), $choices, '', false, false);
+        $this->assertContains(new ChoiceView('en_US', 'en_US', 'American English'), $choices, '', false, false);
+        $this->assertContains(new ChoiceView('fr', 'fr', 'French'), $choices, '', false, false);
+        $this->assertContains(new ChoiceView('my', 'my', 'Burmese'), $choices, '', false, false);
     }
 
     public function testMultipleLanguagesIsNotIncluded()
@@ -41,7 +43,7 @@ class LanguageTypeTest extends BaseTypeTest
         $choices = $this->factory->create(static::TESTED_TYPE, 'language')
             ->createView()->vars['choices'];
 
-        $this->assertNotContainsEquals(new ChoiceView('mul', 'mul', 'Mehrsprachig'), $choices);
+        $this->assertNotContains(new ChoiceView('mul', 'mul', 'Mehrsprachig'), $choices, '', false, false);
     }
 
     public function testSubmitNull($expected = null, $norm = null, $view = null)

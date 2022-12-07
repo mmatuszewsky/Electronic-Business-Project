@@ -42,7 +42,8 @@ class TemplateManager
     /**
      * Gets the template name for a given panel.
      *
-     * @param string $panel
+     * @param Profile $profile
+     * @param string  $panel
      *
      * @return mixed
      *
@@ -117,22 +118,21 @@ class TemplateManager
     protected function templateExists($template)
     {
         $loader = $this->twig->getLoader();
-
-        if (1 === Environment::MAJOR_VERSION && !$loader instanceof ExistsLoaderInterface) {
-            try {
-                if ($loader instanceof SourceContextLoaderInterface) {
-                    $loader->getSourceContext($template);
-                } else {
-                    $loader->getSource($template);
-                }
-
-                return true;
-            } catch (LoaderError $e) {
-            }
-
-            return false;
+        if ($loader instanceof ExistsLoaderInterface) {
+            return $loader->exists($template);
         }
 
-        return $loader->exists($template);
+        try {
+            if ($loader instanceof SourceContextLoaderInterface || method_exists($loader, 'getSourceContext')) {
+                $loader->getSourceContext($template);
+            } else {
+                $loader->getSource($template);
+            }
+
+            return true;
+        } catch (LoaderError $e) {
+        }
+
+        return false;
     }
 }

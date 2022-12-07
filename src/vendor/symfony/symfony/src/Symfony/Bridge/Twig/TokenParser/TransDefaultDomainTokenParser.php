@@ -12,6 +12,7 @@
 namespace Symfony\Bridge\Twig\TokenParser;
 
 use Symfony\Bridge\Twig\Node\TransDefaultDomainNode;
+use Twig\Node\Node;
 use Twig\Token;
 use Twig\TokenParser\AbstractTokenParser;
 
@@ -23,7 +24,9 @@ use Twig\TokenParser\AbstractTokenParser;
 class TransDefaultDomainTokenParser extends AbstractTokenParser
 {
     /**
-     * {@inheritdoc}
+     * Parses a token and returns a node.
+     *
+     * @return Node
      */
     public function parse(Token $token)
     {
@@ -35,7 +38,9 @@ class TransDefaultDomainTokenParser extends AbstractTokenParser
     }
 
     /**
-     * {@inheritdoc}
+     * Gets the tag name associated with this token parser.
+     *
+     * @return string The tag name
      */
     public function getTag()
     {

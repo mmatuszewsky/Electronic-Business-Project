@@ -17,6 +17,5 @@ class FooType extends AbstractType
 {
     public function getParent()
     {
-        return null;
     }
 }

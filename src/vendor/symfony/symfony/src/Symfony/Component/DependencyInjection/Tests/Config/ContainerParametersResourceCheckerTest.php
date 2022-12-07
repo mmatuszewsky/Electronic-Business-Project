@@ -11,7 +11,6 @@
 
 namespace Symfony\Component\DependencyInjection\Tests\Config;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\ResourceCheckerInterface;
 use Symfony\Component\DependencyInjection\Config\ContainerParametersResource;
@@ -53,25 +52,25 @@ class ContainerParametersResourceCheckerTest extends TestCase
 
     public function isFreshProvider()
     {
-        yield 'not fresh on missing parameter' => [function (MockObject $container) {
+        yield 'not fresh on missing parameter' => [function (\PHPUnit_Framework_MockObject_MockObject $container) {
             $container->method('hasParameter')->with('locales')->willReturn(false);
         }, false];
 
-        yield 'not fresh on different value' => [function (MockObject $container) {
+        yield 'not fresh on different value' => [function (\PHPUnit_Framework_MockObject_MockObject $container) {
             $container->method('getParameter')->with('locales')->willReturn(['nl', 'es']);
         }, false];
 
-        yield 'fresh on every identical parameters' => [function (MockObject $container) {
+        yield 'fresh on every identical parameters' => [function (\PHPUnit_Framework_MockObject_MockObject $container) {
             $container->expects($this->exactly(2))->method('hasParameter')->willReturn(true);
             $container->expects($this->exactly(2))->method('getParameter')
                 ->withConsecutive(
                     [$this->equalTo('locales')],
                     [$this->equalTo('default_locale')]
                 )
-                ->willReturnMap([
+                ->will($this->returnValueMap([
                     ['locales', ['fr', 'en']],
                     ['default_locale', 'fr'],
-                ])
+                ]))
             ;
         }, true];
     }

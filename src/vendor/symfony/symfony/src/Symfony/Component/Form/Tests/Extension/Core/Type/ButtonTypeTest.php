@@ -24,13 +24,14 @@ class ButtonTypeTest extends BaseTypeTest
     }
 
     /**
+     * @expectedException \Symfony\Component\Form\Exception\BadMethodCallException
+     * @expectedExceptionMessage Buttons do not support empty data.
+     *
      * @param string $emptyData
      * @param null   $expectedData
      */
     public function testSubmitNullUsesDefaultEmptyData($emptyData = 'empty', $expectedData = null)
     {
-        $this->expectException('Symfony\Component\Form\Exception\BadMethodCallException');
-        $this->expectExceptionMessage('Buttons do not support empty data.');
         parent::testSubmitNullUsesDefaultEmptyData($emptyData, $expectedData);
     }
 }

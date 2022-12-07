@@ -1,11 +1,10 @@
 {**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -16,14 +15,15 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  *}
 {if $product.show_price}
-  <div class="product-prices js-product-prices">
+  <div class="product-prices">
     {block name='product_discount'}
       {if $product.has_discount}
         <div class="product-discount">
@@ -35,17 +35,16 @@
 
     {block name='product_price'}
       <div
-        class="product-price h5 {if $product.has_discount}has-discount{/if}">
+        class="product-price h5 {if $product.has_discount}has-discount{/if}"
+        itemprop="offers"
+        itemscope
+        itemtype="https://schema.org/Offer"
+      >
+        <link itemprop="availability" href="{$product.seo_availability}"/>
+        <meta itemprop="priceCurrency" content="{$currency.iso_code}">
 
         <div class="current-price">
-          <span class='current-price-value' content="{$product.rounded_display_price}">
-            {capture name='custom_price'}{hook h='displayProductPriceBlock' product=$product type='custom_price' hook_origin='product_sheet'}{/capture}
-            {if '' !== $smarty.capture.custom_price}
-              {$smarty.capture.custom_price nofilter}
-            {else}
-              {$product.price}
-            {/if}
-          </span>
+          <span itemprop="price" content="{$product.price_amount}">{$product.price}</span>
 
           {if $product.has_discount}
             {if $product.discount_type === 'percentage'}
@@ -98,18 +97,16 @@
       {/if}
       {hook h='displayProductPriceBlock' product=$product type="price"}
       {hook h='displayProductPriceBlock' product=$product type="after_price"}
-      {if $product.is_virtual	== 0}
-        {if $product.additional_delivery_times == 1}
-          {if $product.delivery_information}
-            <span class="delivery-information">{$product.delivery_information}</span>
-          {/if}
-        {elseif $product.additional_delivery_times == 2}
-          {if $product.quantity > 0}
-            <span class="delivery-information">{$product.delivery_in_stock}</span>
-          {* Out of stock message should not be displayed if customer can't order the product. *}
-          {elseif $product.quantity <= 0 && $product.add_to_cart_url}
-            <span class="delivery-information">{$product.delivery_out_stock}</span>
-          {/if}
+      {if $product.additional_delivery_times == 1}
+        {if $product.delivery_information}
+          <span class="delivery-information">{$product.delivery_information}</span>
+        {/if}
+      {elseif $product.additional_delivery_times == 2}
+        {if $product.quantity > 0}
+          <span class="delivery-information">{$product.delivery_in_stock}</span>
+        {* Out of stock message should not be displayed if customer can't order the product. *}
+        {elseif $product.quantity <= 0 && $product.add_to_cart_url}
+          <span class="delivery-information">{$product.delivery_out_stock}</span>
         {/if}
       {/if}
     </div>

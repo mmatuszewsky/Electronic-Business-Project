@@ -33,7 +33,7 @@ class SubselectFromClause extends Node
     /**
      * @var array
      */
-    public $identificationVariableDeclarations = [];
+    public $identificationVariableDeclarations = array();
 
     /**
      * @param array $identificationVariableDeclarations

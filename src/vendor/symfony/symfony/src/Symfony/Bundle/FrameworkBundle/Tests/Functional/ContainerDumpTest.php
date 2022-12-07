@@ -14,7 +14,7 @@ namespace Symfony\Bundle\FrameworkBundle\Tests\Functional;
 /**
  * Checks that the container compiles correctly when all the bundle features are enabled.
  */
-class ContainerDumpTest extends AbstractWebTestCase
+class ContainerDumpTest extends WebTestCase
 {
     public function testContainerCompilationInDebug()
     {

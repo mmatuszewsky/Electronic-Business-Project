@@ -33,7 +33,11 @@ class SortableIteratorTest extends RealIteratorTestCase
         if (!\is_callable($mode)) {
             switch ($mode) {
                 case SortableIterator::SORT_BY_ACCESSED_TIME:
-                    touch(self::toAbsolute('.git'));
+                    if ('\\' === \DIRECTORY_SEPARATOR) {
+                        touch(self::toAbsolute('.git'));
+                    } else {
+                        file_get_contents(self::toAbsolute('.git'));
+                    }
                     sleep(1);
                     file_get_contents(self::toAbsolute('.bar'));
                     break;

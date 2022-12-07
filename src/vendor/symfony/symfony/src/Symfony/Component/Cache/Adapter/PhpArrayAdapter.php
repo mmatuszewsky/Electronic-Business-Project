@@ -40,9 +40,9 @@ class PhpArrayAdapter implements AdapterInterface, PruneableInterface, Resettabl
     {
         $this->file = $file;
         $this->pool = $fallbackPool;
-        $this->zendDetectUnicode = filter_var(ini_get('zend.detect_unicode'), \FILTER_VALIDATE_BOOLEAN);
+        $this->zendDetectUnicode = filter_var(ini_get('zend.detect_unicode'), FILTER_VALIDATE_BOOLEAN);
         $this->createCacheItem = \Closure::bind(
-            static function ($key, $value, $isHit) {
+            function ($key, $value, $isHit) {
                 $item = new CacheItem();
                 $item->key = $key;
                 $item->value = $value;
@@ -61,13 +61,14 @@ class PhpArrayAdapter implements AdapterInterface, PruneableInterface, Resettabl
      * fallback pool with this adapter only if the current PHP version is supported.
      *
      * @param string                 $file         The PHP file were values are cached
-     * @param CacheItemPoolInterface $fallbackPool A pool to fallback on when an item is not hit
+     * @param CacheItemPoolInterface $fallbackPool Fallback for old PHP versions or opcache disabled
      *
      * @return CacheItemPoolInterface
      */
     public static function create($file, CacheItemPoolInterface $fallbackPool)
     {
-        if (\PHP_VERSION_ID >= 70000) {
+        // Shared memory is available in PHP 7.0+ with OPCache enabled and in HHVM
+        if ((\PHP_VERSION_ID >= 70000 && filter_var(ini_get('opcache.enable'), FILTER_VALIDATE_BOOLEAN)) || \defined('HHVM_VERSION')) {
             if (!$fallbackPool instanceof AdapterInterface) {
                 $fallbackPool = new ProxyAdapter($fallbackPool);
             }
@@ -265,27 +266,20 @@ class PhpArrayAdapter implements AdapterInterface, PruneableInterface, Resettabl
     /**
      * @throws \ReflectionException When $class is not found and is required
      *
-     * @internal to be removed in Symfony 5.0
+     * @internal
      */
     public static function throwOnRequiredClass($class)
     {
         $e = new \ReflectionException("Class $class does not exist");
-        $trace = debug_backtrace();
+        $trace = $e->getTrace();
         $autoloadFrame = [
             'function' => 'spl_autoload_call',
             'args' => [$class],
         ];
+        $i = 1 + array_search($autoloadFrame, $trace, true);
 
-        if (\PHP_VERSION_ID >= 80000 && isset($trace[1])) {
-            $callerFrame = $trace[1];
-        } elseif (false !== $i = array_search($autoloadFrame, $trace, true)) {
-            $callerFrame = $trace[++$i];
-        } else {
-            throw $e;
-        }
-
-        if (isset($callerFrame['function']) && !isset($callerFrame['class'])) {
-            switch ($callerFrame['function']) {
+        if (isset($trace[$i]['function']) && !isset($trace[$i]['class'])) {
+            switch ($trace[$i]['function']) {
                 case 'get_class_methods':
                 case 'get_class_vars':
                 case 'get_parent_class':

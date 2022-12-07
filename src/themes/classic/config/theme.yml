@@ -4,7 +4,7 @@ version: 1.0.0
 author:
   name: "PrestaShop Team"
   email: "pub@prestashop.com"
-  url: "https://www.prestashop.com"
+  url: "http://www.prestashop.com"
 
 meta:
   compatibility:
@@ -55,16 +55,6 @@ global_settings:
      - ps_linklist
   hooks:
     modules_to_hook:
-      displayAfterBodyOpeningTag:
-        - blockreassurance
-      displayNavFullWidth:
-        - blockreassurance
-      displayAdminCustomers:
-        - blockwishlist
-      displayCustomerAccount:
-        - blockwishlist
-      displayMyAccountBlock:
-        - blockwishlist
       displayNav1:
         - ps_contactinfo
       displayNav2:
@@ -81,16 +71,12 @@ global_settings:
         - ps_banner
         - ps_customtext
       displayFooterBefore:
-        - blockreassurance
         - ps_emailsubscription
         - ps_socialfollow
       displayFooter:
         - ps_linklist
         - ps_customeraccountlinks
         - ps_contactinfo
-        - blockwishlist
-      displayFooterAfter:
-        - blockreassurance
       displayLeftColumn:
         - ps_categorytree
         - ps_facetedsearch
@@ -104,8 +90,6 @@ global_settings:
         - ps_featuredproducts
       displayCrossSellingShoppingCart:
         - ps_featuredproducts
-      displayProductActions:
-        - blockwishlist
 
   image_types:
     cart_default:

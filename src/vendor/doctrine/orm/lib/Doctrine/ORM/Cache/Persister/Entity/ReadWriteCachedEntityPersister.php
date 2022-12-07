@@ -73,7 +73,7 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
             $this->timestampRegion->update($this->timestampKey);
         }
 
-        $this->queuedCache = [];
+        $this->queuedCache = array();
     }
 
     /**
@@ -93,7 +93,7 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
             }
         }
 
-        $this->queuedCache = [];
+        $this->queuedCache = array();
     }
 
     /**
@@ -113,10 +113,10 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
             return $deleted;
         }
 
-        $this->queuedCache['delete'][] = [
+        $this->queuedCache['delete'][] = array(
             'lock'   => $lock,
             'key'    => $key
-        ];
+        );
 
         return $deleted;
     }
@@ -135,9 +135,9 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
             return;
         }
 
-        $this->queuedCache['update'][] = [
+        $this->queuedCache['update'][] = array(
             'lock'   => $lock,
             'key'    => $key
-        ];
+        );
     }
 }

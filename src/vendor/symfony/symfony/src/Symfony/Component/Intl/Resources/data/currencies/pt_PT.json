@@ -1,8 +1,9 @@
 {
+    "Version": "2.1.47.89",
     "Names": {
         "AED": [
             "AED",
-            "dirham dos Emirados Árabes Unidos"
+            "Dirham dos Emirados Árabes Unidos"
         ],
         "AFA": [
             "AFA",
@@ -10,7 +11,7 @@
         ],
         "AFN": [
             "AFN",
-            "afegâni afegão"
+            "Afegani do Afeganistão"
         ],
         "ALL": [
             "ALL",
@@ -18,11 +19,11 @@
         ],
         "AMD": [
             "AMD",
-            "dram arménio"
+            "Dram arménio"
         ],
         "ANG": [
             "ANG",
-            "florim das Antilhas Holandesas"
+            "Florim das Antilhas Holandesas"
         ],
         "AOA": [
             "AOA",
@@ -32,17 +33,13 @@
             "ARS",
             "peso argentino"
         ],
-        "AUD": [
-            "AU$",
-            "dólar australiano"
-        ],
         "AWG": [
             "AWG",
             "florim de Aruba"
         ],
         "AZN": [
             "AZN",
-            "manat azeri"
+            "Manat do Azerbaijão"
         ],
         "BAD": [
             "BAD",
@@ -58,7 +55,7 @@
         ],
         "BDT": [
             "BDT",
-            "taka bengali"
+            "Taka de Bangladesh"
         ],
         "BEC": [
             "BEC",
@@ -70,7 +67,7 @@
         ],
         "BHD": [
             "BHD",
-            "dinar baremita"
+            "Dinar baremita"
         ],
         "BIF": [
             "BIF",
@@ -82,7 +79,7 @@
         ],
         "BND": [
             "BND",
-            "dólar bruneano"
+            "Dólar bruneíno"
         ],
         "BOB": [
             "BOB",
@@ -98,11 +95,11 @@
         ],
         "BTN": [
             "BTN",
-            "ngultrum butanês"
+            "Ngultrum do Butão"
         ],
         "BWP": [
             "BWP",
-            "pula de Botswana"
+            "Pula de Botswana"
         ],
         "BYB": [
             "BYB",
@@ -111,6 +108,10 @@
         "BYN": [
             "BYN",
             "rublo bielorrusso"
+        ],
+        "BYR": [
+            "BYR",
+            "Rublo bielorrusso (2000–2016)"
         ],
         "BZD": [
             "BZD",
@@ -178,7 +179,7 @@
         ],
         "DOP": [
             "DOP",
-            "peso dominicano"
+            "Peso dominicano"
         ],
         "DZD": [
             "DZD",
@@ -206,7 +207,7 @@
         ],
         "FJD": [
             "FJD",
-            "dólar fijiano"
+            "Dólar de Fiji"
         ],
         "FKP": [
             "FKP",
@@ -218,7 +219,7 @@
         ],
         "GEL": [
             "GEL",
-            "lari georgiano"
+            "Lari georgiano"
         ],
         "GHS": [
             "GHS",
@@ -246,7 +247,7 @@
         ],
         "HKD": [
             "HK$",
-            "dólar de Hong Kong"
+            "Dólar de Hong Kong"
         ],
         "HNL": [
             "HNL",
@@ -258,7 +259,7 @@
         ],
         "HTG": [
             "HTG",
-            "gourde haitiano"
+            "Gourde haitiano"
         ],
         "HUF": [
             "HUF",
@@ -266,23 +267,23 @@
         ],
         "IDR": [
             "IDR",
-            "rupia indonésia"
+            "Rupia indonésia"
         ],
         "ILS": [
             "₪",
-            "sheqel novo israelita"
+            "Sheqel novo israelita"
         ],
         "INR": [
             "₹",
-            "rupia indiana"
+            "Rupia indiana"
         ],
         "IQD": [
             "IQD",
-            "dinar iraquiano"
+            "Dinar iraquiano"
         ],
         "IRR": [
             "IRR",
-            "rial iraniano"
+            "Rial iraniano"
         ],
         "ISK": [
             "ISK",
@@ -290,15 +291,15 @@
         ],
         "JMD": [
             "JMD",
-            "dólar jamaicano"
+            "Dólar jamaicano"
         ],
         "JOD": [
             "JOD",
-            "dinar jordaniano"
+            "Dinar jordaniano"
         ],
         "JPY": [
             "JP¥",
-            "iene japonês"
+            "Iene japonês"
         ],
         "KES": [
             "KES",
@@ -306,11 +307,11 @@
         ],
         "KGS": [
             "KGS",
-            "som quirguiz"
+            "Som do Quirguistão"
         ],
         "KHR": [
             "KHR",
-            "riel cambojano"
+            "Riel cambojano"
         ],
         "KMF": [
             "KMF",
@@ -318,35 +319,35 @@
         ],
         "KPW": [
             "KPW",
-            "won norte-coreano"
+            "Won norte-coreano"
         ],
         "KRW": [
             "₩",
-            "won sul-coreano"
+            "Won sul-coreano"
         ],
         "KWD": [
             "KWD",
-            "dinar kuwaitiano"
+            "Dinar kuwaitiano"
         ],
         "KYD": [
             "KYD",
-            "dólar das Ilhas Caimão"
+            "Dólar das Ilhas Caimão"
         ],
         "KZT": [
             "KZT",
-            "tenge cazaque"
+            "Tenge do Cazaquistão"
         ],
         "LAK": [
             "LAK",
-            "kip laosiano"
+            "Kip de Laos"
         ],
         "LBP": [
             "LBP",
-            "libra libanesa"
+            "Libra libanesa"
         ],
         "LKR": [
             "LKR",
-            "rupia do Sri Lanka"
+            "Rupia do Sri Lanka"
         ],
         "LRD": [
             "LRD",
@@ -382,15 +383,15 @@
         ],
         "MMK": [
             "MMK",
-            "kyat de Mianmar"
+            "Kyat de Mianmar"
         ],
         "MNT": [
             "MNT",
-            "tugrik mongol"
+            "Tugrik da Mongólia"
         ],
         "MOP": [
             "MOP",
-            "pataca macaense"
+            "Pataca de Macau"
         ],
         "MRO": [
             "MRO",
@@ -406,7 +407,7 @@
         ],
         "MVR": [
             "MVR",
-            "rupia maldivana"
+            "Rupia das Ilhas Maldivas"
         ],
         "MWK": [
             "MWK",
@@ -426,7 +427,7 @@
         ],
         "MYR": [
             "MYR",
-            "ringgit malaio"
+            "Ringgit malaio"
         ],
         "MZN": [
             "MZN",
@@ -434,11 +435,11 @@
         ],
         "NAD": [
             "NAD",
-            "dólar namibiano"
+            "Dólar da Namíbia"
         ],
         "NGN": [
             "NGN",
-            "naira nigeriana"
+            "Naira nigeriana"
         ],
         "NIC": [
             "NIC",
@@ -454,15 +455,15 @@
         ],
         "NPR": [
             "NPR",
-            "rupia nepalesa"
+            "Rupia nepalesa"
         ],
         "NZD": [
             "NZ$",
-            "dólar neozelandês"
+            "Dólar neozelandês"
         ],
         "OMR": [
             "OMR",
-            "rial omanense"
+            "Rial de Omã"
         ],
         "PAB": [
             "PAB",
@@ -474,15 +475,15 @@
         ],
         "PGK": [
             "PGK",
-            "kina papuásia"
+            "Kina da Papua-Nova Guiné"
         ],
         "PHP": [
             "PHP",
-            "peso filipino"
+            "Peso filipino"
         ],
         "PKR": [
             "PKR",
-            "rupia paquistanesa"
+            "Rupia paquistanesa"
         ],
         "PLN": [
             "PLN",
@@ -490,7 +491,7 @@
         ],
         "PTE": [
             "​",
-            "escudo português",
+            "Escudo português",
             {}
         ],
         "PYG": [
@@ -499,7 +500,7 @@
         ],
         "QAR": [
             "QAR",
-            "rial catarense"
+            "Rial do Catar"
         ],
         "RON": [
             "RON",
@@ -519,11 +520,11 @@
         ],
         "SAR": [
             "SAR",
-            "rial saudita"
+            "Rial saudita"
         ],
         "SBD": [
             "SBD",
-            "dólar das Ilhas Salomão"
+            "Dólar das Ilhas Salomão"
         ],
         "SCR": [
             "SCR",
@@ -539,7 +540,7 @@
         ],
         "SGD": [
             "SGD",
-            "dólar singapuriano"
+            "Dólar de Singapura"
         ],
         "SHP": [
             "SHP",
@@ -547,7 +548,7 @@
         ],
         "SLL": [
             "SLL",
-            "leone de Serra Leoa"
+            "Leone de Serra Leoa"
         ],
         "SOS": [
             "SOS",
@@ -561,29 +562,33 @@
             "SSP",
             "libra sul-sudanesa"
         ],
+        "STD": [
+            "STD",
+            "Dobra de São Tomé e Príncipe (1977–2017)"
+        ],
         "STN": [
             "STN",
             "dobra de São Tomé e Príncipe"
         ],
         "SYP": [
             "SYP",
-            "libra síria"
+            "Libra síria"
         ],
         "SZL": [
             "SZL",
-            "lilangeni suázi"
+            "Lilangeni da Suazilândia"
         ],
         "THB": [
             "฿",
-            "baht tailandês"
+            "Baht da Tailândia"
         ],
         "TJS": [
             "TJS",
-            "somoni tajique"
+            "Somoni do Tajaquistão"
         ],
         "TMT": [
             "TMT",
-            "manat turcomeno"
+            "Manat do Turquemenistão"
         ],
         "TND": [
             "TND",
@@ -591,23 +596,23 @@
         ],
         "TOP": [
             "TOP",
-            "paʻanga tonganesa"
+            "Paʻanga de Tonga"
         ],
         "TRY": [
             "TRY",
-            "lira turca"
+            "Lira turca"
         ],
         "TTD": [
             "TTD",
-            "dólar de Trindade e Tobago"
+            "Dólar de Trindade e Tobago"
         ],
         "TWD": [
             "NT$",
-            "novo dólar taiwanês"
+            "Novo dólar taiwanês"
         ],
         "TZS": [
             "TZS",
-            "xelim tanzaniano"
+            "Xelim tanzaniano"
         ],
         "UAH": [
             "UAH",
@@ -615,7 +620,7 @@
         ],
         "UGX": [
             "UGX",
-            "xelim ugandense"
+            "Xelim ugandense"
         ],
         "USD": [
             "US$",
@@ -627,7 +632,7 @@
         ],
         "UZS": [
             "UZS",
-            "som uzbeque"
+            "Som do Uzbequistão"
         ],
         "VEF": [
             "VEF",
@@ -639,15 +644,15 @@
         ],
         "VND": [
             "₫",
-            "dong vietnamita"
+            "Dong vietnamita"
         ],
         "VUV": [
             "VUV",
-            "vatu de Vanuatu"
+            "Vatu de Vanuatu"
         ],
         "WST": [
             "WST",
-            "tala samoano"
+            "Tala samoano"
         ],
         "XAF": [
             "FCFA",
@@ -655,7 +660,7 @@
         ],
         "XCD": [
             "EC$",
-            "dólar das Caraíbas Orientais"
+            "Dólar das Caraíbas Orientais"
         ],
         "XOF": [
             "CFA",
@@ -663,15 +668,15 @@
         ],
         "XPF": [
             "CFPF",
-            "franco CFP"
+            "Franco CFP"
         ],
         "YER": [
             "YER",
-            "rial iemenita"
+            "Rial iemenita"
         ],
         "ZAR": [
             "ZAR",
-            "rand sul-africano"
+            "Rand sul-africano"
         ],
         "ZMK": [
             "ZMK",
@@ -679,7 +684,7 @@
         ],
         "ZMW": [
             "ZMW",
-            "kwacha zambiano"
+            "Kwacha zambiano"
         ]
     }
 }

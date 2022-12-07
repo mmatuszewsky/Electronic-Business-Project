@@ -886,9 +886,11 @@ class RequestTest extends TestCase
         $this->assertEquals(80, $port, 'With only PROTO set and value is not recognized, getPort() defaults to 80.');
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
     public function testGetHostWithFakeHttpHostValue()
     {
-        $this->expectException('RuntimeException');
         $request = new Request();
         $request->initialize([], [], [], [], [], ['HTTP_HOST' => 'www.host.com?query=string']);
         $request->getHost();
@@ -1053,11 +1055,11 @@ class RequestTest extends TestCase
     }
 
     /**
+     * @expectedException \Symfony\Component\HttpFoundation\Exception\ConflictingHeadersException
      * @dataProvider getClientIpsWithConflictingHeadersProvider
      */
     public function testGetClientIpsWithConflictingHeaders($httpForwarded, $httpXForwardedFor)
     {
-        $this->expectException('Symfony\Component\HttpFoundation\Exception\ConflictingHeadersException');
         $request = new Request();
 
         $server = [
@@ -1151,7 +1153,7 @@ class RequestTest extends TestCase
     {
         $req = new Request();
         $retval = $req->getContent(true);
-        $this->assertIsResource($retval);
+        $this->assertInternalType('resource', $retval);
         $this->assertEquals('', fread($retval, 1));
         $this->assertTrue(feof($retval));
     }
@@ -1161,7 +1163,7 @@ class RequestTest extends TestCase
         $req = new Request([], [], [], [], [], [], 'MyContent');
         $resource = $req->getContent(true);
 
-        $this->assertIsResource($resource);
+        $this->assertInternalType('resource', $resource);
         $this->assertEquals('MyContent', stream_get_contents($resource));
     }
 
@@ -1177,11 +1179,11 @@ class RequestTest extends TestCase
     }
 
     /**
+     * @expectedException \LogicException
      * @dataProvider getContentCantBeCalledTwiceWithResourcesProvider
      */
     public function testGetContentCantBeCalledTwiceWithResources($first, $second)
     {
-        $this->expectException('LogicException');
         if (\PHP_VERSION_ID >= 50600) {
             $this->markTestSkipped('PHP >= 5.6 allows to open php://input several times.');
         }
@@ -1549,6 +1551,7 @@ class RequestTest extends TestCase
         $request = new Request();
         $request->headers->set('Accept-language', 'zh, en-us; q=0.8, en; q=0.6');
         $this->assertEquals(['zh', 'en_US', 'en'], $request->getLanguages());
+        $this->assertEquals(['zh', 'en_US', 'en'], $request->getLanguages());
 
         $request = new Request();
         $request->headers->set('Accept-language', 'zh, en-us; q=0.6, en; q=0.8');
@@ -1630,14 +1633,14 @@ class RequestTest extends TestCase
 
         $asString = (string) $request;
 
-        $this->assertStringContainsString('Accept-Language: zh, en-us; q=0.8, en; q=0.6', $asString);
-        $this->assertStringContainsString('Cookie: Foo=Bar', $asString);
+        $this->assertContains('Accept-Language: zh, en-us; q=0.8, en; q=0.6', $asString);
+        $this->assertContains('Cookie: Foo=Bar', $asString);
 
         $request->cookies->set('Another', 'Cookie');
 
         $asString = (string) $request;
 
-        $this->assertStringContainsString('Cookie: Foo=Bar; Another=Cookie', $asString);
+        $this->assertContains('Cookie: Foo=Bar; Another=Cookie', $asString);
     }
 
     public function testIsMethod()
@@ -1965,20 +1968,20 @@ class RequestTest extends TestCase
 
     /**
      * @group legacy
+     * @expectedException \InvalidArgumentException
      */
     public function testSetTrustedProxiesInvalidHeaderName()
     {
-        $this->expectException('InvalidArgumentException');
         Request::create('http://example.com/');
         Request::setTrustedHeaderName('bogus name', 'X_MY_FOR');
     }
 
     /**
      * @group legacy
+     * @expectedException \InvalidArgumentException
      */
     public function testGetTrustedProxiesInvalidHeaderName()
     {
-        $this->expectException('InvalidArgumentException');
         Request::create('http://example.com/');
         Request::getTrustedHeaderName('bogus name');
     }
@@ -2115,8 +2118,12 @@ class RequestTest extends TestCase
                 $this->assertSame($expectedPort, $request->getPort());
             }
         } else {
-            $this->expectException(SuspiciousOperationException::class);
-            $this->expectExceptionMessage('Invalid Host');
+            if (method_exists($this, 'expectException')) {
+                $this->expectException(SuspiciousOperationException::class);
+                $this->expectExceptionMessage('Invalid Host');
+            } else {
+                $this->setExpectedException(SuspiciousOperationException::class, 'Invalid Host');
+            }
 
             $request->getHost();
         }
@@ -2419,18 +2426,6 @@ class RequestTest extends TestCase
         $request->headers->set('X-Forwarded-Port', 443);
 
         $this->assertSame(443, $request->getPort());
-    }
-
-    public function testTrustedPortDoesNotDefaultToZero()
-    {
-        Request::setTrustedProxies(['1.1.1.1'], Request::HEADER_X_FORWARDED_ALL);
-
-        $request = Request::create('/');
-        $request->server->set('REMOTE_ADDR', '1.1.1.1');
-        $request->headers->set('X-Forwarded-Host', 'test.example.com');
-        $request->headers->set('X-Forwarded-Port', '');
-
-        $this->assertSame(80, $request->getPort());
     }
 }
 

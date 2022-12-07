@@ -29,7 +29,7 @@ class WebServerConfig
         }
 
         if (null === $file = $this->findFrontController($documentRoot, $env)) {
-            throw new \InvalidArgumentException(sprintf('Unable to find the front controller under "%s" (none of these files exist: "%s").', $documentRoot, implode('", "', $this->getFrontControllerFileNames($env))));
+            throw new \InvalidArgumentException(sprintf('Unable to find the front controller under "%s" (none of these files exist: %s).', $documentRoot, implode(', ', $this->getFrontControllerFileNames($env))));
         }
 
         $_ENV['APP_FRONT_CONTROLLER'] = $file;
@@ -101,12 +101,6 @@ class WebServerConfig
         return $this->hostname.':'.$this->port;
     }
 
-    /**
-     * @param string $documentRoot
-     * @param string $env
-     *
-     * @return string|null
-     */
     private function findFrontController($documentRoot, $env)
     {
         $fileNames = $this->getFrontControllerFileNames($env);
@@ -116,23 +110,13 @@ class WebServerConfig
                 return $fileName;
             }
         }
-
-        return null;
     }
 
-    /**
-     * @param string $env
-     *
-     * @return array
-     */
     private function getFrontControllerFileNames($env)
     {
         return ['app_'.$env.'.php', 'app.php', 'index_'.$env.'.php', 'index.php'];
     }
 
-    /**
-     * @return int
-     */
     private function findBestPort()
     {
         $port = 8000;

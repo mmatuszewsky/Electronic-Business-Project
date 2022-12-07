@@ -11,8 +11,8 @@
 
 namespace Symfony\Component\Intl\Data\Generator;
 
-use Symfony\Component\Intl\Data\Bundle\Compiler\BundleCompilerInterface;
-use Symfony\Component\Intl\Data\Bundle\Reader\BundleEntryReaderInterface;
+use Symfony\Component\Intl\Data\Bundle\Compiler\GenrbCompiler;
+use Symfony\Component\Intl\Data\Bundle\Reader\BundleReaderInterface;
 use Symfony\Component\Intl\Data\Util\LocaleScanner;
 
 /**
@@ -42,7 +42,7 @@ class ScriptDataGenerator extends AbstractDataGenerator
     /**
      * {@inheritdoc}
      */
-    protected function compileTemporaryBundles(BundleCompilerInterface $compiler, $sourceDir, $tempDir)
+    protected function compileTemporaryBundles(GenrbCompiler $compiler, $sourceDir, $tempDir)
     {
         $compiler->compile($sourceDir.'/lang', $tempDir);
     }
@@ -58,13 +58,14 @@ class ScriptDataGenerator extends AbstractDataGenerator
     /**
      * {@inheritdoc}
      */
-    protected function generateDataForLocale(BundleEntryReaderInterface $reader, $tempDir, $displayLocale)
+    protected function generateDataForLocale(BundleReaderInterface $reader, $tempDir, $displayLocale)
     {
         $localeBundle = $reader->read($tempDir, $displayLocale);
 
         // isset() on \ResourceBundle returns true even if the value is null
         if (isset($localeBundle['Scripts']) && null !== $localeBundle['Scripts']) {
             $data = [
+                'Version' => $localeBundle['Version'],
                 'Names' => iterator_to_array($localeBundle['Scripts']),
             ];
 
@@ -72,27 +73,28 @@ class ScriptDataGenerator extends AbstractDataGenerator
 
             return $data;
         }
-
-        return null;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function generateDataForRoot(BundleEntryReaderInterface $reader, $tempDir)
+    protected function generateDataForRoot(BundleReaderInterface $reader, $tempDir)
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function generateDataForMeta(BundleEntryReaderInterface $reader, $tempDir)
+    protected function generateDataForMeta(BundleReaderInterface $reader, $tempDir)
     {
+        $rootBundle = $reader->read($tempDir, 'root');
+
         $this->scriptCodes = array_unique($this->scriptCodes);
 
         sort($this->scriptCodes);
 
         return [
+            'Version' => $rootBundle['Version'],
             'Scripts' => $this->scriptCodes,
         ];
     }

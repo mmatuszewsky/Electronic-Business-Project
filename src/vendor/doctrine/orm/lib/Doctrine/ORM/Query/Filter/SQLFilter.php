@@ -67,15 +67,15 @@ abstract class SQLFilter
      *                           the type conversion of this type. This is usually not needed for
      *                           strings and numeric types.
      *
-     * @return self The current SQL filter.
+     * @return SQLFilter The current SQL filter.
      */
-    final public function setParameter($name, $value, $type = null) : self
+    final public function setParameter($name, $value, $type = null)
     {
         if (null === $type) {
             $type = ParameterTypeInferer::inferType($value);
         }
 
-        $this->parameters[$name] = ['value' => $value, 'type' => $type];
+        $this->parameters[$name] = array('value' => $value, 'type' => $type);
 
         // Keep the parameters sorted for the hash
         ksort($this->parameters);
@@ -122,7 +122,7 @@ abstract class SQLFilter
 
         return true;
     }
-
+    
     /**
      * Returns as string representation of the SQLFilter parameters (the state).
      *

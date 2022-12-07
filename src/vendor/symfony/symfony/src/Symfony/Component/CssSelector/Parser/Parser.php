@@ -158,7 +158,8 @@ class Parser implements ParserInterface
     /**
      * Parses next simple node (hash, class, pseudo, negation).
      *
-     * @param bool $insideNegation
+     * @param TokenStream $stream
+     * @param bool        $insideNegation
      *
      * @return array
      *

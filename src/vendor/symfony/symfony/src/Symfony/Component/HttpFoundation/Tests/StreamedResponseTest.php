@@ -81,16 +81,20 @@ class StreamedResponseTest extends TestCase
         $this->assertEquals(1, $called);
     }
 
+    /**
+     * @expectedException \LogicException
+     */
     public function testSendContentWithNonCallable()
     {
-        $this->expectException('LogicException');
         $response = new StreamedResponse(null);
         $response->sendContent();
     }
 
+    /**
+     * @expectedException \LogicException
+     */
     public function testSetContent()
     {
-        $this->expectException('LogicException');
         $response = new StreamedResponse(function () { echo 'foo'; });
         $response->setContent('foo');
     }

@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.42",
     "Names": {
         "ADP": [
             "ADP",
@@ -218,7 +219,7 @@
         ],
         "CNH": [
             "CNH",
-            "renmimbi cinese offshore"
+            "CNH"
         ],
         "CNY": [
             "CN¥",

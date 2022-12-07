@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\AddConsoleComman
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * @group legacy
@@ -63,10 +64,12 @@ class AddConsoleCommandPassTest extends TestCase
         ];
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage The service "my-command" tagged "console.command" must not be abstract.
+     */
     public function testProcessThrowAnExceptionIfTheServiceIsAbstract()
     {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('The service "my-command" tagged "console.command" must not be abstract.');
         $container = new ContainerBuilder();
         $container->addCompilerPass(new AddConsoleCommandPass());
 
@@ -78,10 +81,12 @@ class AddConsoleCommandPassTest extends TestCase
         $container->compile();
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage The service "my-command" tagged "console.command" must be a subclass of "Symfony\Component\Console\Command\Command".
+     */
     public function testProcessThrowAnExceptionIfTheServiceIsNotASubclassOfCommand()
     {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('The service "my-command" tagged "console.command" must be a subclass of "Symfony\Component\Console\Command\Command".');
         $container = new ContainerBuilder();
         $container->addCompilerPass(new AddConsoleCommandPass());
 
@@ -116,5 +121,9 @@ class AddConsoleCommandPassTest extends TestCase
 }
 
 class MyCommand extends Command
+{
+}
+
+class ExtensionPresentBundle extends Bundle
 {
 }

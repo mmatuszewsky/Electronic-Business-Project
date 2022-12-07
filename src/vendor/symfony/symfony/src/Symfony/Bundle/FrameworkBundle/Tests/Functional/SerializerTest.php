@@ -14,7 +14,7 @@ namespace Symfony\Bundle\FrameworkBundle\Tests\Functional;
 /**
  * @author Kévin Dunglas <dunglas@gmail.com>
  */
-class SerializerTest extends AbstractWebTestCase
+class SerializerTest extends WebTestCase
 {
     public function testDeserializeArrayOfObject()
     {

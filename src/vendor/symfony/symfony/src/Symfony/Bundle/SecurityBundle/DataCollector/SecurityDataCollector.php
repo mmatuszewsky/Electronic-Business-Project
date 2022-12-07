@@ -121,7 +121,7 @@ class SecurityDataCollector extends DataCollector implements LateDataCollectorIn
 
             $extractRoles = function ($role) {
                 if (!$role instanceof RoleInterface && !$role instanceof Role) {
-                    throw new \InvalidArgumentException(sprintf('Roles must be instances of "%s" or "%s" ("%s" given).', RoleInterface::class, Role::class, \is_object($role) ? \get_class($role) : \gettype($role)));
+                    throw new \InvalidArgumentException(sprintf('Roles must be instances of %s or %s (%s given).', RoleInterface::class, Role::class, \is_object($role) ? \get_class($role) : \gettype($role)));
                 }
 
                 return $role->getRole();
@@ -231,7 +231,7 @@ class SecurityDataCollector extends DataCollector implements LateDataCollectorIn
     /**
      * Gets the roles of the user.
      *
-     * @return array|Data
+     * @return array The roles
      */
     public function getRoles()
     {
@@ -241,7 +241,7 @@ class SecurityDataCollector extends DataCollector implements LateDataCollectorIn
     /**
      * Gets the inherited roles of the user.
      *
-     * @return array|Data
+     * @return array The inherited roles
      */
     public function getInheritedRoles()
     {
@@ -269,25 +269,16 @@ class SecurityDataCollector extends DataCollector implements LateDataCollectorIn
         return $this->data['authenticated'];
     }
 
-    /**
-     * @return bool
-     */
     public function isImpersonated()
     {
         return $this->data['impersonated'];
     }
 
-    /**
-     * @return string|null
-     */
     public function getImpersonatorUser()
     {
         return $this->data['impersonator_user'];
     }
 
-    /**
-     * @return string|null
-     */
     public function getImpersonationExitPath()
     {
         return $this->data['impersonation_exit_path'];
@@ -296,7 +287,7 @@ class SecurityDataCollector extends DataCollector implements LateDataCollectorIn
     /**
      * Get the class name of the security token.
      *
-     * @return string|Data|null The token
+     * @return string The token
      */
     public function getTokenClass()
     {
@@ -306,7 +297,7 @@ class SecurityDataCollector extends DataCollector implements LateDataCollectorIn
     /**
      * Get the full security token class as Data object.
      *
-     * @return Data|null
+     * @return Data
      */
     public function getToken()
     {
@@ -316,7 +307,7 @@ class SecurityDataCollector extends DataCollector implements LateDataCollectorIn
     /**
      * Get the logout URL.
      *
-     * @return string|null The logout URL
+     * @return string The logout URL
      */
     public function getLogoutUrl()
     {
@@ -326,7 +317,7 @@ class SecurityDataCollector extends DataCollector implements LateDataCollectorIn
     /**
      * Returns the FQCN of the security voters enabled in the application.
      *
-     * @return string[]|Data
+     * @return string[]
      */
     public function getVoters()
     {
@@ -346,7 +337,7 @@ class SecurityDataCollector extends DataCollector implements LateDataCollectorIn
     /**
      * Returns the log of the security decisions made by the access decision manager.
      *
-     * @return array|Data
+     * @return array
      */
     public function getAccessDecisionLog()
     {
@@ -356,16 +347,13 @@ class SecurityDataCollector extends DataCollector implements LateDataCollectorIn
     /**
      * Returns the configuration of the current firewall context.
      *
-     * @return array|Data
+     * @return array
      */
     public function getFirewall()
     {
         return $this->data['firewall'];
     }
 
-    /**
-     * @return array|Data
-     */
     public function getListeners()
     {
         return $this->data['listeners'];

@@ -30,17 +30,21 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class HttpKernelTest extends TestCase
 {
+    /**
+     * @expectedException \RuntimeException
+     */
     public function testHandleWhenControllerThrowsAnExceptionAndCatchIsTrue()
     {
-        $this->expectException('RuntimeException');
         $kernel = $this->getHttpKernel(new EventDispatcher(), function () { throw new \RuntimeException(); });
 
         $kernel->handle(new Request(), HttpKernelInterface::MASTER_REQUEST, true);
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
     public function testHandleWhenControllerThrowsAnExceptionAndCatchIsFalseAndNoListenerIsRegistered()
     {
-        $this->expectException('RuntimeException');
         $kernel = $this->getHttpKernel(new EventDispatcher(), function () { throw new \RuntimeException(); });
 
         $kernel->handle(new Request(), HttpKernelInterface::MASTER_REQUEST, false);
@@ -173,9 +177,11 @@ class HttpKernelTest extends TestCase
         $this->assertEquals('hello', $kernel->handle(new Request())->getContent());
     }
 
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
     public function testHandleWhenNoControllerIsFound()
     {
-        $this->expectException('Symfony\Component\HttpKernel\Exception\NotFoundHttpException');
         $dispatcher = new EventDispatcher();
         $kernel = $this->getHttpKernel($dispatcher, false);
 
@@ -223,9 +229,11 @@ class HttpKernelTest extends TestCase
         $this->assertResponseEquals(new Response('foo'), $kernel->handle(new Request()));
     }
 
+    /**
+     * @expectedException \LogicException
+     */
     public function testHandleWhenTheControllerDoesNotReturnAResponse()
     {
-        $this->expectException('LogicException');
         $dispatcher = new EventDispatcher();
         $kernel = $this->getHttpKernel($dispatcher, function () { return 'foo'; });
 
@@ -314,8 +322,8 @@ class HttpKernelTest extends TestCase
         $request = new Request();
 
         $stack = $this->getMockBuilder('Symfony\Component\HttpFoundation\RequestStack')->setMethods(['push', 'pop'])->getMock();
-        $stack->expects($this->once())->method('push')->with($this->equalTo($request));
-        $stack->expects($this->once())->method('pop');
+        $stack->expects($this->at(0))->method('push')->with($this->equalTo($request));
+        $stack->expects($this->at(1))->method('pop');
 
         $dispatcher = new EventDispatcher();
         $kernel = $this->getHttpKernel($dispatcher, null, $stack);
@@ -323,9 +331,11 @@ class HttpKernelTest extends TestCase
         $kernel->handle($request, HttpKernelInterface::MASTER_REQUEST);
     }
 
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+     */
     public function testInconsistentClientIpsOnMasterRequests()
     {
-        $this->expectException('Symfony\Component\HttpKernel\Exception\BadRequestHttpException');
         $request = new Request();
         $request->setTrustedProxies(['1.1.1.1'], Request::HEADER_X_FORWARDED_FOR | Request::HEADER_FORWARDED);
         $request->server->set('REMOTE_ADDR', '1.1.1.1');
@@ -353,13 +363,13 @@ class HttpKernelTest extends TestCase
         $controllerResolver
             ->expects($this->any())
             ->method('getController')
-            ->willReturn($controller);
+            ->will($this->returnValue($controller));
 
         $argumentResolver = $this->getMockBuilder(ArgumentResolverInterface::class)->getMock();
         $argumentResolver
             ->expects($this->any())
             ->method('getArguments')
-            ->willReturn($arguments);
+            ->will($this->returnValue($arguments));
 
         return new HttpKernel($eventDispatcher, $controllerResolver, $requestStack, $argumentResolver);
     }

@@ -91,6 +91,16 @@ interface CollectionPersister
     public function containsKey(PersistentCollection $collection, $key);
 
     /**
+     * Removes an element.
+     *
+     * @param \Doctrine\ORM\PersistentCollection $collection
+     * @param object                             $element
+     *
+     * @return mixed
+     */
+    public function removeElement(PersistentCollection $collection, $element);
+
+    /**
      * Gets an element by key.
      *
      * @param \Doctrine\ORM\PersistentCollection $collection

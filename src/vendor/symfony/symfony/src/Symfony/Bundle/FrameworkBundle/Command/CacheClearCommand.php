@@ -42,11 +42,12 @@ class CacheClearCommand extends ContainerAwareCommand
 
     /**
      * @param CacheClearerInterface $cacheClearer
+     * @param Filesystem|null       $filesystem
      */
     public function __construct($cacheClearer = null, Filesystem $filesystem = null)
     {
         if (!$cacheClearer instanceof CacheClearerInterface) {
-            @trigger_error(sprintf('%s() expects an instance of "%s" as first argument since Symfony 3.4. Not passing it is deprecated and will throw a TypeError in 4.0.', __METHOD__, CacheClearerInterface::class), \E_USER_DEPRECATED);
+            @trigger_error(sprintf('%s() expects an instance of "%s" as first argument since Symfony 3.4. Not passing it is deprecated and will throw a TypeError in 4.0.', __METHOD__, CacheClearerInterface::class), E_USER_DEPRECATED);
 
             parent::__construct($cacheClearer);
 
@@ -104,7 +105,7 @@ EOF
         $fs->remove($oldCacheDir);
 
         if (!is_writable($realCacheDir)) {
-            throw new RuntimeException(sprintf('Unable to write in the "%s" directory.', $realCacheDir));
+            throw new RuntimeException(sprintf('Unable to write in the "%s" directory', $realCacheDir));
         }
 
         $io->comment(sprintf('Clearing the cache for the <info>%s</info> environment with debug <info>%s</info>', $kernel->getEnvironment(), var_export($kernel->isDebug(), true)));
@@ -133,7 +134,7 @@ EOF
             $this->warmup($warmupDir, $realCacheDir, !$input->getOption('no-optional-warmers'));
 
             if ($this->warning) {
-                @trigger_error($this->warning, \E_USER_DEPRECATED);
+                @trigger_error($this->warning, E_USER_DEPRECATED);
                 $io->warning($this->warning);
                 $this->warning = null;
             }
@@ -266,9 +267,10 @@ EOF
     }
 
     /**
-     * @param string $namespace
-     * @param string $parentClass
-     * @param string $warmupDir
+     * @param KernelInterface $parent
+     * @param string          $namespace
+     * @param string          $parentClass
+     * @param string          $warmupDir
      *
      * @return KernelInterface
      */

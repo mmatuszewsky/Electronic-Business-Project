@@ -27,9 +27,11 @@ class OrderedHashMapTest extends TestCase
         $this->assertSame(1, $map['first']);
     }
 
+    /**
+     * @expectedException \OutOfBoundsException
+     */
     public function testGetNonExistingFails()
     {
-        $this->expectException('OutOfBoundsException');
         $map = new OrderedHashMap();
 
         $map['first'];

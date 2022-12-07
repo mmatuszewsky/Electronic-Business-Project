@@ -1,66 +1,84 @@
 <?php
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the MIT license. For more information, see
+ * <http://www.doctrine-project.org>.
+ */
 
 namespace Doctrine\DBAL\Driver\Mysqli;
 
 use Doctrine\DBAL\Driver\Statement;
-use Doctrine\DBAL\Driver\StatementIterator;
-use Doctrine\DBAL\Exception\InvalidArgumentException;
-use Doctrine\DBAL\FetchMode;
-use Doctrine\DBAL\ParameterType;
-use IteratorAggregate;
-use mysqli;
-use mysqli_stmt;
 use PDO;
-use stdClass;
-use function array_combine;
-use function array_fill;
-use function count;
-use function feof;
-use function fread;
-use function get_resource_type;
-use function is_resource;
-use function sprintf;
-use function str_repeat;
 
-class MysqliStatement implements IteratorAggregate, Statement
+/**
+ * @author Kim Hemsø Rasmussen <kimhemsoe@gmail.com>
+ */
+class MysqliStatement implements \IteratorAggregate, Statement
 {
-    /** @var string[] */
-    protected static $_paramTypeMap = [
-        ParameterType::STRING       => 's',
-        ParameterType::BINARY       => 's',
-        ParameterType::BOOLEAN      => 'i',
-        ParameterType::NULL         => 's',
-        ParameterType::INTEGER      => 'i',
-        ParameterType::LARGE_OBJECT => 'b',
-    ];
+    /**
+     * @var array
+     */
+    protected static $_paramTypeMap = array(
+        PDO::PARAM_STR => 's',
+        PDO::PARAM_BOOL => 'i',
+        PDO::PARAM_NULL => 's',
+        PDO::PARAM_INT => 'i',
+        PDO::PARAM_LOB => 's' // TODO Support LOB bigger then max package size.
+    );
 
-    /** @var mysqli */
+    /**
+     * @var \mysqli
+     */
     protected $_conn;
 
-    /** @var mysqli_stmt */
+    /**
+     * @var \mysqli_stmt
+     */
     protected $_stmt;
 
-    /** @var string[]|bool|null */
+    /**
+     * @var null|boolean|array
+     */
     protected $_columnNames;
 
-    /** @var mixed[]|null */
+    /**
+     * @var null|array
+     */
     protected $_rowBindedValues;
 
-    /** @var mixed[] */
+    /**
+     * @var array
+     */
     protected $_bindedValues;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $types;
 
     /**
      * Contains ref values for bindValue().
      *
-     * @var mixed[]
+     * @var array
      */
-    protected $_values = [];
+    protected $_values = array();
 
-    /** @var int */
-    protected $_defaultFetchMode = FetchMode::MIXED;
+    /**
+     * @var integer
+     */
+    protected $_defaultFetchMode = PDO::FETCH_BOTH;
 
     /**
      * Indicates whether the statement is in the state when fetching results is possible
@@ -70,44 +88,43 @@ class MysqliStatement implements IteratorAggregate, Statement
     private $result = false;
 
     /**
-     * @param string $prepareString
+     * @param \mysqli $conn
+     * @param string  $prepareString
      *
-     * @throws MysqliException
+     * @throws \Doctrine\DBAL\Driver\Mysqli\MysqliException
      */
-    public function __construct(mysqli $conn, $prepareString)
+    public function __construct(\mysqli $conn, $prepareString)
     {
         $this->_conn = $conn;
         $this->_stmt = $conn->prepare($prepareString);
-        if ($this->_stmt === false) {
+        if (false === $this->_stmt) {
             throw new MysqliException($this->_conn->error, $this->_conn->sqlstate, $this->_conn->errno);
         }
 
         $paramCount = $this->_stmt->param_count;
-        if (0 >= $paramCount) {
-            return;
+        if (0 < $paramCount) {
+            $this->types = str_repeat('s', $paramCount);
+            $this->_bindedValues = array_fill(1, $paramCount, null);
         }
-
-        $this->types         = str_repeat('s', $paramCount);
-        $this->_bindedValues = array_fill(1, $paramCount, null);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function bindParam($column, &$variable, $type = ParameterType::STRING, $length = null)
+    public function bindParam($column, &$variable, $type = null, $length = null)
     {
-        if ($type === null) {
+        if (null === $type) {
             $type = 's';
         } else {
-            if (! isset(self::$_paramTypeMap[$type])) {
-                throw new MysqliException(sprintf("Unknown type: '%s'", $type));
+            if (isset(self::$_paramTypeMap[$type])) {
+                $type = self::$_paramTypeMap[$type];
+            } else {
+                throw new MysqliException("Unknown type: '{$type}'");
             }
-
-            $type = self::$_paramTypeMap[$type];
         }
 
         $this->_bindedValues[$column] =& $variable;
-        $this->types[$column - 1]     = $type;
+        $this->types[$column - 1] = $type;
 
         return true;
     }
@@ -115,21 +132,21 @@ class MysqliStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function bindValue($param, $value, $type = ParameterType::STRING)
+    public function bindValue($param, $value, $type = null)
     {
-        if ($type === null) {
+        if (null === $type) {
             $type = 's';
         } else {
-            if (! isset(self::$_paramTypeMap[$type])) {
-                throw new MysqliException(sprintf("Unknown type: '%s'", $type));
+            if (isset(self::$_paramTypeMap[$type])) {
+                $type = self::$_paramTypeMap[$type];
+            } else {
+                throw new MysqliException("Unknown type: '{$type}'");
             }
-
-            $type = self::$_paramTypeMap[$type];
         }
 
-        $this->_values[$param]       = $value;
+        $this->_values[$param] = $value;
         $this->_bindedValues[$param] =& $this->_values[$param];
-        $this->types[$param - 1]     = $type;
+        $this->types[$param - 1] = $type;
 
         return true;
     }
@@ -139,28 +156,26 @@ class MysqliStatement implements IteratorAggregate, Statement
      */
     public function execute($params = null)
     {
-        if ($this->_bindedValues !== null) {
-            if ($params !== null) {
-                if (! $this->_bindValues($params)) {
+        if (null !== $this->_bindedValues) {
+            if (null !== $params) {
+                if ( ! $this->_bindValues($params)) {
                     throw new MysqliException($this->_stmt->error, $this->_stmt->errno);
                 }
             } else {
-                [$types, $values, $streams] = $this->separateBoundValues();
-                if (! $this->_stmt->bind_param($types, ...$values)) {
+                if (!call_user_func_array(array($this->_stmt, 'bind_param'), array($this->types) + $this->_bindedValues)) {
                     throw new MysqliException($this->_stmt->error, $this->_stmt->sqlstate, $this->_stmt->errno);
                 }
-                $this->sendLongData($streams);
             }
         }
 
-        if (! $this->_stmt->execute()) {
+        if ( ! $this->_stmt->execute()) {
             throw new MysqliException($this->_stmt->error, $this->_stmt->sqlstate, $this->_stmt->errno);
         }
 
-        if ($this->_columnNames === null) {
+        if (null === $this->_columnNames) {
             $meta = $this->_stmt->result_metadata();
-            if ($meta !== false) {
-                $columnNames = [];
+            if (false !== $meta) {
+                $columnNames = array();
                 foreach ($meta->fetch_fields() as $col) {
                     $columnNames[] = $col->name;
                 }
@@ -172,7 +187,7 @@ class MysqliStatement implements IteratorAggregate, Statement
             }
         }
 
-        if ($this->_columnNames !== false) {
+        if (false !== $this->_columnNames) {
             // Store result of every execution which has it. Otherwise it will be impossible
             // to execute a new statement in case if the previous one has non-fetched rows
             // @link http://dev.mysql.com/doc/refman/5.7/en/commands-out-of-sync.html
@@ -191,12 +206,12 @@ class MysqliStatement implements IteratorAggregate, Statement
             // to the length of the ones fetched during the previous execution.
             $this->_rowBindedValues = array_fill(0, count($this->_columnNames), null);
 
-            $refs = [];
+            $refs = array();
             foreach ($this->_rowBindedValues as $key => &$value) {
                 $refs[$key] =& $value;
             }
 
-            if (! $this->_stmt->bind_result(...$refs)) {
+            if (!call_user_func_array(array($this->_stmt, 'bind_result'), $refs)) {
                 throw new MysqliException($this->_stmt->error, $this->_stmt->sqlstate, $this->_stmt->errno);
             }
         }
@@ -207,90 +222,34 @@ class MysqliStatement implements IteratorAggregate, Statement
     }
 
     /**
-     * Split $this->_bindedValues into those values that need to be sent using mysqli::send_long_data()
-     * and those that can be bound the usual way.
-     *
-     * @return array<int, array<int|string, mixed>|string>
-     */
-    private function separateBoundValues()
-    {
-        $streams = $values = [];
-        $types   = $this->types;
-
-        foreach ($this->_bindedValues as $parameter => $value) {
-            if (! isset($types[$parameter - 1])) {
-                $types[$parameter - 1] = static::$_paramTypeMap[ParameterType::STRING];
-            }
-
-            if ($types[$parameter - 1] === static::$_paramTypeMap[ParameterType::LARGE_OBJECT]) {
-                if (is_resource($value)) {
-                    if (get_resource_type($value) !== 'stream') {
-                        throw new InvalidArgumentException('Resources passed with the LARGE_OBJECT parameter type must be stream resources.');
-                    }
-                    $streams[$parameter] = $value;
-                    $values[$parameter]  = null;
-                    continue;
-                } else {
-                    $types[$parameter - 1] = static::$_paramTypeMap[ParameterType::STRING];
-                }
-            }
-
-            $values[$parameter] = $value;
-        }
-
-        return [$types, $values, $streams];
-    }
-
-    /**
-     * Handle $this->_longData after regular query parameters have been bound
-     *
-     * @throws MysqliException
-     */
-    private function sendLongData($streams)
-    {
-        foreach ($streams as $paramNr => $stream) {
-            while (! feof($stream)) {
-                $chunk = fread($stream, 8192);
-
-                if ($chunk === false) {
-                    throw new MysqliException("Failed reading the stream resource for parameter offset ${paramNr}.");
-                }
-
-                if (! $this->_stmt->send_long_data($paramNr - 1, $chunk)) {
-                    throw new MysqliException($this->_stmt->error, $this->_stmt->sqlstate, $this->_stmt->errno);
-                }
-            }
-        }
-    }
-
-    /**
      * Binds a array of values to bound parameters.
      *
-     * @param mixed[] $values
+     * @param array $values
      *
-     * @return bool
+     * @return boolean
      */
     private function _bindValues($values)
     {
-        $params = [];
-        $types  = str_repeat('s', count($values));
+        $params = array();
+        $types = str_repeat('s', count($values));
+        $params[0] = $types;
 
         foreach ($values as &$v) {
             $params[] =& $v;
         }
 
-        return $this->_stmt->bind_param($types, ...$params);
+        return call_user_func_array(array($this->_stmt, 'bind_param'), $params);
     }
 
     /**
-     * @return mixed[]|false
+     * @return boolean|array
      */
     private function _fetch()
     {
         $ret = $this->_stmt->fetch();
 
-        if ($ret === true) {
-            $values = [];
+        if (true === $ret) {
+            $values = array();
             foreach ($this->_rowBindedValues as $v) {
                 $values[] = $v;
             }
@@ -304,67 +263,52 @@ class MysqliStatement implements IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function fetch($fetchMode = null, $cursorOrientation = PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
+    public function fetch($fetchMode = null)
     {
         // do not try fetching from the statement if it's not expected to contain result
         // in order to prevent exceptional situation
-        if (! $this->result) {
+        if (!$this->result) {
             return false;
+        }
+
+        $values = $this->_fetch();
+        if (null === $values) {
+            return false;
+        }
+
+        if (false === $values) {
+            throw new MysqliException($this->_stmt->error, $this->_stmt->sqlstate, $this->_stmt->errno);
         }
 
         $fetchMode = $fetchMode ?: $this->_defaultFetchMode;
 
-        if ($fetchMode === FetchMode::COLUMN) {
-            return $this->fetchColumn();
-        }
-
-        $values = $this->_fetch();
-        if ($values === null) {
-            return false;
-        }
-
-        if ($values === false) {
-            throw new MysqliException($this->_stmt->error, $this->_stmt->sqlstate, $this->_stmt->errno);
-        }
-
         switch ($fetchMode) {
-            case FetchMode::NUMERIC:
+            case PDO::FETCH_NUM:
                 return $values;
 
-            case FetchMode::ASSOCIATIVE:
+            case PDO::FETCH_ASSOC:
                 return array_combine($this->_columnNames, $values);
 
-            case FetchMode::MIXED:
-                $ret  = array_combine($this->_columnNames, $values);
+            case PDO::FETCH_BOTH:
+                $ret = array_combine($this->_columnNames, $values);
                 $ret += $values;
 
                 return $ret;
 
-            case FetchMode::STANDARD_OBJECT:
-                $assoc = array_combine($this->_columnNames, $values);
-                $ret   = new stdClass();
-
-                foreach ($assoc as $column => $value) {
-                    $ret->$column = $value;
-                }
-
-                return $ret;
-
             default:
-                throw new MysqliException(sprintf("Unknown fetch type '%s'", $fetchMode));
+                throw new MysqliException("Unknown fetch type '{$fetchMode}'");
         }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
+    public function fetchAll($fetchMode = null)
     {
         $fetchMode = $fetchMode ?: $this->_defaultFetchMode;
 
-        $rows = [];
-
-        if ($fetchMode === FetchMode::COLUMN) {
+        $rows = array();
+        if (PDO::FETCH_COLUMN == $fetchMode) {
             while (($row = $this->fetchColumn()) !== false) {
                 $rows[] = $row;
             }
@@ -382,13 +326,12 @@ class MysqliStatement implements IteratorAggregate, Statement
      */
     public function fetchColumn($columnIndex = 0)
     {
-        $row = $this->fetch(FetchMode::NUMERIC);
-
-        if ($row === false) {
+        $row = $this->fetch(PDO::FETCH_NUM);
+        if (false === $row) {
             return false;
         }
 
-        return $row[$columnIndex] ?? null;
+        return isset($row[$columnIndex]) ? $row[$columnIndex] : null;
     }
 
     /**
@@ -423,7 +366,7 @@ class MysqliStatement implements IteratorAggregate, Statement
      */
     public function rowCount()
     {
-        if ($this->_columnNames === false) {
+        if (false === $this->_columnNames) {
             return $this->_stmt->affected_rows;
         }
 
@@ -453,6 +396,8 @@ class MysqliStatement implements IteratorAggregate, Statement
      */
     public function getIterator()
     {
-        return new StatementIterator($this);
+        $data = $this->fetchAll();
+
+        return new \ArrayIterator($data);
     }
 }

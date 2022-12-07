@@ -11,10 +11,8 @@
 
 namespace Symfony\Bridge\Doctrine\Form\Type;
 
-use Doctrine\Common\Persistence\ManagerRegistry as LegacyManagerRegistry;
-use Doctrine\Common\Persistence\ObjectManager as LegacyObjectManager;
-use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Bridge\Doctrine\Form\ChoiceList\DoctrineChoiceLoader;
 use Symfony\Bridge\Doctrine\Form\ChoiceList\EntityLoaderInterface;
 use Symfony\Bridge\Doctrine\Form\ChoiceList\IdReader;
@@ -101,10 +99,7 @@ abstract class DoctrineType extends AbstractType
         return false;
     }
 
-    /**
-     * @param ManagerRegistry|LegacyManagerRegistry $registry
-     */
-    public function __construct($registry)
+    public function __construct(ManagerRegistry $registry)
     {
         $this->registry = $registry;
     }
@@ -162,8 +157,6 @@ abstract class DoctrineType extends AbstractType
 
                 return $doctrineChoiceLoader;
             }
-
-            return null;
         };
 
         $choiceName = function (Options $options) {
@@ -178,7 +171,6 @@ abstract class DoctrineType extends AbstractType
             }
 
             // Otherwise, an incrementing integer is used as name automatically
-            return null;
         };
 
         // The choices are always indexed by ID (see "choices" normalizer
@@ -195,12 +187,12 @@ abstract class DoctrineType extends AbstractType
             }
 
             // Otherwise, an incrementing integer is used as value automatically
-            return null;
         };
 
         $emNormalizer = function (Options $options, $em) {
+            /* @var ManagerRegistry $registry */
             if (null !== $em) {
-                if ($em instanceof ObjectManager || $em instanceof LegacyObjectManager) {
+                if ($em instanceof ObjectManager) {
                     return $em;
                 }
 
@@ -266,18 +258,19 @@ abstract class DoctrineType extends AbstractType
         $resolver->setNormalizer('query_builder', $queryBuilderNormalizer);
         $resolver->setNormalizer('id_reader', $idReaderNormalizer);
 
-        $resolver->setAllowedTypes('em', ['null', 'string', ObjectManager::class, LegacyObjectManager::class]);
+        $resolver->setAllowedTypes('em', ['null', 'string', 'Doctrine\Common\Persistence\ObjectManager']);
     }
 
     /**
      * Return the default loader object.
      *
-     * @param mixed  $queryBuilder
-     * @param string $class
+     * @param ObjectManager $manager
+     * @param mixed         $queryBuilder
+     * @param string        $class
      *
      * @return EntityLoaderInterface
      */
-    abstract public function getLoader(LegacyObjectManager $manager, $queryBuilder, $class);
+    abstract public function getLoader(ObjectManager $manager, $queryBuilder, $class);
 
     public function getParent()
     {

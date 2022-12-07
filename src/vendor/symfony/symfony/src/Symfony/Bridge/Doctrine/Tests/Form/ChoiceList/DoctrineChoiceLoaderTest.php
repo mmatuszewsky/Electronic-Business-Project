@@ -11,12 +11,9 @@
 
 namespace Symfony\Bridge\Doctrine\Tests\Form\ChoiceList;
 
-use Doctrine\Common\Persistence\ObjectManager as LegacyObjectManager;
-use Doctrine\Common\Persistence\ObjectRepository as LegacyObjectRepository;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\Persistence\ObjectManager;
-use Doctrine\Persistence\ObjectRepository;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Doctrine\Form\ChoiceList\DoctrineChoiceLoader;
 use Symfony\Bridge\Doctrine\Form\ChoiceList\EntityLoaderInterface;
@@ -30,17 +27,17 @@ use Symfony\Component\Form\ChoiceList\Factory\ChoiceListFactoryInterface;
 class DoctrineChoiceLoaderTest extends TestCase
 {
     /**
-     * @var ChoiceListFactoryInterface|MockObject
+     * @var ChoiceListFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $factory;
 
     /**
-     * @var ObjectManager|MockObject
+     * @var ObjectManager|\PHPUnit_Framework_MockObject_MockObject
      */
     private $om;
 
     /**
-     * @var ObjectRepository|MockObject
+     * @var ObjectRepository|\PHPUnit_Framework_MockObject_MockObject
      */
     private $repository;
 
@@ -50,12 +47,12 @@ class DoctrineChoiceLoaderTest extends TestCase
     private $class;
 
     /**
-     * @var IdReader|MockObject
+     * @var IdReader|\PHPUnit_Framework_MockObject_MockObject
      */
     private $idReader;
 
     /**
-     * @var EntityLoaderInterface|MockObject
+     * @var EntityLoaderInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $objectLoader;
 
@@ -77,8 +74,8 @@ class DoctrineChoiceLoaderTest extends TestCase
     protected function setUp()
     {
         $this->factory = $this->getMockBuilder('Symfony\Component\Form\ChoiceList\Factory\ChoiceListFactoryInterface')->getMock();
-        $this->om = $this->getMockBuilder(interface_exists(ObjectManager::class) ? ObjectManager::class : LegacyObjectManager::class)->getMock();
-        $this->repository = $this->getMockBuilder(interface_exists(ObjectRepository::class) ? ObjectRepository::class : LegacyObjectRepository::class)->getMock();
+        $this->om = $this->getMockBuilder('Doctrine\Common\Persistence\ObjectManager')->getMock();
+        $this->repository = $this->getMockBuilder('Doctrine\Common\Persistence\ObjectRepository')->getMock();
         $this->class = 'stdClass';
         $this->idReader = $this->getMockBuilder('Symfony\Bridge\Doctrine\Form\ChoiceList\IdReader')
             ->disableOriginalConstructor()

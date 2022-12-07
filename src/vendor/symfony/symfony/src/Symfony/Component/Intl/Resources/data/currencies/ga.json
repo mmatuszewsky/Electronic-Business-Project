@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.17",
     "Names": {
         "ADP": [
             "ADP",
@@ -52,10 +53,6 @@
             "ARA",
             "Austral Airgintíneach"
         ],
-        "ARL": [
-            "ARL",
-            "ARL"
-        ],
         "ARM": [
             "ARM",
             "Peso na hAirgintíne (1881–1970)"
@@ -70,7 +67,7 @@
         ],
         "ATS": [
             "ATS",
-            "Scilling na hOstaire"
+            "ATS"
         ],
         "AUD": [
             "A$",
@@ -96,10 +93,6 @@
             "BAM",
             "Marg Inmhalartaithe na Boisnia-Heirseagaivéine"
         ],
-        "BAN": [
-            "BAN",
-            "BAN"
-        ],
         "BBD": [
             "BBD",
             "Dollar Bharbadós"
@@ -110,7 +103,7 @@
         ],
         "BEC": [
             "BEC",
-            "Franc na Beilge (inmhalartaithe)"
+            "BEC"
         ],
         "BEF": [
             "BEF",
@@ -118,7 +111,7 @@
         ],
         "BEL": [
             "BEL",
-            "Franc na Beilge (airgeadais)"
+            "BEL"
         ],
         "BGL": [
             "BGL",
@@ -151,10 +144,6 @@
         "BOB": [
             "BOB",
             "Boliviano"
-        ],
-        "BOL": [
-            "BOL",
-            "BOL"
         ],
         "BOP": [
             "BOP",
@@ -248,6 +237,10 @@
             "CLP",
             "Peso na Sile"
         ],
+        "CNH": [
+            "CNH",
+            "CNH"
+        ],
         "CNY": [
             "CN¥",
             "Yuan na Síne"
@@ -255,10 +248,6 @@
         "COP": [
             "COP",
             "Peso na Colóime"
-        ],
-        "COU": [
-            "COU",
-            "COU"
         ],
         "CRC": [
             "CRC",
@@ -294,7 +283,7 @@
         ],
         "DDM": [
             "DDM",
-            "Marc Ghearmáin an Oirthir"
+            "DDM"
         ],
         "DEM": [
             "DEM",
@@ -335,14 +324,6 @@
         "ERN": [
             "ERN",
             "Nakfa na hEiritré"
-        ],
-        "ESA": [
-            "ESA",
-            "ESA"
-        ],
-        "ESB": [
-            "ESB",
-            "ESB"
         ],
         "ESP": [
             "ESP",
@@ -524,14 +505,6 @@
             "KPW",
             "Won na Cóiré Thuaidh"
         ],
-        "KRH": [
-            "KRH",
-            "KRH"
-        ],
-        "KRO": [
-            "KRO",
-            "KRO"
-        ],
         "KRW": [
             "₩",
             "Won na Cóiré Theas"
@@ -619,10 +592,6 @@
         "MKD": [
             "MKD",
             "Denar na Macadóine"
-        ],
-        "MKN": [
-            "MKN",
-            "MKN"
         ],
         "MLF": [
             "MLF",
@@ -1044,10 +1013,6 @@
             "CFPF",
             "Franc CFP"
         ],
-        "XRE": [
-            "XRE",
-            "XRE"
-        ],
         "YDD": [
             "YDD",
             "Dínear Éimin"
@@ -1067,10 +1032,6 @@
         "YUN": [
             "YUN",
             "YUN"
-        ],
-        "YUR": [
-            "YUR",
-            "YUR"
         ],
         "ZAL": [
             "ZAL",

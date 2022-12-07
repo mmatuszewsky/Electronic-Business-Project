@@ -42,12 +42,18 @@ class Smarty_CacheResource_Memcache extends Smarty_CacheResource_KeyValueStore
      */
     protected function read(array $keys)
     {
-        $res = array();
-        foreach ($keys as $key) {
-            $k = sha1($key);
-            $res[$key] = $this->memcache->get($k);
+        $_keys = $lookup = array();
+        foreach ($keys as $k) {
+            $_k = sha1($k);
+            $_keys[] = $_k;
+            $lookup[ $_k ] = $k;
         }
-        return $res;
+        $_res = array();
+        $res = $this->memcache->get($_keys);
+        foreach ($res as $k => $v) {
+            $_res[ $lookup[ $k ] ] = $v;
+        }
+        return $_res;
     }
 
     /**
@@ -62,11 +68,7 @@ class Smarty_CacheResource_Memcache extends Smarty_CacheResource_KeyValueStore
     {
         foreach ($keys as $k => $v) {
             $k = sha1($k);
-            if (class_exists('Memcached')) {
-                $this->memcache->set($k, $v, $expire);
-            } else {
-                $this->memcache->set($k, $v, 0, $expire);
-            }
+            $this->memcache->set($k, $v, 0, $expire);
         }
         return true;
     }

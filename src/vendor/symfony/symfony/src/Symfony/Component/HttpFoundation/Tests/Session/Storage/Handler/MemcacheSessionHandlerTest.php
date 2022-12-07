@@ -79,7 +79,7 @@ class MemcacheSessionHandlerTest extends TestCase
             ->expects($this->once())
             ->method('set')
             ->with(self::PREFIX.'id', 'data', 0, $this->equalTo(time() + self::TTL, 2))
-            ->willReturn(true)
+            ->will($this->returnValue(true))
         ;
 
         $this->assertTrue($this->storage->write('id', 'data'));
@@ -91,7 +91,7 @@ class MemcacheSessionHandlerTest extends TestCase
             ->expects($this->once())
             ->method('delete')
             ->with(self::PREFIX.'id')
-            ->willReturn(true)
+            ->will($this->returnValue(true))
         ;
 
         $this->assertTrue($this->storage->destroy('id'));

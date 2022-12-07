@@ -26,9 +26,9 @@ class FilterIteratorTest extends RealIteratorTestCase
         $i = $this->getMockForAbstractClass('Symfony\Component\Finder\Iterator\FilterIterator', [$i]);
         $i->expects($this->any())
             ->method('accept')
-            ->willReturnCallback(function () use ($i) {
+            ->will($this->returnCallback(function () use ($i) {
                 return (bool) preg_match('/\.php/', (string) $i->current());
-            }
+            })
         );
 
         $c = 0;

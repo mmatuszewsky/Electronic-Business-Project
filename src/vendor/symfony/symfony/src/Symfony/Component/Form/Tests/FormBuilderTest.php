@@ -49,13 +49,13 @@ class FormBuilderTest extends TestCase
 
     public function testAddNameNoStringAndNoInteger()
     {
-        $this->expectException('Symfony\Component\Form\Exception\UnexpectedTypeException');
+        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}('Symfony\Component\Form\Exception\UnexpectedTypeException');
         $this->builder->add(true);
     }
 
     public function testAddTypeNoString()
     {
-        $this->expectException('Symfony\Component\Form\Exception\UnexpectedTypeException');
+        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}('Symfony\Component\Form\Exception\UnexpectedTypeException');
         $this->builder->add('foo', 1234);
     }
 
@@ -91,7 +91,7 @@ class FormBuilderTest extends TestCase
         $this->factory->expects($this->once())
             ->method('createNamedBuilder')
             ->with('foo', 'Symfony\Component\Form\Extension\Core\Type\TextType')
-            ->willReturn(new FormBuilder('foo', null, $this->dispatcher, $this->factory));
+            ->will($this->returnValue(new FormBuilder('foo', null, $this->dispatcher, $this->factory)));
 
         $this->assertCount(0, $this->builder->all());
         $this->assertFalse($this->builder->has('foo'));
@@ -167,8 +167,12 @@ class FormBuilderTest extends TestCase
 
     public function testGetUnknown()
     {
-        $this->expectException('Symfony\Component\Form\Exception\InvalidArgumentException');
-        $this->expectExceptionMessage('The child with the name "foo" does not exist.');
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('Symfony\Component\Form\Exception\InvalidArgumentException');
+            $this->expectExceptionMessage('The child with the name "foo" does not exist.');
+        } else {
+            $this->setExpectedException('Symfony\Component\Form\Exception\InvalidArgumentException', 'The child with the name "foo" does not exist.');
+        }
 
         $this->builder->get('foo');
     }
@@ -182,7 +186,7 @@ class FormBuilderTest extends TestCase
         $this->factory->expects($this->once())
             ->method('createNamedBuilder')
             ->with($expectedName, $expectedType, null, $expectedOptions)
-            ->willReturn($this->getFormBuilder());
+            ->will($this->returnValue($this->getFormBuilder()));
 
         $this->builder->add($expectedName, $expectedType, $expectedOptions);
         $builder = $this->builder->get($expectedName);
@@ -198,7 +202,7 @@ class FormBuilderTest extends TestCase
         $this->factory->expects($this->once())
             ->method('createBuilderForProperty')
             ->with('stdClass', $expectedName, null, $expectedOptions)
-            ->willReturn($this->getFormBuilder());
+            ->will($this->returnValue($this->getFormBuilder()));
 
         $this->builder = new FormBuilder('name', 'stdClass', $this->dispatcher, $this->factory);
         $this->builder->add($expectedName, null, $expectedOptions);
@@ -232,7 +236,7 @@ class FormBuilderTest extends TestCase
 
         $mock->expects($this->any())
             ->method('getName')
-            ->willReturn($name);
+            ->will($this->returnValue($name));
 
         return $mock;
     }

@@ -74,13 +74,12 @@ class IterableResult implements \Iterator
     /**
      * Gets the next set of results.
      *
-     * @return array|false
+     * @return array
      */
     public function next()
     {
         $this->_current = $this->_hydrator->hydrateRow();
         $this->_key++;
-
         return $this->_current;
     }
 

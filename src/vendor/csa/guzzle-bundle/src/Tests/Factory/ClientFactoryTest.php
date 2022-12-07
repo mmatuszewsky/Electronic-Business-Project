@@ -4,7 +4,6 @@
  * This file is part of the CsaGuzzleBundle package
  *
  * (c) Charles Sarrazin <charles@sarraz.in>
- * (c) PrestaShop and Contributors
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code
@@ -19,7 +18,7 @@ use Csa\Bundle\GuzzleBundle\Factory\ClientFactory;
  *
  * @group legacy
  */
-class ClientFactoryTest extends \PHPUnit\Framework\TestCase
+class ClientFactoryTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreateClient()
     {

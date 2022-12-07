@@ -27,18 +27,21 @@
 
 namespace PrestaShop\TranslationToolsBundle\Translation\Manager;
 
-use PrestaShop\TranslationToolsBundle\Translation\MultilanguageCatalog;
 use PrestaShop\TranslationToolsBundle\Translation\Parser\CrowdinPhpParser;
+use PrestaShop\TranslationToolsBundle\Translation\MultilanguageCatalog;
 use Symfony\Component\Finder\Finder;
 
 class TranslationManager
 {
-    /** @var MultilanguageCatalog */
+    /** @var MultilanguageCatalog $catalogue */
     private $catalog;
 
-    /** @var CrowdinPhpParser */
+    /** @var CrowdinPhpParser $parser */
     private $parser;
 
+    /**
+     * @param CrowdinPhpParser $crodwinPhpParser
+     */
     public function __construct(CrowdinPhpParser $crodwinPhpParser)
     {
         $this->parser = $crodwinPhpParser;

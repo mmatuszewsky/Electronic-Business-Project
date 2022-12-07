@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.42",
     "Names": {
         "aa": "afar",
         "ab": "abcaso",
@@ -160,7 +161,6 @@
         "ewo": "ewondo",
         "ext": "estremegno",
         "fa": "persiano",
-        "fa_AF": "dari",
         "fan": "fang",
         "fat": "fanti",
         "ff": "fulah",
@@ -451,6 +451,7 @@
         "ro_MD": "moldavo",
         "rof": "rombo",
         "rom": "romani",
+        "root": "root",
         "rtm": "rotumano",
         "ru": "russo",
         "rue": "ruteno",

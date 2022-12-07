@@ -39,7 +39,7 @@ class YamlReferenceDumper
 
         foreach (explode('.', $path) as $step) {
             if (!$node instanceof ArrayNode) {
-                throw new \UnexpectedValueException(sprintf('Unable to find node at path "%s.%s".', $rootNode->getName(), $path));
+                throw new \UnexpectedValueException(sprintf('Unable to find node at path "%s.%s"', $rootNode->getName(), $path));
             }
 
             /** @var NodeInterface[] $children */
@@ -53,7 +53,7 @@ class YamlReferenceDumper
                 }
             }
 
-            throw new \UnexpectedValueException(sprintf('Unable to find node at path "%s.%s".', $rootNode->getName(), $path));
+            throw new \UnexpectedValueException(sprintf('Unable to find node at path "%s.%s"', $rootNode->getName(), $path));
         }
 
         return $this->dumpNode($node);
@@ -70,8 +70,10 @@ class YamlReferenceDumper
     }
 
     /**
-     * @param int  $depth
-     * @param bool $prototypedArray
+     * @param NodeInterface      $node
+     * @param NodeInterface|null $parentNode
+     * @param int                $depth
+     * @param bool               $prototypedArray
      */
     private function writeNode(NodeInterface $node, NodeInterface $parentNode = null, $depth = 0, $prototypedArray = false)
     {
@@ -213,6 +215,8 @@ class YamlReferenceDumper
     }
 
     /**
+     * @param PrototypedArrayNode $node
+     *
      * @return array
      */
     private function getPrototypeChildren(PrototypedArrayNode $node)

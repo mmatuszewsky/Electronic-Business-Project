@@ -77,16 +77,15 @@ interface EntityPersister
     /**
      * Get the COUNT SQL to count entities (optionally based on a criteria)
      *
-     * @param array|\Doctrine\Common\Collections\Criteria $criteria
-     *
+     * @param  array|\Doctrine\Common\Collections\Criteria $criteria
      * @return string
      */
-    public function getCountSQL($criteria = []);
+    public function getCountSQL($criteria = array());
 
     /**
      * Expands the parameters from the given criteria and use the correct binding types if found.
      *
-     * @param string[] $criteria
+     * @param $criteria
      *
      * @return array
      */
@@ -165,7 +164,7 @@ interface EntityPersister
      *
      * @return int
      */
-    public function count($criteria = []);
+    public function count($criteria = array());
 
     /**
      * Gets the name of the table that owns the column the given field is mapped to.
@@ -197,13 +196,13 @@ interface EntityPersister
      *
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
-    public function load(array $criteria, $entity = null, $assoc = null, array $hints = [], $lockMode = null, $limit = null, array $orderBy = null);
+    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = null, $limit = null, array $orderBy = null);
 
     /**
      * Loads an entity by identifier.
      *
-     * @param array       $identifier The entity identifier.
-     * @param object|null $entity     The entity to load the data into. If not specified, a new entity is created.
+     * @param array       $identifier   The entity identifier.
+     * @param object|null $entity       The entity to load the data into. If not specified, a new entity is created.
      *
      * @return object The loaded and managed entity instance or NULL if the entity can not be found.
      *
@@ -225,7 +224,7 @@ interface EntityPersister
      *
      * @throws \Doctrine\ORM\Mapping\MappingException
      */
-    public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = []);
+    public function loadOneToOneEntity(array $assoc, $sourceEntity, array $identifier = array());
 
     /**
      * Refreshes a managed entity.
@@ -260,7 +259,7 @@ interface EntityPersister
      *
      * @return array
      */
-    public function loadAll(array $criteria = [], array $orderBy = null, $limit = null, $offset = null);
+    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null);
 
     /**
      * Gets (sliced or full) elements of the given collection.
@@ -290,7 +289,7 @@ interface EntityPersister
      *
      * @param array                $assoc
      * @param object               $sourceEntity
-     * @param PersistentCollection $collection   The collection to load/fill.
+     * @param PersistentCollection $collection         The collection to load/fill.
      *
      * @return array
      */

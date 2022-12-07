@@ -18,7 +18,6 @@ use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Loader\ExistsLoaderInterface;
-use Twig\Loader\SourceContextLoaderInterface;
 
 /**
  * ExceptionController renders error or exception pages for a given
@@ -33,7 +32,8 @@ class ExceptionController
     protected $debug;
 
     /**
-     * @param bool $debug Show error (false) or exception (true) pages by default
+     * @param Environment $twig
+     * @param bool        $debug Show error (false) or exception (true) pages by default
      */
     public function __construct(Environment $twig, $debug)
     {
@@ -88,9 +88,10 @@ class ExceptionController
     }
 
     /**
-     * @param string $format
-     * @param int    $code          An HTTP response status code
-     * @param bool   $showException
+     * @param Request $request
+     * @param string  $format
+     * @param int     $code          An HTTP response status code
+     * @param bool    $showException
      *
      * @return string
      */
@@ -121,28 +122,23 @@ class ExceptionController
         return sprintf('@Twig/Exception/%s.html.twig', $showException ? 'exception_full' : $name);
     }
 
-    // to be removed when the minimum required version of Twig is >= 2.0
+    // to be removed when the minimum required version of Twig is >= 3.0
     protected function templateExists($template)
     {
         $template = (string) $template;
 
         $loader = $this->twig->getLoader();
-
-        if (1 === Environment::MAJOR_VERSION && !$loader instanceof ExistsLoaderInterface) {
-            try {
-                if ($loader instanceof SourceContextLoaderInterface) {
-                    $loader->getSourceContext($template);
-                } else {
-                    $loader->getSource($template);
-                }
-
-                return true;
-            } catch (LoaderError $e) {
-            }
-
-            return false;
+        if ($loader instanceof ExistsLoaderInterface || method_exists($loader, 'exists')) {
+            return $loader->exists($template);
         }
 
-        return $loader->exists($template);
+        try {
+            $loader->getSourceContext($template)->getCode();
+
+            return true;
+        } catch (LoaderError $e) {
+        }
+
+        return false;
     }
 }

@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Mapping\Reflection;
 
-use Doctrine\Persistence\Mapping\ReflectionService;
+use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use ReflectionClass;
 use ReflectionProperty;
 
@@ -52,11 +52,9 @@ final class ReflectionPropertiesGetter
     }
 
     /**
-     * @param string $className
+     * @param $className
      *
      * @return ReflectionProperty[] indexed by property internal name
-     *
-     * @psalm-param class-string $className
      */
     public function getProperties($className)
     {
@@ -81,10 +79,8 @@ final class ReflectionPropertiesGetter
      * @param string $className
      *
      * @return ReflectionClass[]
-     *
-     * @psalm-return list<ReflectionClass>
      */
-    private function getHierarchyClasses($className) : array
+    private function getHierarchyClasses($className)
     {
         $classes         = [];
         $parentClassName = $className;
@@ -101,17 +97,13 @@ final class ReflectionPropertiesGetter
         return $classes;
     }
 
-    //  phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod
     /**
      * @param ReflectionClass $reflectionClass
      *
      * @return ReflectionProperty[]
-     *
-     * @psalm-return array<string, ReflectionProperty>
      */
-    private function getClassProperties(ReflectionClass $reflectionClass) : array
+    private function getClassProperties(ReflectionClass $reflectionClass)
     {
-        //  phpcs:enable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod
         $properties = $reflectionClass->getProperties();
 
         return array_filter(

@@ -19,21 +19,14 @@
 
 namespace Doctrine\ORM;
 
+use Exception;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\Persistence\Mapping\MappingException;
-use Doctrine\Persistence\ObjectRepository;
-use Throwable;
-use function ltrim;
-use const E_USER_DEPRECATED;
-use function trigger_error;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -243,9 +236,9 @@ use function trigger_error;
             $this->conn->commit();
 
             return $return ?: true;
-        } catch (Throwable $e) {
+        } catch (Exception $e) {
             $this->close();
-            $this->conn->rollBack();
+            $this->conn->rollback();
 
             throw $e;
         }
@@ -264,7 +257,7 @@ use function trigger_error;
      */
     public function rollback()
     {
-        $this->conn->rollBack();
+        $this->conn->rollback();
     }
 
     /**
@@ -296,7 +289,7 @@ use function trigger_error;
         $query = new Query($this);
 
         if ( ! empty($dql)) {
-            $query->setDQL($dql);
+            $query->setDql($dql);
         }
 
         return $query;
@@ -317,7 +310,7 @@ use function trigger_error;
     {
         $query = new NativeQuery($this);
 
-        $query->setSQL($sql);
+        $query->setSql($sql);
         $query->setResultSetMapping($rsm);
 
         return $query;
@@ -328,7 +321,7 @@ use function trigger_error;
      */
     public function createNamedNativeQuery($name)
     {
-        [$sql, $rsm] = $this->config->getNamedNativeQuery($name);
+        list($sql, $rsm) = $this->config->getNamedNativeQuery($name);
 
         return $this->createNativeQuery($sql, $rsm);
     }
@@ -355,17 +348,9 @@ use function trigger_error;
      *
      * @throws \Doctrine\ORM\OptimisticLockException If a version check on an entity that
      *         makes use of optimistic locking fails.
-     * @throws ORMException
      */
     public function flush($entity = null)
     {
-        if ($entity !== null) {
-            @trigger_error(
-                'Calling ' . __METHOD__ . '() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-                E_USER_DEPRECATED
-            );
-        }
-
         $this->errorIfClosed();
 
         $this->unitOfWork->commit($entity);
@@ -374,7 +359,7 @@ use function trigger_error;
     /**
      * Finds an Entity by its identifier.
      *
-     * @param string       $className   The class name of the entity to find.
+     * @param string       $entityName  The class name of the entity to find.
      * @param mixed        $id          The identity of the entity to find.
      * @param integer|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
      *                                  or NULL if no specific lock mode should be used
@@ -389,20 +374,16 @@ use function trigger_error;
      * @throws TransactionRequiredException
      * @throws ORMException
      */
-    public function find($className, $id, $lockMode = null, $lockVersion = null)
+    public function find($entityName, $id, $lockMode = null, $lockVersion = null)
     {
-        $class = $this->metadataFactory->getMetadataFor(ltrim($className, '\\'));
-
-        if ($lockMode !== null) {
-            $this->checkLockRequirements($lockMode, $class);
-        }
+        $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
         if ( ! is_array($id)) {
             if ($class->isIdentifierComposite) {
                 throw ORMInvalidArgumentException::invalidCompositeIdentifier();
             }
 
-            $id = [$class->identifier[0] => $id];
+            $id = array($class->identifier[0] => $id);
         }
 
         foreach ($id as $i => $value) {
@@ -415,7 +396,7 @@ use function trigger_error;
             }
         }
 
-        $sortedId = [];
+        $sortedId = array();
 
         foreach ($class->identifier as $identifier) {
             if ( ! isset($id[$identifier])) {
@@ -458,15 +439,24 @@ use function trigger_error;
 
         switch (true) {
             case LockMode::OPTIMISTIC === $lockMode:
+                if ( ! $class->isVersioned) {
+                    throw OptimisticLockException::notVersioned($class->name);
+                }
+
                 $entity = $persister->load($sortedId);
 
                 $unitOfWork->lock($entity, $lockMode, $lockVersion);
 
                 return $entity;
 
+            case LockMode::NONE === $lockMode:
             case LockMode::PESSIMISTIC_READ === $lockMode:
             case LockMode::PESSIMISTIC_WRITE === $lockMode:
-                return $persister->load($sortedId, null, null, [], $lockMode);
+                if ( ! $this->getConnection()->isTransactionActive()) {
+                    throw TransactionRequiredException::transactionRequired();
+                }
+
+                return $persister->load($sortedId, null, null, array(), $lockMode);
 
             default:
                 return $persister->loadById($sortedId);
@@ -481,10 +471,10 @@ use function trigger_error;
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
         if ( ! is_array($id)) {
-            $id = [$class->identifier[0] => $id];
+            $id = array($class->identifier[0] => $id);
         }
 
-        $sortedId = [];
+        $sortedId = array();
 
         foreach ($class->identifier as $identifier) {
             if ( ! isset($id[$identifier])) {
@@ -492,11 +482,6 @@ use function trigger_error;
             }
 
             $sortedId[$identifier] = $id[$identifier];
-            unset($id[$identifier]);
-        }
-
-        if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
         }
 
         // Check identity map first, if its already in there just return it.
@@ -508,9 +493,13 @@ use function trigger_error;
             return $this->find($entityName, $sortedId);
         }
 
+        if ( ! is_array($sortedId)) {
+            $sortedId = array($class->identifier[0] => $sortedId);
+        }
+
         $entity = $this->proxyFactory->getProxy($class->name, $sortedId);
 
-        $this->unitOfWork->registerManaged($entity, $sortedId, []);
+        $this->unitOfWork->registerManaged($entity, $sortedId, array());
 
         return $entity;
     }
@@ -528,14 +517,14 @@ use function trigger_error;
         }
 
         if ( ! is_array($identifier)) {
-            $identifier = [$class->identifier[0] => $identifier];
+            $identifier = array($class->identifier[0] => $identifier);
         }
 
         $entity = $class->newInstance();
 
         $class->setIdentifierValues($entity, $identifier);
 
-        $this->unitOfWork->registerManaged($entity, $identifier, []);
+        $this->unitOfWork->registerManaged($entity, $identifier, array());
         $this->unitOfWork->markReadOnly($entity);
 
         return $entity;
@@ -548,29 +537,10 @@ use function trigger_error;
      * @param string|null $entityName if given, only entities of this type will get detached
      *
      * @return void
-     *
-     * @throws ORMInvalidArgumentException If a non-null non-string value is given.
-     * @throws MappingException            If a $entityName is given, but that entity is not
-     *                                     found in the mappings.
      */
     public function clear($entityName = null)
     {
-        if (null !== $entityName && ! is_string($entityName)) {
-            throw ORMInvalidArgumentException::invalidEntityName($entityName);
-        }
-
-        if ($entityName !== null) {
-            @trigger_error(
-                'Calling ' . __METHOD__ . '() with any arguments to clear specific entities is deprecated and will not be supported in Doctrine ORM 3.0.',
-                E_USER_DEPRECATED
-            );
-        }
-
-        $this->unitOfWork->clear(
-            null === $entityName
-                ? null
-                : $this->metadataFactory->getMetadataFor($entityName)->getName()
-        );
+        $this->unitOfWork->clear($entityName);
     }
 
     /**
@@ -597,12 +567,11 @@ use function trigger_error;
      * @return void
      *
      * @throws ORMInvalidArgumentException
-     * @throws ORMException
      */
     public function persist($entity)
     {
         if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#persist()', $entity);
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#persist()' , $entity);
         }
 
         $this->errorIfClosed();
@@ -621,12 +590,11 @@ use function trigger_error;
      * @return void
      *
      * @throws ORMInvalidArgumentException
-     * @throws ORMException
      */
     public function remove($entity)
     {
         if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#remove()', $entity);
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#remove()' , $entity);
         }
 
         $this->errorIfClosed();
@@ -643,12 +611,11 @@ use function trigger_error;
      * @return void
      *
      * @throws ORMInvalidArgumentException
-     * @throws ORMException
      */
     public function refresh($entity)
     {
         if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()', $entity);
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()' , $entity);
         }
 
         $this->errorIfClosed();
@@ -668,15 +635,11 @@ use function trigger_error;
      * @return void
      *
      * @throws ORMInvalidArgumentException
-     *
-     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
      */
     public function detach($entity)
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
-
         if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()', $entity);
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()' , $entity);
         }
 
         $this->unitOfWork->detach($entity);
@@ -692,16 +655,11 @@ use function trigger_error;
      * @return object The managed copy of the entity.
      *
      * @throws ORMInvalidArgumentException
-     * @throws ORMException
-     *
-     * @deprecated 2.7 This method is being removed from the ORM and won't have any replacement
      */
     public function merge($entity)
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
-
         if ( ! is_object($entity)) {
-            throw ORMInvalidArgumentException::invalidObject('EntityManager#merge()', $entity);
+            throw ORMInvalidArgumentException::invalidObject('EntityManager#merge()' , $entity);
         }
 
         $this->errorIfClosed();
@@ -711,11 +669,12 @@ use function trigger_error;
 
     /**
      * {@inheritDoc}
+     *
+     * @todo Implementation need. This is necessary since $e2 = clone $e1; throws an E_FATAL when access anything on $e:
+     * Fatal error: Maximum function nesting level of '100' reached, aborting!
      */
     public function copy($entity, $deep = false)
     {
-        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine ORM 3.0.', E_USER_DEPRECATED);
-
         throw new \BadMethodCallException("Not implemented.");
     }
 
@@ -732,7 +691,7 @@ use function trigger_error;
      *
      * @param string $entityName The name of the entity.
      *
-     * @return ObjectRepository|EntityRepository The repository class.
+     * @return \Doctrine\ORM\EntityRepository The repository class.
      */
     public function getRepository($entityName)
     {
@@ -856,59 +815,39 @@ use function trigger_error;
     /**
      * Factory method to create EntityManager instances.
      *
-     * @param array|Connection $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration    $config       The Configuration instance to use.
-     * @param EventManager     $eventManager The EventManager instance to use.
+     * @param mixed         $conn         An array with the connection parameters or an existing Connection instance.
+     * @param Configuration $config       The Configuration instance to use.
+     * @param EventManager  $eventManager The EventManager instance to use.
      *
      * @return EntityManager The created EntityManager.
      *
      * @throws \InvalidArgumentException
      * @throws ORMException
      */
-    public static function create($connection, Configuration $config, EventManager $eventManager = null)
+    public static function create($conn, Configuration $config, EventManager $eventManager = null)
     {
         if ( ! $config->getMetadataDriverImpl()) {
             throw ORMException::missingMappingDriverImpl();
         }
 
-        $connection = static::createConnection($connection, $config, $eventManager);
+        switch (true) {
+            case (is_array($conn)):
+                $conn = \Doctrine\DBAL\DriverManager::getConnection(
+                    $conn, $config, ($eventManager ?: new EventManager())
+                );
+                break;
 
-        return new EntityManager($connection, $config, $connection->getEventManager());
-    }
+            case ($conn instanceof Connection):
+                if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
+                     throw ORMException::mismatchedEventManager();
+                }
+                break;
 
-    /**
-     * Factory method to create Connection instances.
-     *
-     * @param array|Connection $connection   An array with the connection parameters or an existing Connection instance.
-     * @param Configuration    $config       The Configuration instance to use.
-     * @param EventManager     $eventManager The EventManager instance to use.
-     *
-     * @return Connection
-     *
-     * @throws \InvalidArgumentException
-     * @throws ORMException
-     */
-    protected static function createConnection($connection, Configuration $config, EventManager $eventManager = null)
-    {
-        if (is_array($connection)) {
-            return DriverManager::getConnection($connection, $config, $eventManager ?: new EventManager());
+            default:
+                throw new \InvalidArgumentException("Invalid argument: " . $conn);
         }
 
-        if ( ! $connection instanceof Connection) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'Invalid $connection argument of type %s given%s.',
-                    is_object($connection) ? get_class($connection) : gettype($connection),
-                    is_object($connection) ? '' : ': "' . $connection . '"'
-                )
-            );
-        }
-
-        if ($eventManager !== null && $connection->getEventManager() !== $eventManager) {
-            throw ORMException::mismatchedEventManager();
-        }
-
-        return $connection;
+        return new EntityManager($conn, $config, $conn->getEventManager());
     }
 
     /**
@@ -937,27 +876,5 @@ use function trigger_error;
     public function hasFilters()
     {
         return null !== $this->filterCollection;
-    }
-
-    /**
-     * @param int $lockMode
-     * @param ClassMetadata $class
-     * @throws OptimisticLockException
-     * @throws TransactionRequiredException
-     */
-    private function checkLockRequirements(int $lockMode, ClassMetadata $class): void
-    {
-        switch ($lockMode) {
-            case LockMode::OPTIMISTIC:
-                if (!$class->isVersioned) {
-                    throw OptimisticLockException::notVersioned($class->name);
-                }
-                break;
-            case LockMode::PESSIMISTIC_READ:
-            case LockMode::PESSIMISTIC_WRITE:
-                if (!$this->getConnection()->isTransactionActive()) {
-                    throw TransactionRequiredException::transactionRequired();
-                }
-        }
     }
 }

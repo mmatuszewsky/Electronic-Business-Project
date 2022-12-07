@@ -11,6 +11,7 @@
 
 namespace Symfony\Bundle\SwiftmailerBundle\Command;
 
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -21,10 +22,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  *
  * @author Gusakov Nikita <dev@nkt.me>
  */
-class NewEmailCommand extends AbstractSwiftMailerCommand
+class NewEmailCommand extends ContainerAwareCommand
 {
-    protected static $defaultName = 'swiftmailer:email:send';
-
     /** @var SymfonyStyle */
     private $io;
 
@@ -34,7 +33,7 @@ class NewEmailCommand extends AbstractSwiftMailerCommand
     protected function configure()
     {
         $this
-            ->setName(static::$defaultName) // BC with 2.7
+            ->setName('swiftmailer:email:send')
             ->setDescription('Send simple email message')
             ->addOption('from', null, InputOption::VALUE_REQUIRED, 'The from address of the message')
             ->addOption('to', null, InputOption::VALUE_REQUIRED, 'The to address of the message')
@@ -44,8 +43,7 @@ class NewEmailCommand extends AbstractSwiftMailerCommand
             ->addOption('content-type', null, InputOption::VALUE_REQUIRED, 'The body content type of the message', 'text/html')
             ->addOption('charset', null, InputOption::VALUE_REQUIRED, 'The body charset of the message', 'UTF8')
             ->addOption('body-source', null, InputOption::VALUE_REQUIRED, 'The source where body come from [stdin|file]', 'stdin')
-            ->setHelp(
-                <<<EOF
+            ->setHelp(<<<EOF
 The <info>%command.name%</info> command creates and sends a simple email message.
 
 <info>php %command.full_name% --mailer=custom_mailer --content-type=text/xml</info>
@@ -80,7 +78,7 @@ EOF
             case 'file':
                 $filename = $input->getOption('body');
                 $content = file_get_contents($filename);
-                if (false === $content) {
+                if ($content === false) {
                     throw new \Exception(sprintf('Could not get contents from "%s".', $filename));
                 }
                 $input->setOption('body', $content);
@@ -104,7 +102,7 @@ EOF
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         foreach ($input->getOptions() as $option => $value) {
-            if (null === $value) {
+            if ($value === null) {
                 $input->setOption($option, $this->io->ask(sprintf('%s', ucfirst($option))));
             }
         }

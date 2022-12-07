@@ -56,7 +56,8 @@ class ResolveReferencesToAliasesPass extends AbstractRecursivePass
     /**
      * Resolves an alias into a definition id.
      *
-     * @param string $id The definition or alias id to resolve
+     * @param string           $id        The definition or alias id to resolve
+     * @param ContainerBuilder $container
      *
      * @return string The definition id with aliases resolved
      */

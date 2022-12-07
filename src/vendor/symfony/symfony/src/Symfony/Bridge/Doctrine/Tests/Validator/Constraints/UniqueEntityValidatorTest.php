@@ -12,16 +12,11 @@
 namespace Symfony\Bridge\Doctrine\Tests\Validator\Constraints;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Persistence\ManagerRegistry as LegacyManagerRegistry;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as LegacyClassMetadata;
-use Doctrine\Common\Persistence\ObjectManager as LegacyObjectManager;
-use Doctrine\Common\Persistence\ObjectRepository as LegacyObjectRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\Persistence\Mapping\ClassMetadata;
-use Doctrine\Persistence\ObjectManager;
-use Doctrine\Persistence\ObjectRepository;
 use Symfony\Bridge\Doctrine\Test\DoctrineTestHelper;
 use Symfony\Bridge\Doctrine\Test\TestRepositoryFactory;
 use Symfony\Bridge\Doctrine\Tests\Fixtures\AssociationEntity;
@@ -81,20 +76,20 @@ class UniqueEntityValidatorTest extends ConstraintValidatorTestCase
         parent::setUp();
     }
 
-    protected function createRegistryMock($em = null)
+    protected function createRegistryMock(ObjectManager $em = null)
     {
-        $registry = $this->getMockBuilder(interface_exists(ManagerRegistry::class) ? ManagerRegistry::class : LegacyManagerRegistry::class)->getMock();
+        $registry = $this->getMockBuilder('Doctrine\Common\Persistence\ManagerRegistry')->getMock();
         $registry->expects($this->any())
                  ->method('getManager')
                  ->with($this->equalTo(self::EM_NAME))
-                 ->willReturn($em);
+                 ->will($this->returnValue($em));
 
         return $registry;
     }
 
     protected function createRepositoryMock()
     {
-        $repository = $this->getMockBuilder(interface_exists(ObjectRepository::class) ? ObjectRepository::class : LegacyObjectRepository::class)
+        $repository = $this->getMockBuilder('Doctrine\Common\Persistence\ObjectRepository')
             ->setMethods(['findByCustom', 'find', 'findAll', 'findOneBy', 'findBy', 'getClassName'])
             ->getMock()
         ;
@@ -104,19 +99,19 @@ class UniqueEntityValidatorTest extends ConstraintValidatorTestCase
 
     protected function createEntityManagerMock($repositoryMock)
     {
-        $em = $this->getMockBuilder(interface_exists(ObjectManager::class) ? ObjectManager::class : LegacyObjectManager::class)
+        $em = $this->getMockBuilder('Doctrine\Common\Persistence\ObjectManager')
             ->getMock()
         ;
         $em->expects($this->any())
             ->method('getRepository')
-            ->willReturn($repositoryMock)
+            ->will($this->returnValue($repositoryMock))
         ;
 
-        $classMetadata = $this->getMockBuilder(interface_exists(ClassMetadata::class) ? ClassMetadata::class : LegacyClassMetadata::class)->getMock();
+        $classMetadata = $this->getMockBuilder('Doctrine\Common\Persistence\Mapping\ClassMetadata')->getMock();
         $classMetadata
             ->expects($this->any())
             ->method('hasField')
-            ->willReturn(true)
+            ->will($this->returnValue(true))
         ;
         $reflParser = $this->getMockBuilder('Doctrine\Common\Reflection\StaticReflectionParser')
             ->disableOriginalConstructor()
@@ -130,12 +125,12 @@ class UniqueEntityValidatorTest extends ConstraintValidatorTestCase
         $refl
             ->expects($this->any())
             ->method('getValue')
-            ->willReturn(true)
+            ->will($this->returnValue(true))
         ;
         $classMetadata->reflFields = ['name' => $refl];
         $em->expects($this->any())
             ->method('getClassMetadata')
-            ->willReturn($classMetadata)
+            ->will($this->returnValue($classMetadata))
         ;
 
         return $em;
@@ -146,7 +141,7 @@ class UniqueEntityValidatorTest extends ConstraintValidatorTestCase
         return new UniqueEntityValidator($this->registry);
     }
 
-    private function createSchema($em)
+    private function createSchema(ObjectManager $em)
     {
         $schemaTool = new SchemaTool($em);
         $schemaTool->createSchema([
@@ -280,9 +275,11 @@ class UniqueEntityValidatorTest extends ConstraintValidatorTestCase
             ->assertRaised();
     }
 
+    /**
+     * @expectedException \Symfony\Component\Validator\Exception\ConstraintDefinitionException
+     */
     public function testAllConfiguredFieldsAreCheckedOfBeingMappedByDoctrineWithIgnoreNullEnabled()
     {
-        $this->expectException('Symfony\Component\Validator\Exception\ConstraintDefinitionException');
         $constraint = new UniqueEntity([
             'message' => 'myMessage',
             'fields' => ['name', 'name2'],
@@ -369,7 +366,7 @@ class UniqueEntityValidatorTest extends ConstraintValidatorTestCase
         $repository = $this->createRepositoryMock();
         $repository->expects($this->once())
             ->method('findByCustom')
-            ->willReturn([])
+            ->will($this->returnValue([]))
         ;
         $this->em = $this->createEntityManagerMock($repository);
         $this->registry = $this->createRegistryMock($this->em);
@@ -397,15 +394,15 @@ class UniqueEntityValidatorTest extends ConstraintValidatorTestCase
         $repository = $this->createRepositoryMock();
         $repository->expects($this->once())
             ->method('findByCustom')
-            ->willReturnCallback(
-                function () use ($entity) {
+            ->will(
+                $this->returnCallback(function () use ($entity) {
                     $returnValue = [
                         $entity,
                     ];
                     next($returnValue);
 
                     return $returnValue;
-                }
+                })
             )
         ;
         $this->em = $this->createEntityManagerMock($repository);
@@ -433,7 +430,7 @@ class UniqueEntityValidatorTest extends ConstraintValidatorTestCase
         $repository = $this->createRepositoryMock();
         $repository->expects($this->once())
             ->method('findByCustom')
-            ->willReturn($result)
+            ->will($this->returnValue($result))
         ;
         $this->em = $this->createEntityManagerMock($repository);
         $this->registry = $this->createRegistryMock($this->em);
@@ -567,7 +564,7 @@ class UniqueEntityValidatorTest extends ConstraintValidatorTestCase
 
         $repository->expects($this->once())
             ->method('findByCustom')
-            ->willReturn([$entity1])
+            ->will($this->returnValue([$entity1]))
         ;
 
         $this->em->persist($entity1);
@@ -589,10 +586,12 @@ class UniqueEntityValidatorTest extends ConstraintValidatorTestCase
             ->assertRaised();
     }
 
+    /**
+     * @expectedException \Symfony\Component\Validator\Exception\ConstraintDefinitionException
+     * @expectedExceptionMessage Object manager "foo" does not exist.
+     */
     public function testDedicatedEntityManagerNullObject()
     {
-        $this->expectException('Symfony\Component\Validator\Exception\ConstraintDefinitionException');
-        $this->expectExceptionMessage('Object manager "foo" does not exist.');
         $constraint = new UniqueEntity([
             'message' => 'myMessage',
             'fields' => ['name'],
@@ -609,10 +608,12 @@ class UniqueEntityValidatorTest extends ConstraintValidatorTestCase
         $this->validator->validate($entity, $constraint);
     }
 
+    /**
+     * @expectedException \Symfony\Component\Validator\Exception\ConstraintDefinitionException
+     * @expectedExceptionMessage Unable to find the object manager associated with an entity of class "Symfony\Bridge\Doctrine\Tests\Fixtures\SingleIntIdEntity"
+     */
     public function testEntityManagerNullObject()
     {
-        $this->expectException('Symfony\Component\Validator\Exception\ConstraintDefinitionException');
-        $this->expectExceptionMessage('Unable to find the object manager associated with an entity of class "Symfony\Bridge\Doctrine\Tests\Fixtures\SingleIntIdEntity"');
         $constraint = new UniqueEntity([
             'message' => 'myMessage',
             'fields' => ['name'],
@@ -634,7 +635,7 @@ class UniqueEntityValidatorTest extends ConstraintValidatorTestCase
         $repository = $this->createRepositoryMock();
         $repository
              ->method('find')
-             ->willReturn(null)
+             ->will($this->returnValue(null))
         ;
 
         $this->em = $this->createEntityManagerMock($repository);
@@ -691,10 +692,12 @@ class UniqueEntityValidatorTest extends ConstraintValidatorTestCase
             ->assertRaised();
     }
 
+    /**
+     * @expectedException \Symfony\Component\Validator\Exception\ConstraintDefinitionException
+     * @expectedExceptionMessage The "Symfony\Bridge\Doctrine\Tests\Fixtures\SingleStringIdEntity" entity repository does not support the "Symfony\Bridge\Doctrine\Tests\Fixtures\Person" entity. The entity should be an instance of or extend "Symfony\Bridge\Doctrine\Tests\Fixtures\SingleStringIdEntity".
+     */
     public function testInvalidateRepositoryForInheritance()
     {
-        $this->expectException('Symfony\Component\Validator\Exception\ConstraintDefinitionException');
-        $this->expectExceptionMessage('The "Symfony\Bridge\Doctrine\Tests\Fixtures\SingleStringIdEntity" entity repository does not support the "Symfony\Bridge\Doctrine\Tests\Fixtures\Person" entity. The entity should be an instance of or extend "Symfony\Bridge\Doctrine\Tests\Fixtures\SingleStringIdEntity".');
         $constraint = new UniqueEntity([
             'message' => 'myMessage',
             'fields' => ['name'],

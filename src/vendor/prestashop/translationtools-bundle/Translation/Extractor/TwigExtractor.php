@@ -27,16 +27,15 @@
 
 namespace PrestaShop\TranslationToolsBundle\Translation\Extractor;
 
-use PrestaShop\TranslationToolsBundle\Twig\Lexer;
-use Symfony\Bridge\Twig\Extension\TranslationExtension;
-use Symfony\Bridge\Twig\Translation\TwigExtractor as BaseTwigExtractor;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
-use Symfony\Component\Translation\Extractor\ExtractorInterface;
-use Symfony\Component\Translation\MessageCatalogue;
+use Twig_Source;
 use Twig_Environment;
 use Twig_Error;
-use Twig_Source;
+use PrestaShop\TranslationToolsBundle\Twig\Lexer;
+use Symfony\Bridge\Twig\Translation\TwigExtractor as BaseTwigExtractor;
+use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\Translation\MessageCatalogue;
+use Symfony\Component\Translation\Extractor\ExtractorInterface;
+use Symfony\Bridge\Twig\Extension\TranslationExtension;
 
 class TwigExtractor extends BaseTwigExtractor implements ExtractorInterface
 {
@@ -129,7 +128,7 @@ class TwigExtractor extends BaseTwigExtractor implements ExtractorInterface
 
             $catalogue->set(
                 $message[0],
-                $this->prefix . trim($message[0]),
+                $this->prefix.trim($message[0]),
                 $domain
             );
 
@@ -155,15 +154,28 @@ class TwigExtractor extends BaseTwigExtractor implements ExtractorInterface
     }
 
     /**
+     * @param $comments
+     * @param $file
+     * @param $line
+     *
+     * @return array
+     */
+    public function getEntryComment($comments, $file, $line)
+    {
+        foreach ($comments as $comment) {
+            if ($comment['file'] == $file && $comment['line'] == $line) {
+                return $comment['comment'];
+            }
+        }
+    }
+
+    /**
      * @param string $directory
      *
      * @return Finder
      */
     protected function extractFromDirectory($directory)
     {
-        return $this->getFinder()->files()
-            ->name('*.twig')
-            ->in($directory)
-            ->exclude($this->getExcludedDirectories());
+        return $this->getFinder()->files()->name('*.twig')->in($directory);
     }
 }

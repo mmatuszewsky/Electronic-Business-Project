@@ -2,29 +2,38 @@
 
 namespace Doctrine\Bundle\DoctrineBundle;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\ORMException;
-use ProxyManager\Proxy\LazyLoadingInterface;
-use Psr\Container\ContainerInterface;
 use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Bridge\Doctrine\RegistryInterface;
-use Symfony\Contracts\Service\ResetInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * References all Doctrine connections and entity managers in a given Container.
  */
-class Registry extends ManagerRegistry implements RegistryInterface, ResetInterface
+class Registry extends ManagerRegistry implements RegistryInterface
 {
     /**
-     * @param string[] $connections
-     * @param string[] $entityManagers
-     * @param string   $defaultConnection
-     * @param string   $defaultEntityManager
+     * Construct.
+     *
+     * @param Connection[]             $connections
+     * @param EntityManagerInterface[] $entityManagers
+     * @param string                   $defaultConnection
+     * @param string                   $defaultEntityManager
      */
     public function __construct(ContainerInterface $container, array $connections, array $entityManagers, $defaultConnection, $defaultEntityManager)
     {
-        $this->container = $container;
+        $parentTraits = class_uses(parent::class);
+        if (isset($parentTraits[ContainerAwareTrait::class])) {
+            // this case should be removed when Symfony 3.4 becomes the lowest supported version
+            // and then also, the constructor should type-hint Psr\Container\ContainerInterface
+            $this->setContainer($container);
+        } else {
+            $this->container = $container;
+        }
 
         parent::__construct('ORM', $connections, $entityManagers, $defaultConnection, $defaultEntityManager, 'Doctrine\ORM\Proxy\Proxy');
     }
@@ -90,11 +99,11 @@ class Registry extends ManagerRegistry implements RegistryInterface, ResetInterf
      *
      * @param string $name The entity manager name (null for the default one)
      */
-    public function resetEntityManager($name = null) : EntityManager
+    public function resetEntityManager($name = null)
     {
         @trigger_error('resetEntityManager is deprecated since Symfony 2.1. Use resetManager instead', E_USER_DEPRECATED);
 
-        return $this->resetManager($name);
+        $this->resetManager($name);
     }
 
     /**
@@ -166,31 +175,5 @@ class Registry extends ManagerRegistry implements RegistryInterface, ResetInterf
         @trigger_error('getEntityManagerForClass is deprecated since Symfony 2.1. Use getManagerForClass instead', E_USER_DEPRECATED);
 
         return $this->getManagerForClass($class);
-    }
-
-    public function reset() : void
-    {
-        foreach ($this->getManagerNames() as $managerName => $serviceId) {
-            $this->resetOrClearManager($managerName, $serviceId);
-        }
-    }
-
-    private function resetOrClearManager(string $managerName, string $serviceId) : void
-    {
-        if (! $this->container->initialized($serviceId)) {
-            return;
-        }
-
-        $manager = $this->container->get($serviceId);
-
-        assert($manager instanceof EntityManagerInterface);
-
-        if (! $manager instanceof LazyLoadingInterface || $manager->isOpen()) {
-            $manager->clear();
-
-            return;
-        }
-
-        $this->resetManager($managerName);
     }
 }

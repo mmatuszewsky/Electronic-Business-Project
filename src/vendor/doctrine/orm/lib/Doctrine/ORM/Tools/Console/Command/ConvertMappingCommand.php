@@ -19,18 +19,16 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
-use Doctrine\ORM\Tools\Console\MetadataFilter;
-use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
-use Doctrine\ORM\Tools\EntityGenerator;
-use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
-use Doctrine\ORM\Tools\Export\Driver\AnnotationExporter;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Doctrine\ORM\Tools\Console\MetadataFilter;
+use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
+use Doctrine\ORM\Tools\EntityGenerator;
+use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
+use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Command\Command;
 
 /**
  * Command to convert your mapping information between the various formats.
@@ -49,18 +47,43 @@ class ConvertMappingCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('orm:convert-mapping')
-             ->setAliases(['orm:convert:mapping'])
-             ->setDescription('Convert mapping information between supported formats')
-             ->addArgument('to-type', InputArgument::REQUIRED, 'The mapping type to be converted.')
-             ->addArgument('dest-path', InputArgument::REQUIRED, 'The path to generate your entities classes.')
-             ->addOption('filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'A string pattern used to match entities that should be processed.')
-             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force to overwrite existing mapping files.')
-             ->addOption('from-database', null, null, 'Whether or not to convert mapping information from existing database.')
-             ->addOption('extend', null, InputOption::VALUE_OPTIONAL, 'Defines a base class to be extended by generated entity classes.')
-             ->addOption('num-spaces', null, InputOption::VALUE_OPTIONAL, 'Defines the number of indentation spaces', 4)
-             ->addOption('namespace', null, InputOption::VALUE_OPTIONAL, 'Defines a namespace for the generated entity classes, if converted from database.')
-             ->setHelp(<<<EOT
+        $this
+        ->setName('orm:convert-mapping')
+        ->setAliases(array('orm:convert:mapping'))
+        ->setDescription('Convert mapping information between supported formats.')
+        ->setDefinition(array(
+            new InputOption(
+                'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                'A string pattern used to match entities that should be processed.'
+            ),
+            new InputArgument(
+                'to-type', InputArgument::REQUIRED, 'The mapping type to be converted.'
+            ),
+            new InputArgument(
+                'dest-path', InputArgument::REQUIRED,
+                'The path to generate your entities classes.'
+            ),
+            new InputOption(
+                'force', 'f', InputOption::VALUE_NONE,
+                'Force to overwrite existing mapping files.'
+            ),
+            new InputOption(
+                'from-database', null, null, 'Whether or not to convert mapping information from existing database.'
+            ),
+            new InputOption(
+                'extend', null, InputOption::VALUE_OPTIONAL,
+                'Defines a base class to be extended by generated entity classes.'
+            ),
+            new InputOption(
+                'num-spaces', null, InputOption::VALUE_OPTIONAL,
+                'Defines the number of indentation spaces', 4
+            ),
+            new InputOption(
+                'namespace', null, InputOption::VALUE_OPTIONAL,
+                'Defines a namespace for the generated entity classes, if converted from database.'
+            ),
+        ))
+        ->setHelp(<<<EOT
 Convert mapping information between supported formats.
 
 This is an execute <info>one-time</info> command. It should not be necessary for
@@ -83,7 +106,7 @@ on a global level:
 
     \$config->setFilterSchemaAssetsExpression(\$regexp);
 EOT
-             );
+        );
     }
 
     /**
@@ -91,8 +114,6 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $ui = new SymfonyStyle($input, $output);
-
         $em = $this->getHelper('em')->getEntityManager();
 
         if ($input->getOption('from-database') === true) {
@@ -137,39 +158,31 @@ EOT
         $exporter = $this->getExporter($toType, $destPath);
         $exporter->setOverwriteExistingFiles($input->getOption('force'));
 
-        if ($exporter instanceof AnnotationExporter) {
+        if ($toType == 'annotation') {
             $entityGenerator = new EntityGenerator();
             $exporter->setEntityGenerator($entityGenerator);
 
-            $entityGenerator->setNumSpaces((int) $input->getOption('num-spaces'));
+            $entityGenerator->setNumSpaces($input->getOption('num-spaces'));
 
             if (($extend = $input->getOption('extend')) !== null) {
                 $entityGenerator->setClassToExtend($extend);
             }
         }
 
-        if (empty($metadata)) {
-            $ui->success('No Metadata Classes to process.');
-            return;
+        if (count($metadata)) {
+            foreach ($metadata as $class) {
+                $output->writeln(sprintf('Processing entity "<info>%s</info>"', $class->name));
+            }
+
+            $exporter->setMetadata($metadata);
+            $exporter->export();
+
+            $output->writeln(PHP_EOL . sprintf(
+                'Exporting "<info>%s</info>" mapping information to "<info>%s</info>"', $toType, $destPath
+            ));
+        } else {
+            $output->writeln('No Metadata Classes to process.');
         }
-
-        foreach ($metadata as $class) {
-            $ui->text(sprintf('Processing entity "<info>%s</info>"', $class->name));
-        }
-
-        $exporter->setMetadata($metadata);
-        $exporter->export();
-
-        $ui->newLine();
-        $ui->text(
-            sprintf(
-                'Exporting "<info>%s</info>" mapping information to "<info>%s</info>"',
-                $toType,
-                $destPath
-            )
-        );
-
-        return 0;
     }
 
     /**

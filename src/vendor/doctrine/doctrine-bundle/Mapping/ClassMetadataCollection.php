@@ -16,6 +16,8 @@ class ClassMetadataCollection
     private $metadata;
 
     /**
+     * Constructor
+     *
      * @param ClassMetadata[] $metadata
      */
     public function __construct(array $metadata)

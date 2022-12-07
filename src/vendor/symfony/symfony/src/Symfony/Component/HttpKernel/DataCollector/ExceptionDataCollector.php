@@ -55,7 +55,7 @@ class ExceptionDataCollector extends DataCollector
     /**
      * Gets the exception.
      *
-     * @return \Exception|FlattenException
+     * @return \Exception The exception
      */
     public function getException()
     {

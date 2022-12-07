@@ -30,7 +30,9 @@ class RegionBundle extends RegionDataProvider implements RegionBundleInterface
     /**
      * Creates a new region bundle.
      *
-     * @param string $path
+     * @param string                     $path
+     * @param BundleEntryReaderInterface $reader
+     * @param LocaleDataProvider         $localeProvider
      */
     public function __construct($path, BundleEntryReaderInterface $reader, LocaleDataProvider $localeProvider)
     {
@@ -47,7 +49,7 @@ class RegionBundle extends RegionDataProvider implements RegionBundleInterface
         try {
             return $this->getName($country, $displayLocale);
         } catch (MissingResourceException $e) {
-            return null;
+            return;
         }
     }
 

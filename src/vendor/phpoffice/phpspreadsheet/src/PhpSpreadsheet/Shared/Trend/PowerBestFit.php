@@ -105,9 +105,7 @@ class PowerBestFit extends BestFit
      */
     public function __construct($yValues, $xValues = [], $const = true)
     {
-        parent::__construct($yValues, $xValues);
-
-        if (!$this->error) {
+        if (parent::__construct($yValues, $xValues) !== false) {
             $this->powerRegression($yValues, $xValues, $const);
         }
     }

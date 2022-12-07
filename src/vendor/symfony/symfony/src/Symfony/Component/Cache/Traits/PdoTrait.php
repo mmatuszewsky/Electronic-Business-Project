@@ -44,7 +44,7 @@ trait PdoTrait
 
         if ($connOrDsn instanceof \PDO) {
             if (\PDO::ERRMODE_EXCEPTION !== $connOrDsn->getAttribute(\PDO::ATTR_ERRMODE)) {
-                throw new InvalidArgumentException(sprintf('"%s" requires PDO error mode attribute be set to throw Exceptions (i.e. $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION)).', __CLASS__));
+                throw new InvalidArgumentException(sprintf('"%s" requires PDO error mode attribute be set to throw Exceptions (i.e. $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION))', __CLASS__));
             }
 
             $this->conn = $connOrDsn;
@@ -105,11 +105,7 @@ trait PdoTrait
             $table->setPrimaryKey([$this->idCol]);
 
             foreach ($schema->toSql($conn->getDatabasePlatform()) as $sql) {
-                if (method_exists($conn, 'executeStatement')) {
-                    $conn->executeStatement($sql);
-                } else {
-                    $conn->exec($sql);
-                }
+                $conn->exec($sql);
             }
 
             return;
@@ -140,11 +136,7 @@ trait PdoTrait
                 throw new \DomainException(sprintf('Creating the cache table is currently not implemented for PDO driver "%s".', $this->driver));
         }
 
-        if (method_exists($conn, 'executeStatement')) {
-            $conn->executeStatement($sql);
-        } else {
-            $conn->exec($sql);
-        }
+        $conn->exec($sql);
     }
 
     /**
@@ -183,16 +175,9 @@ trait PdoTrait
         foreach ($ids as $id) {
             $stmt->bindValue(++$i, $id);
         }
-        $result = $stmt->execute();
+        $stmt->execute();
 
-        if (\is_object($result)) {
-            $result = $result->iterateNumeric();
-        } else {
-            $stmt->setFetchMode(\PDO::FETCH_NUM);
-            $result = $stmt;
-        }
-
-        foreach ($result as $row) {
+        while ($row = $stmt->fetch(\PDO::FETCH_NUM)) {
             if (null === $row[1]) {
                 $expired[] = $row[0];
             } else {
@@ -222,9 +207,9 @@ trait PdoTrait
 
         $stmt->bindValue(':id', $id);
         $stmt->bindValue(':time', time(), \PDO::PARAM_INT);
-        $result = $stmt->execute();
+        $stmt->execute();
 
-        return (bool) (\is_object($result) ? $result->fetchOne() : $stmt->fetchColumn());
+        return (bool) $stmt->fetchColumn();
     }
 
     /**
@@ -244,11 +229,7 @@ trait PdoTrait
             $sql = "DELETE FROM $this->table WHERE $this->idCol LIKE '$namespace%'";
         }
 
-        if (method_exists($conn, 'executeStatement')) {
-            $conn->executeStatement($sql);
-        } else {
-            $conn->exec($sql);
-        }
+        $conn->exec($sql);
 
         return true;
     }
@@ -348,9 +329,9 @@ trait PdoTrait
         }
 
         foreach ($serialized as $id => $data) {
-            $result = $stmt->execute();
+            $stmt->execute();
 
-            if (null === $driver && !(\is_object($result) ? $result->rowCount() : $stmt->rowCount())) {
+            if (null === $driver && !$stmt->rowCount()) {
                 try {
                     $insertStmt->execute();
                 } catch (DBALException $e) {
@@ -376,36 +357,24 @@ trait PdoTrait
             if ($this->conn instanceof \PDO) {
                 $this->driver = $this->conn->getAttribute(\PDO::ATTR_DRIVER_NAME);
             } else {
-                $driver = $this->conn->getDriver();
-
-                switch (true) {
-                    case $driver instanceof \Doctrine\DBAL\Driver\AbstractMySQLDriver:
-                    case $driver instanceof \Doctrine\DBAL\Driver\DrizzlePDOMySql\Driver:
-                    case $driver instanceof \Doctrine\DBAL\Driver\Mysqli\Driver:
-                    case $driver instanceof \Doctrine\DBAL\Driver\PDOMySql\Driver:
-                    case $driver instanceof \Doctrine\DBAL\Driver\PDO\MySQL\Driver:
+                switch ($this->driver = $this->conn->getDriver()->getName()) {
+                    case 'mysqli':
+                    case 'pdo_mysql':
+                    case 'drizzle_pdo_mysql':
                         $this->driver = 'mysql';
                         break;
-                    case $driver instanceof \Doctrine\DBAL\Driver\PDOSqlite\Driver:
-                    case $driver instanceof \Doctrine\DBAL\Driver\PDO\SQLite\Driver:
+                    case 'pdo_sqlite':
                         $this->driver = 'sqlite';
                         break;
-                    case $driver instanceof \Doctrine\DBAL\Driver\PDOPgSql\Driver:
-                    case $driver instanceof \Doctrine\DBAL\Driver\PDO\PgSQL\Driver:
+                    case 'pdo_pgsql':
                         $this->driver = 'pgsql';
                         break;
-                    case $driver instanceof \Doctrine\DBAL\Driver\OCI8\Driver:
-                    case $driver instanceof \Doctrine\DBAL\Driver\PDOOracle\Driver:
-                    case $driver instanceof \Doctrine\DBAL\Driver\PDO\OCI\Driver:
+                    case 'oci8':
+                    case 'pdo_oracle':
                         $this->driver = 'oci';
                         break;
-                    case $driver instanceof \Doctrine\DBAL\Driver\SQLSrv\Driver:
-                    case $driver instanceof \Doctrine\DBAL\Driver\PDOSqlsrv\Driver:
-                    case $driver instanceof \Doctrine\DBAL\Driver\PDO\SQLSrv\Driver:
+                    case 'pdo_sqlsrv':
                         $this->driver = 'sqlsrv';
-                        break;
-                    default:
-                        $this->driver = \get_class($driver);
                         break;
                 }
             }

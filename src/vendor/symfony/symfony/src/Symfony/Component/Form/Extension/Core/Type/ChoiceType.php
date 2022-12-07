@@ -251,7 +251,7 @@ class ChoiceType extends AbstractType
     {
         $emptyData = function (Options $options) {
             if ($options['expanded'] && !$options['multiple']) {
-                return null;
+                return;
             }
 
             if ($options['multiple']) {
@@ -273,10 +273,10 @@ class ChoiceType extends AbstractType
 
             // Set by the user
             if (true !== $choicesAsValues) {
-                throw new \RuntimeException(sprintf('The "choices_as_values" option of the "%s" should not be used. Remove it and flip the contents of the "choices" option instead.', static::class));
+                throw new \RuntimeException(sprintf('The "choices_as_values" option of the %s should not be used. Remove it and flip the contents of the "choices" option instead.', \get_class($this)));
             }
 
-            @trigger_error('The "choices_as_values" option is deprecated since Symfony 3.1 and will be removed in 4.0. You should not use it anymore.', \E_USER_DEPRECATED);
+            @trigger_error('The "choices_as_values" option is deprecated since Symfony 3.1 and will be removed in 4.0. You should not use it anymore.', E_USER_DEPRECATED);
 
             return true;
         };
@@ -284,13 +284,13 @@ class ChoiceType extends AbstractType
         $placeholderNormalizer = function (Options $options, $placeholder) {
             if ($options['multiple']) {
                 // never use an empty value for this case
-                return null;
+                return;
             } elseif ($options['required'] && ($options['expanded'] || isset($options['attr']['size']) && $options['attr']['size'] > 1)) {
                 // placeholder for required radio buttons or a select with size > 1 does not make sense
-                return null;
+                return;
             } elseif (false === $placeholder) {
                 // an empty value should be added but the user decided otherwise
-                return null;
+                return;
             } elseif ($options['expanded'] && '' === $placeholder) {
                 // never use an empty label for radio buttons
                 return 'None';
@@ -380,23 +380,26 @@ class ChoiceType extends AbstractType
         }
     }
 
+    /**
+     * @return mixed
+     */
     private function addSubForm(FormBuilderInterface $builder, $name, ChoiceView $choiceView, array $options)
     {
         $choiceOpts = [
             'value' => $choiceView->value,
             'label' => $choiceView->label,
             'attr' => $choiceView->attr,
-            'translation_domain' => $options['choice_translation_domain'],
+            'translation_domain' => $options['translation_domain'],
             'block_name' => 'entry',
         ];
 
         if ($options['multiple']) {
-            $choiceType = CheckboxType::class;
+            $choiceType = __NAMESPACE__.'\CheckboxType';
             // The user can check 0 or more checkboxes. If required
             // is true, they are required to check all of them.
             $choiceOpts['required'] = false;
         } else {
-            $choiceType = RadioType::class;
+            $choiceType = __NAMESPACE__.'\RadioType';
         }
 
         $builder->add($name, $choiceType, $choiceOpts);

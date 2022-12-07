@@ -14,9 +14,9 @@ use Symfony\Component\DependencyInjection\ParameterBag\FrozenParameterBag;
  *
  * @final since Symfony 3.3
  */
-class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyContainer
+class FrontContainer extends Container
 {
-    private $parameters = [];
+    private $parameters;
     private $targetDirs = [];
 
     public function __construct()
@@ -24,146 +24,8 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
         $this->parameters = $this->getDefaultParameters();
 
         $this->services = [];
-        $this->normalizedIds = [
-            'prestashop\\module\\prestashopfacebook\\adapter\\configurationadapter' => 'PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter',
-            'prestashop\\module\\prestashopfacebook\\adapter\\toolsadapter' => 'PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ToolsAdapter',
-            'prestashop\\module\\prestashopfacebook\\api\\client\\facebookcategoryclient' => 'PrestaShop\\Module\\PrestashopFacebook\\API\\Client\\FacebookCategoryClient',
-            'prestashop\\module\\prestashopfacebook\\api\\client\\facebookclient' => 'PrestaShop\\Module\\PrestashopFacebook\\API\\Client\\FacebookClient',
-            'prestashop\\module\\prestashopfacebook\\api\\eventsubscriber\\accountsuspendedsubscriber' => 'PrestaShop\\Module\\PrestashopFacebook\\API\\EventSubscriber\\AccountSuspendedSubscriber',
-            'prestashop\\module\\prestashopfacebook\\api\\eventsubscriber\\apierrorsubscriber' => 'PrestaShop\\Module\\PrestashopFacebook\\API\\EventSubscriber\\ApiErrorSubscriber',
-            'prestashop\\module\\prestashopfacebook\\api\\responselistener' => 'PrestaShop\\Module\\PrestashopFacebook\\API\\ResponseListener',
-            'prestashop\\module\\prestashopfacebook\\buffer\\templatebuffer' => 'PrestaShop\\Module\\PrestashopFacebook\\Buffer\\TemplateBuffer',
-            'prestashop\\module\\prestashopfacebook\\config\\env' => 'PrestaShop\\Module\\PrestashopFacebook\\Config\\Env',
-            'prestashop\\module\\prestashopfacebook\\dispatcher\\eventdispatcher' => 'PrestaShop\\Module\\PrestashopFacebook\\Dispatcher\\EventDispatcher',
-            'prestashop\\module\\prestashopfacebook\\factory\\facebookessentialsapiclientfactory' => 'PrestaShop\\Module\\PrestashopFacebook\\Factory\\FacebookEssentialsApiClientFactory',
-            'prestashop\\module\\prestashopfacebook\\factory\\psapiclientfactory' => 'PrestaShop\\Module\\PrestashopFacebook\\Factory\\PsApiClientFactory',
-            'prestashop\\module\\prestashopfacebook\\handler\\apiconversionhandler' => 'PrestaShop\\Module\\PrestashopFacebook\\Handler\\ApiConversionHandler',
-            'prestashop\\module\\prestashopfacebook\\handler\\categorymatchhandler' => 'PrestaShop\\Module\\PrestashopFacebook\\Handler\\CategoryMatchHandler',
-            'prestashop\\module\\prestashopfacebook\\handler\\configurationhandler' => 'PrestaShop\\Module\\PrestashopFacebook\\Handler\\ConfigurationHandler',
-            'prestashop\\module\\prestashopfacebook\\handler\\errorhandler\\errorhandler' => 'PrestaShop\\Module\\PrestashopFacebook\\Handler\\ErrorHandler\\ErrorHandler',
-            'prestashop\\module\\prestashopfacebook\\handler\\eventbusproducthandler' => 'PrestaShop\\Module\\PrestashopFacebook\\Handler\\EventBusProductHandler',
-            'prestashop\\module\\prestashopfacebook\\handler\\messengerhandler' => 'PrestaShop\\Module\\PrestashopFacebook\\Handler\\MessengerHandler',
-            'prestashop\\module\\prestashopfacebook\\handler\\pixelhandler' => 'PrestaShop\\Module\\PrestashopFacebook\\Handler\\PixelHandler',
-            'prestashop\\module\\prestashopfacebook\\handler\\prevalidationscanrefreshhandler' => 'PrestaShop\\Module\\PrestashopFacebook\\Handler\\PrevalidationScanRefreshHandler',
-            'prestashop\\module\\prestashopfacebook\\manager\\fbefeaturemanager' => 'PrestaShop\\Module\\PrestashopFacebook\\Manager\\FbeFeatureManager',
-            'prestashop\\module\\prestashopfacebook\\presenter\\moduleupgradepresenter' => 'PrestaShop\\Module\\PrestashopFacebook\\Presenter\\ModuleUpgradePresenter',
-            'prestashop\\module\\prestashopfacebook\\provider\\accesstokenprovider' => 'PrestaShop\\Module\\PrestashopFacebook\\Provider\\AccessTokenProvider',
-            'prestashop\\module\\prestashopfacebook\\provider\\eventdataprovider' => 'PrestaShop\\Module\\PrestashopFacebook\\Provider\\EventDataProvider',
-            'prestashop\\module\\prestashopfacebook\\provider\\facebookdataprovider' => 'PrestaShop\\Module\\PrestashopFacebook\\Provider\\FacebookDataProvider',
-            'prestashop\\module\\prestashopfacebook\\provider\\fbedataprovider' => 'PrestaShop\\Module\\PrestashopFacebook\\Provider\\FbeDataProvider',
-            'prestashop\\module\\prestashopfacebook\\provider\\fbefeaturedataprovider' => 'PrestaShop\\Module\\PrestashopFacebook\\Provider\\FbeFeatureDataProvider',
-            'prestashop\\module\\prestashopfacebook\\provider\\googlecategoryprovider' => 'PrestaShop\\Module\\PrestashopFacebook\\Provider\\GoogleCategoryProvider',
-            'prestashop\\module\\prestashopfacebook\\provider\\googlecategoryproviderinterface' => 'PrestaShop\\Module\\PrestashopFacebook\\Provider\\GoogleCategoryProviderInterface',
-            'prestashop\\module\\prestashopfacebook\\provider\\multishopdataprovider' => 'PrestaShop\\Module\\PrestashopFacebook\\Provider\\MultishopDataProvider',
-            'prestashop\\module\\prestashopfacebook\\provider\\prevalidationscancacheprovider' => 'PrestaShop\\Module\\PrestashopFacebook\\Provider\\PrevalidationScanCacheProvider',
-            'prestashop\\module\\prestashopfacebook\\provider\\prevalidationscandataprovider' => 'PrestaShop\\Module\\PrestashopFacebook\\Provider\\PrevalidationScanDataProvider',
-            'prestashop\\module\\prestashopfacebook\\provider\\productavailabilityprovider' => 'PrestaShop\\Module\\PrestashopFacebook\\Provider\\ProductAvailabilityProvider',
-            'prestashop\\module\\prestashopfacebook\\provider\\productavailabilityproviderinterface' => 'PrestaShop\\Module\\PrestashopFacebook\\Provider\\ProductAvailabilityProviderInterface',
-            'prestashop\\module\\prestashopfacebook\\provider\\productsyncreportprovider' => 'PrestaShop\\Module\\PrestashopFacebook\\Provider\\ProductSyncReportProvider',
-            'prestashop\\module\\prestashopfacebook\\repository\\googlecategoryrepository' => 'PrestaShop\\Module\\PrestashopFacebook\\Repository\\GoogleCategoryRepository',
-            'prestashop\\module\\prestashopfacebook\\repository\\productrepository' => 'PrestaShop\\Module\\PrestashopFacebook\\Repository\\ProductRepository',
-            'prestashop\\module\\prestashopfacebook\\repository\\serverinformationrepository' => 'PrestaShop\\Module\\PrestashopFacebook\\Repository\\ServerInformationRepository',
-            'prestashop\\module\\prestashopfacebook\\repository\\shoprepository' => 'PrestaShop\\Module\\PrestashopFacebook\\Repository\\ShopRepository',
-            'prestashop\\module\\prestashopfacebook\\repository\\tabrepository' => 'PrestaShop\\Module\\PrestashopFacebook\\Repository\\TabRepository',
-            'prestashop\\module\\ps_facebook\\tracker\\segment' => 'PrestaShop\\Module\\Ps_facebook\\Tracker\\Segment',
-            'prestashop\\module\\psxmarketingwithgoogle\\adapter\\configurationadapter' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Adapter\\ConfigurationAdapter',
-            'prestashop\\module\\psxmarketingwithgoogle\\buffer\\templatebuffer' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Buffer\\TemplateBuffer',
-            'prestashop\\module\\psxmarketingwithgoogle\\config\\env' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Config\\Env',
-            'prestashop\\module\\psxmarketingwithgoogle\\handler\\errorhandler' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Handler\\ErrorHandler',
-            'prestashop\\module\\psxmarketingwithgoogle\\handler\\remarketinghookhandler' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Handler\\RemarketingHookHandler',
-            'prestashop\\module\\psxmarketingwithgoogle\\provider\\carteventdataprovider' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\CartEventDataProvider',
-            'prestashop\\module\\psxmarketingwithgoogle\\provider\\conversioneventdataprovider' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\ConversionEventDataProvider',
-            'prestashop\\module\\psxmarketingwithgoogle\\provider\\pagevieweventdataprovider' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\PageViewEventDataProvider',
-            'prestashop\\module\\psxmarketingwithgoogle\\provider\\productdataprovider' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\ProductDataProvider',
-            'prestashop\\module\\psxmarketingwithgoogle\\provider\\purchaseeventdataprovider' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\PurchaseEventDataProvider',
-            'prestashop\\module\\psxmarketingwithgoogle\\repository\\attributesrepository' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\AttributesRepository',
-            'prestashop\\module\\psxmarketingwithgoogle\\repository\\carrierrepository' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\CarrierRepository',
-            'prestashop\\module\\psxmarketingwithgoogle\\repository\\countryrepository' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\CountryRepository',
-            'prestashop\\module\\psxmarketingwithgoogle\\repository\\currencyrepository' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\CurrencyRepository',
-            'prestashop\\module\\psxmarketingwithgoogle\\repository\\languagerepository' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\LanguageRepository',
-            'prestashop\\module\\psxmarketingwithgoogle\\repository\\productrepository' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\ProductRepository',
-            'prestashop\\module\\psxmarketingwithgoogle\\repository\\staterepository' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\StateRepository',
-            'prestashop\\module\\psxmarketingwithgoogle\\repository\\tabrepository' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\TabRepository',
-            'prestashop\\module\\psxmarketingwithgoogle\\repository\\taxrepository' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\TaxRepository',
-            'prestashop\\module\\psxmarketingwithgoogle\\tracker\\segment' => 'PrestaShop\\Module\\PsxMarketingWithGoogle\\Tracker\\Segment',
-            'prestashop\\modulelibguzzleadapter\\clientfactory' => 'Prestashop\\ModuleLibGuzzleAdapter\\ClientFactory',
-            'prestashop\\psaccountsinstaller\\installer\\facade\\psaccounts' => 'PrestaShop\\PsAccountsInstaller\\Installer\\Facade\\PsAccounts',
-            'prestashop\\psaccountsinstaller\\installer\\installer' => 'PrestaShop\\PsAccountsInstaller\\Installer\\Installer',
-        ];
-        $this->syntheticIds = [
-            'employee' => true,
-            'shop' => true,
-        ];
         $this->methodMap = [
-            'PrestaShop\\Module\\PrestashopFacebook\\API\\Client\\FacebookCategoryClient' => 'getFacebookCategoryClientService',
-            'PrestaShop\\Module\\PrestashopFacebook\\API\\Client\\FacebookClient' => 'getFacebookClientService',
-            'PrestaShop\\Module\\PrestashopFacebook\\API\\EventSubscriber\\AccountSuspendedSubscriber' => 'getAccountSuspendedSubscriberService',
-            'PrestaShop\\Module\\PrestashopFacebook\\API\\EventSubscriber\\ApiErrorSubscriber' => 'getApiErrorSubscriberService',
-            'PrestaShop\\Module\\PrestashopFacebook\\API\\ResponseListener' => 'getResponseListenerService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter' => 'getConfigurationAdapterService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ToolsAdapter' => 'getToolsAdapterService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Buffer\\TemplateBuffer' => 'getTemplateBufferService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Config\\Env' => 'getEnvService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Dispatcher\\EventDispatcher' => 'getEventDispatcherService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Factory\\FacebookEssentialsApiClientFactory' => 'getFacebookEssentialsApiClientFactoryService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Factory\\PsApiClientFactory' => 'getPsApiClientFactoryService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Handler\\ApiConversionHandler' => 'getApiConversionHandlerService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Handler\\CategoryMatchHandler' => 'getCategoryMatchHandlerService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Handler\\ConfigurationHandler' => 'getConfigurationHandlerService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Handler\\ErrorHandler\\ErrorHandler' => 'getErrorHandlerService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Handler\\EventBusProductHandler' => 'getEventBusProductHandlerService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Handler\\MessengerHandler' => 'getMessengerHandlerService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Handler\\PixelHandler' => 'getPixelHandlerService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Handler\\PrevalidationScanRefreshHandler' => 'getPrevalidationScanRefreshHandlerService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Manager\\FbeFeatureManager' => 'getFbeFeatureManagerService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Presenter\\ModuleUpgradePresenter' => 'getModuleUpgradePresenterService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Provider\\AccessTokenProvider' => 'getAccessTokenProviderService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Provider\\EventDataProvider' => 'getEventDataProviderService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Provider\\FacebookDataProvider' => 'getFacebookDataProviderService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Provider\\FbeDataProvider' => 'getFbeDataProviderService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Provider\\FbeFeatureDataProvider' => 'getFbeFeatureDataProviderService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Provider\\GoogleCategoryProvider' => 'getGoogleCategoryProviderService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Provider\\MultishopDataProvider' => 'getMultishopDataProviderService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Provider\\PrevalidationScanCacheProvider' => 'getPrevalidationScanCacheProviderService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Provider\\PrevalidationScanDataProvider' => 'getPrevalidationScanDataProviderService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Provider\\ProductAvailabilityProvider' => 'getProductAvailabilityProviderService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Provider\\ProductSyncReportProvider' => 'getProductSyncReportProviderService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Repository\\GoogleCategoryRepository' => 'getGoogleCategoryRepositoryService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Repository\\ProductRepository' => 'getProductRepositoryService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Repository\\ServerInformationRepository' => 'getServerInformationRepositoryService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Repository\\ShopRepository' => 'getShopRepositoryService',
-            'PrestaShop\\Module\\PrestashopFacebook\\Repository\\TabRepository' => 'getTabRepositoryService',
-            'PrestaShop\\Module\\Ps_facebook\\Tracker\\Segment' => 'getSegmentService',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Adapter\\ConfigurationAdapter' => 'getConfigurationAdapter2Service',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Buffer\\TemplateBuffer' => 'getTemplateBuffer2Service',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Config\\Env' => 'getEnv2Service',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Handler\\ErrorHandler' => 'getErrorHandler2Service',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Handler\\RemarketingHookHandler' => 'getRemarketingHookHandlerService',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\CartEventDataProvider' => 'getCartEventDataProviderService',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\ConversionEventDataProvider' => 'getConversionEventDataProviderService',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\PageViewEventDataProvider' => 'getPageViewEventDataProviderService',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\ProductDataProvider' => 'getProductDataProviderService',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\PurchaseEventDataProvider' => 'getPurchaseEventDataProviderService',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\AttributesRepository' => 'getAttributesRepositoryService',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\CarrierRepository' => 'getCarrierRepositoryService',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\CountryRepository' => 'getCountryRepositoryService',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\CurrencyRepository' => 'getCurrencyRepositoryService',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\LanguageRepository' => 'getLanguageRepositoryService',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\ProductRepository' => 'getProductRepository2Service',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\StateRepository' => 'getStateRepositoryService',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\TabRepository' => 'getTabRepository2Service',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\TaxRepository' => 'getTaxRepositoryService',
-            'PrestaShop\\Module\\PsxMarketingWithGoogle\\Tracker\\Segment' => 'getSegment2Service',
-            'PrestaShop\\PsAccountsInstaller\\Installer\\Facade\\PsAccounts' => 'getPsAccountsService',
-            'PrestaShop\\PsAccountsInstaller\\Installer\\Installer' => 'getInstallerService',
-            'Prestashop\\ModuleLibGuzzleAdapter\\ClientFactory' => 'getClientFactoryService',
             'annotation_reader' => 'getAnnotationReaderService',
-            'cache.doctrine.orm.default.metadata' => 'getCache_Doctrine_Orm_Default_MetadataService',
-            'cache.doctrine.orm.default.query' => 'getCache_Doctrine_Orm_Default_QueryService',
-            'cache.doctrine.orm.default.result' => 'getCache_Doctrine_Orm_Default_ResultService',
-            'configuration' => 'getConfigurationService',
-            'context' => 'getContextService',
-            'db' => 'getDbService',
             'doctrine' => 'getDoctrineService',
             'doctrine.cache_clear_metadata_command' => 'getDoctrine_CacheClearMetadataCommandService',
             'doctrine.cache_clear_query_cache_command' => 'getDoctrine_CacheClearQueryCacheCommandService',
@@ -181,9 +43,6 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
             'doctrine.mapping_convert_command' => 'getDoctrine_MappingConvertCommandService',
             'doctrine.mapping_import_command' => 'getDoctrine_MappingImportCommandService',
             'doctrine.mapping_info_command' => 'getDoctrine_MappingInfoCommandService',
-            'doctrine.orm.cache.provider.cache.doctrine.orm.default.metadata' => 'getDoctrine_Orm_Cache_Provider_Cache_Doctrine_Orm_Default_MetadataService',
-            'doctrine.orm.cache.provider.cache.doctrine.orm.default.query' => 'getDoctrine_Orm_Cache_Provider_Cache_Doctrine_Orm_Default_QueryService',
-            'doctrine.orm.cache.provider.cache.doctrine.orm.default.result' => 'getDoctrine_Orm_Cache_Provider_Cache_Doctrine_Orm_Default_ResultService',
             'doctrine.orm.default_entity_listener_resolver' => 'getDoctrine_Orm_DefaultEntityListenerResolverService',
             'doctrine.orm.default_entity_manager' => 'getDoctrine_Orm_DefaultEntityManagerService',
             'doctrine.orm.default_entity_manager.property_info_extractor' => 'getDoctrine_Orm_DefaultEntityManager_PropertyInfoExtractorService',
@@ -200,25 +59,18 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
             'doctrine_cache.contains_command' => 'getDoctrineCache_ContainsCommandService',
             'doctrine_cache.delete_command' => 'getDoctrineCache_DeleteCommandService',
             'doctrine_cache.flush_command' => 'getDoctrineCache_FlushCommandService',
+            'doctrine_cache.providers.doctrine.orm.default_metadata_cache' => 'getDoctrineCache_Providers_Doctrine_Orm_DefaultMetadataCacheService',
+            'doctrine_cache.providers.doctrine.orm.default_query_cache' => 'getDoctrineCache_Providers_Doctrine_Orm_DefaultQueryCacheService',
+            'doctrine_cache.providers.doctrine.orm.default_result_cache' => 'getDoctrineCache_Providers_Doctrine_Orm_DefaultResultCacheService',
             'doctrine_cache.stats_command' => 'getDoctrineCache_StatsCommandService',
             'form.type.entity' => 'getForm_Type_EntityService',
             'form.type_guesser.doctrine' => 'getForm_TypeGuesser_DoctrineService',
             'hashing' => 'getHashingService',
-            'prestashop.adapter.context_state_manager' => 'getPrestashop_Adapter_ContextStateManagerService',
-            'prestashop.adapter.data_provider.country' => 'getPrestashop_Adapter_DataProvider_CountryService',
             'prestashop.adapter.data_provider.currency' => 'getPrestashop_Adapter_DataProvider_CurrencyService',
             'prestashop.adapter.environment' => 'getPrestashop_Adapter_EnvironmentService',
             'prestashop.adapter.legacy.configuration' => 'getPrestashop_Adapter_Legacy_ConfigurationService',
             'prestashop.adapter.legacy.context' => 'getPrestashop_Adapter_Legacy_ContextService',
-            'prestashop.adapter.module.repository.module_repository' => 'getPrestashop_Adapter_Module_Repository_ModuleRepositoryService',
             'prestashop.adapter.tools' => 'getPrestashop_Adapter_ToolsService',
-            'prestashop.adapter.validate' => 'getPrestashop_Adapter_ValidateService',
-            'prestashop.core.circuit_breaker.advanced_factory' => 'getPrestashop_Core_CircuitBreaker_AdvancedFactoryService',
-            'prestashop.core.circuit_breaker.doctrine_cache' => 'getPrestashop_Core_CircuitBreaker_DoctrineCacheService',
-            'prestashop.core.circuit_breaker.guzzle.cache_storage' => 'getPrestashop_Core_CircuitBreaker_Guzzle_CacheStorageService',
-            'prestashop.core.circuit_breaker.guzzle.cache_subscriber' => 'getPrestashop_Core_CircuitBreaker_Guzzle_CacheSubscriberService',
-            'prestashop.core.circuit_breaker.guzzle.cache_subscriber_factory' => 'getPrestashop_Core_CircuitBreaker_Guzzle_CacheSubscriberFactoryService',
-            'prestashop.core.circuit_breaker.storage' => 'getPrestashop_Core_CircuitBreaker_StorageService',
             'prestashop.core.filter.front_end_object.cart' => 'getPrestashop_Core_Filter_FrontEndObject_CartService',
             'prestashop.core.filter.front_end_object.configuration' => 'getPrestashop_Core_Filter_FrontEndObject_ConfigurationService',
             'prestashop.core.filter.front_end_object.customer' => 'getPrestashop_Core_Filter_FrontEndObject_CustomerService',
@@ -241,13 +93,8 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
             'prestashop.core.localization.currency.middleware.installed' => 'getPrestashop_Core_Localization_Currency_Middleware_InstalledService',
             'prestashop.core.localization.currency.middleware.reference' => 'getPrestashop_Core_Localization_Currency_Middleware_ReferenceService',
             'prestashop.core.localization.currency.repository' => 'getPrestashop_Core_Localization_Currency_RepositoryService',
-            'prestashop.core.localization.locale.context_locale' => 'getPrestashop_Core_Localization_Locale_ContextLocaleService',
             'prestashop.core.localization.locale.repository' => 'getPrestashop_Core_Localization_Locale_RepositoryService',
-            'prestashop.core.string.character_cleaner' => 'getPrestashop_Core_String_CharacterCleanerService',
             'prestashop.database.naming_strategy' => 'getPrestashop_Database_NamingStrategyService',
-            'prestashop.translation.translator_language_loader' => 'getPrestashop_Translation_TranslatorLanguageLoaderService',
-            'product_comment_criterion_repository' => 'getProductCommentCriterionRepositoryService',
-            'product_comment_repository' => 'getProductCommentRepositoryService',
             'ps_checkout.adapter.language' => 'getPsCheckout_Adapter_LanguageService',
             'ps_checkout.api.firebase.auth' => 'getPsCheckout_Api_Firebase_AuthService',
             'ps_checkout.api.firebase.auth.factory' => 'getPsCheckout_Api_Firebase_Auth_FactoryService',
@@ -308,36 +155,9 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
             'ps_checkout.updater.paypal.account' => 'getPsCheckout_Updater_Paypal_AccountService',
             'ps_checkout.validator.front_controller' => 'getPsCheckout_Validator_FrontControllerService',
             'ps_checkout.validator.merchant' => 'getPsCheckout_Validator_MerchantService',
-            'ps_facebook' => 'getPsFacebookService',
-            'ps_facebook.cache' => 'getPsFacebook_CacheService',
-            'ps_facebook.context' => 'getPsFacebook_ContextService',
-            'ps_facebook.controller' => 'getPsFacebook_ControllerService',
-            'ps_facebook.cookie' => 'getPsFacebook_CookieService',
-            'ps_facebook.currency' => 'getPsFacebook_CurrencyService',
-            'ps_facebook.language' => 'getPsFacebook_LanguageService',
-            'ps_facebook.link' => 'getPsFacebook_LinkService',
-            'ps_facebook.shop' => 'getPsFacebook_ShopService',
-            'ps_facebook.smarty' => 'getPsFacebook_SmartyService',
-            'psxmarketingwithgoogle' => 'getPsxmarketingwithgoogleService',
-            'psxmarketingwithgoogle.context' => 'getPsxmarketingwithgoogle_ContextService',
-            'psxmarketingwithgoogle.controller' => 'getPsxmarketingwithgoogle_ControllerService',
-            'psxmarketingwithgoogle.cookie' => 'getPsxmarketingwithgoogle_CookieService',
-            'psxmarketingwithgoogle.country' => 'getPsxmarketingwithgoogle_CountryService',
-            'psxmarketingwithgoogle.currency' => 'getPsxmarketingwithgoogle_CurrencyService',
-            'psxmarketingwithgoogle.db' => 'getPsxmarketingwithgoogle_DbService',
-            'psxmarketingwithgoogle.language' => 'getPsxmarketingwithgoogle_LanguageService',
-            'psxmarketingwithgoogle.link' => 'getPsxmarketingwithgoogle_LinkService',
-            'psxmarketingwithgoogle.shop' => 'getPsxmarketingwithgoogle_ShopService',
-            'psxmarketingwithgoogle.smarty' => 'getPsxmarketingwithgoogle_SmartyService',
         ];
         $this->privates = [
             'annotation_reader' => true,
-            'cache.doctrine.orm.default.metadata' => true,
-            'cache.doctrine.orm.default.query' => true,
-            'cache.doctrine.orm.default.result' => true,
-            'configuration' => true,
-            'context' => true,
-            'db' => true,
             'doctrine.cache_clear_metadata_command' => true,
             'doctrine.cache_clear_query_cache_command' => true,
             'doctrine.cache_clear_result_command' => true,
@@ -353,9 +173,6 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
             'doctrine.mapping_convert_command' => true,
             'doctrine.mapping_import_command' => true,
             'doctrine.mapping_info_command' => true,
-            'doctrine.orm.cache.provider.cache.doctrine.orm.default.metadata' => true,
-            'doctrine.orm.cache.provider.cache.doctrine.orm.default.query' => true,
-            'doctrine.orm.cache.provider.cache.doctrine.orm.default.result' => true,
             'doctrine.orm.default_entity_listener_resolver' => true,
             'doctrine.orm.default_entity_manager.property_info_extractor' => true,
             'doctrine.orm.default_listeners.attach_entity_listeners' => true,
@@ -372,11 +189,9 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
             'doctrine_cache.delete_command' => true,
             'doctrine_cache.flush_command' => true,
             'doctrine_cache.stats_command' => true,
-            'employee' => true,
             'form.type.entity' => true,
             'form.type_guesser.doctrine' => true,
             'hashing' => true,
-            'prestashop.adapter.module.repository.module_repository' => true,
             'prestashop.core.filter.front_end_object.cart' => true,
             'prestashop.core.filter.front_end_object.configuration' => true,
             'prestashop.core.filter.front_end_object.customer' => true,
@@ -387,13 +202,12 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
             'prestashop.core.filter.front_end_object.search_result_product_collection' => true,
             'prestashop.core.filter.front_end_object.shop' => true,
             'prestashop.database.naming_strategy' => true,
-            'prestashop.translation.translator_language_loader' => true,
-            'shop' => true,
         ];
         $this->aliases = [
-            'PrestaShop\\Module\\PrestashopFacebook\\Provider\\GoogleCategoryProviderInterface' => 'PrestaShop\\Module\\PrestashopFacebook\\Provider\\GoogleCategoryProvider',
-            'PrestaShop\\Module\\PrestashopFacebook\\Provider\\ProductAvailabilityProviderInterface' => 'PrestaShop\\Module\\PrestashopFacebook\\Provider\\ProductAvailabilityProvider',
             'database_connection' => 'doctrine.dbal.default_connection',
+            'doctrine.orm.default_metadata_cache' => 'doctrine_cache.providers.doctrine.orm.default_metadata_cache',
+            'doctrine.orm.default_query_cache' => 'doctrine_cache.providers.doctrine.orm.default_query_cache',
+            'doctrine.orm.default_result_cache' => 'doctrine_cache.providers.doctrine.orm.default_result_cache',
             'doctrine.orm.entity_manager' => 'doctrine.orm.default_entity_manager',
             'prestashop.core.localization.cldr.datalayer.top_layer' => 'prestashop.core.localization.cldr.datalayer.locale_cache',
             'prestashop.core.localization.currency.middleware.top_layer' => 'prestashop.core.localization.currency.middleware.cache',
@@ -403,24 +217,16 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
     public function getRemovedIds()
     {
         return [
-            'Doctrine\\Bundle\\DoctrineBundle\\Registry' => true,
             'Doctrine\\Common\\Persistence\\ManagerRegistry' => true,
             'Doctrine\\Common\\Persistence\\ObjectManager' => true,
             'Doctrine\\DBAL\\Connection' => true,
             'Doctrine\\DBAL\\Driver\\Connection' => true,
             'Doctrine\\ORM\\EntityManagerInterface' => true,
-            'Doctrine\\Persistence\\ManagerRegistry' => true,
             'Psr\\Container\\ContainerInterface' => true,
             'Symfony\\Bridge\\Doctrine\\RegistryInterface' => true,
             'Symfony\\Component\\DependencyInjection\\ContainerInterface' => true,
             'annotation_reader' => true,
-            'cache.doctrine.orm.default.metadata' => true,
-            'cache.doctrine.orm.default.query' => true,
-            'cache.doctrine.orm.default.result' => true,
-            'configuration' => true,
-            'context' => true,
             'data_collector.doctrine' => true,
-            'db' => true,
             'doctrine.cache_clear_metadata_command' => true,
             'doctrine.cache_clear_query_cache_command' => true,
             'doctrine.cache_clear_result_command' => true,
@@ -438,24 +244,17 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
             'doctrine.dbal.default_connection.event_manager' => true,
             'doctrine.dbal.event_manager' => true,
             'doctrine.dbal.logger' => true,
-            'doctrine.dbal.logger.backtrace' => true,
             'doctrine.dbal.logger.chain' => true,
             'doctrine.dbal.logger.chain.default' => true,
             'doctrine.dbal.logger.profiling' => true,
             'doctrine.dbal.logger.profiling.default' => true,
-            'doctrine.dbal.schema_asset_filter_manager' => true,
-            'doctrine.dbal.well_known_schema_asset_filter' => true,
             'doctrine.ensure_production_settings_command' => true,
             'doctrine.generate_entities_command' => true,
             'doctrine.mapping_convert_command' => true,
             'doctrine.mapping_import_command' => true,
             'doctrine.mapping_info_command' => true,
-            'doctrine.orm.cache.provider.cache.doctrine.orm.default.metadata' => true,
-            'doctrine.orm.cache.provider.cache.doctrine.orm.default.query' => true,
-            'doctrine.orm.cache.provider.cache.doctrine.orm.default.result' => true,
             'doctrine.orm.configuration' => true,
             'doctrine.orm.container_repository_factory' => true,
-            'doctrine.orm.default_annotation_metadata_driver' => true,
             'doctrine.orm.default_configuration' => true,
             'doctrine.orm.default_entity_listener_resolver' => true,
             'doctrine.orm.default_entity_manager.event_manager' => true,
@@ -463,17 +262,13 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
             'doctrine.orm.default_entity_manager.property_info_extractor' => true,
             'doctrine.orm.default_listeners.attach_entity_listeners' => true,
             'doctrine.orm.default_manager_configurator' => true,
-            'doctrine.orm.default_metadata_cache' => true,
             'doctrine.orm.default_metadata_driver' => true,
-            'doctrine.orm.default_query_cache' => true,
-            'doctrine.orm.default_result_cache' => true,
             'doctrine.orm.entity_manager.abstract' => true,
             'doctrine.orm.listeners.resolve_target_entity' => true,
             'doctrine.orm.manager_configurator.abstract' => true,
             'doctrine.orm.metadata.annotation_reader' => true,
             'doctrine.orm.naming_strategy.default' => true,
             'doctrine.orm.naming_strategy.underscore' => true,
-            'doctrine.orm.naming_strategy.underscore_number_aware' => true,
             'doctrine.orm.proxy_cache_warmer' => true,
             'doctrine.orm.quote_strategy.ansi' => true,
             'doctrine.orm.quote_strategy.default' => true,
@@ -509,11 +304,9 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
             'doctrine_cache.delete_command' => true,
             'doctrine_cache.flush_command' => true,
             'doctrine_cache.stats_command' => true,
-            'employee' => true,
             'form.type.entity' => true,
             'form.type_guesser.doctrine' => true,
             'hashing' => true,
-            'prestashop.adapter.module.repository.module_repository' => true,
             'prestashop.core.filter.front_end_object.cart' => true,
             'prestashop.core.filter.front_end_object.configuration' => true,
             'prestashop.core.filter.front_end_object.customer' => true,
@@ -524,8 +317,6 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
             'prestashop.core.filter.front_end_object.search_result_product_collection' => true,
             'prestashop.core.filter.front_end_object.shop' => true,
             'prestashop.database.naming_strategy' => true,
-            'prestashop.translation.translator_language_loader' => true,
-            'shop' => true,
         ];
     }
 
@@ -544,626 +335,6 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
         @trigger_error(sprintf('The %s() method is deprecated since Symfony 3.3 and will be removed in 4.0. Use the isCompiled() method instead.', __METHOD__), E_USER_DEPRECATED);
 
         return true;
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\API\Client\FacebookCategoryClient' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\API\Client\FacebookCategoryClient
-     */
-    protected function getFacebookCategoryClientService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\Client\\FacebookCategoryClient'] = new \PrestaShop\Module\PrestashopFacebook\API\Client\FacebookCategoryClient(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Factory\\PsApiClientFactory']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Factory\\PsApiClientFactory'] : $this->getPsApiClientFactoryService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\GoogleCategoryRepository']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\GoogleCategoryRepository'] : $this->getGoogleCategoryRepositoryService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\ResponseListener']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\ResponseListener'] : $this->getResponseListenerService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\API\Client\FacebookClient' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\API\Client\FacebookClient
-     */
-    protected function getFacebookClientService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\Client\\FacebookClient'] = new \PrestaShop\Module\PrestashopFacebook\API\Client\FacebookClient(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Factory\\FacebookEssentialsApiClientFactory']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Factory\\FacebookEssentialsApiClientFactory'] : $this->getFacebookEssentialsApiClientFactoryService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\AccessTokenProvider']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\AccessTokenProvider'] : $this->getAccessTokenProviderService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\ConfigurationHandler']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\ConfigurationHandler'] : $this->getConfigurationHandlerService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\ResponseListener']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\ResponseListener'] : $this->getResponseListenerService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\API\EventSubscriber\AccountSuspendedSubscriber' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\API\EventSubscriber\AccountSuspendedSubscriber
-     */
-    protected function getAccountSuspendedSubscriberService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\EventSubscriber\\AccountSuspendedSubscriber'] = new \PrestaShop\Module\PrestashopFacebook\API\EventSubscriber\AccountSuspendedSubscriber(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\API\EventSubscriber\ApiErrorSubscriber' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\API\EventSubscriber\ApiErrorSubscriber
-     */
-    protected function getApiErrorSubscriberService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\EventSubscriber\\ApiErrorSubscriber'] = new \PrestaShop\Module\PrestashopFacebook\API\EventSubscriber\ApiErrorSubscriber(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\ErrorHandler\\ErrorHandler']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\ErrorHandler\\ErrorHandler'] : $this->getErrorHandlerService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\API\ResponseListener' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\API\ResponseListener
-     */
-    protected function getResponseListenerService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\ResponseListener'] = new \PrestaShop\Module\PrestashopFacebook\API\ResponseListener([0 => ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\EventSubscriber\\AccountSuspendedSubscriber']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\EventSubscriber\\AccountSuspendedSubscriber'] : $this->getAccountSuspendedSubscriberService()) && false ?: '_'}, 1 => ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\EventSubscriber\\ApiErrorSubscriber']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\EventSubscriber\\ApiErrorSubscriber'] : $this->getApiErrorSubscriberService()) && false ?: '_'}]);
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Adapter\ConfigurationAdapter' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Adapter\ConfigurationAdapter
-     */
-    protected function getConfigurationAdapterService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] = new \PrestaShop\Module\PrestashopFacebook\Adapter\ConfigurationAdapter(${($_ = isset($this->services['ps_facebook.shop']) ? $this->services['ps_facebook.shop'] : $this->getPsFacebook_ShopService()) && false ?: '_'}->id);
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Adapter\ToolsAdapter' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Adapter\ToolsAdapter
-     */
-    protected function getToolsAdapterService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ToolsAdapter'] = new \PrestaShop\Module\PrestashopFacebook\Adapter\ToolsAdapter();
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Buffer\TemplateBuffer' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Buffer\TemplateBuffer
-     */
-    protected function getTemplateBufferService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Buffer\\TemplateBuffer'] = new \PrestaShop\Module\PrestashopFacebook\Buffer\TemplateBuffer();
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Config\Env' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Config\Env
-     */
-    protected function getEnvService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Config\\Env'] = new \PrestaShop\Module\PrestashopFacebook\Config\Env();
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Dispatcher\EventDispatcher' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Dispatcher\EventDispatcher
-     */
-    protected function getEventDispatcherService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Dispatcher\\EventDispatcher'] = new \PrestaShop\Module\PrestashopFacebook\Dispatcher\EventDispatcher(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\ApiConversionHandler']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\ApiConversionHandler'] : $this->getApiConversionHandlerService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\PixelHandler']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\PixelHandler'] : $this->getPixelHandlerService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\EventDataProvider']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\EventDataProvider'] : $this->getEventDataProviderService()) && false ?: '_'}, ${($_ = isset($this->services['ps_facebook.context']) ? $this->services['ps_facebook.context'] : $this->getPsFacebook_ContextService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Factory\FacebookEssentialsApiClientFactory' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Factory\FacebookEssentialsApiClientFactory
-     */
-    protected function getFacebookEssentialsApiClientFactoryService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Factory\\FacebookEssentialsApiClientFactory'] = new \PrestaShop\Module\PrestashopFacebook\Factory\FacebookEssentialsApiClientFactory(${($_ = isset($this->services['Prestashop\\ModuleLibGuzzleAdapter\\ClientFactory']) ? $this->services['Prestashop\\ModuleLibGuzzleAdapter\\ClientFactory'] : ($this->services['Prestashop\\ModuleLibGuzzleAdapter\\ClientFactory'] = new \Prestashop\ModuleLibGuzzleAdapter\ClientFactory())) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Factory\PsApiClientFactory' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Factory\PsApiClientFactory
-     */
-    protected function getPsApiClientFactoryService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Factory\\PsApiClientFactory'] = new \PrestaShop\Module\PrestashopFacebook\Factory\PsApiClientFactory(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Config\\Env']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Config\\Env'] : ($this->services['PrestaShop\\Module\\PrestashopFacebook\\Config\\Env'] = new \PrestaShop\Module\PrestashopFacebook\Config\Env())) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\PsAccountsInstaller\\Installer\\Facade\\PsAccounts']) ? $this->services['PrestaShop\\PsAccountsInstaller\\Installer\\Facade\\PsAccounts'] : $this->getPsAccountsService()) && false ?: '_'}, ${($_ = isset($this->services['Prestashop\\ModuleLibGuzzleAdapter\\ClientFactory']) ? $this->services['Prestashop\\ModuleLibGuzzleAdapter\\ClientFactory'] : ($this->services['Prestashop\\ModuleLibGuzzleAdapter\\ClientFactory'] = new \Prestashop\ModuleLibGuzzleAdapter\ClientFactory())) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Handler\ApiConversionHandler' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Handler\ApiConversionHandler
-     */
-    protected function getApiConversionHandlerService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\ApiConversionHandler'] = new \PrestaShop\Module\PrestashopFacebook\Handler\ApiConversionHandler(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\ErrorHandler\\ErrorHandler']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\ErrorHandler\\ErrorHandler'] : $this->getErrorHandlerService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\Client\\FacebookClient']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\Client\\FacebookClient'] : $this->getFacebookClientService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Handler\CategoryMatchHandler' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Handler\CategoryMatchHandler
-     */
-    protected function getCategoryMatchHandlerService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\CategoryMatchHandler'] = new \PrestaShop\Module\PrestashopFacebook\Handler\CategoryMatchHandler(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\GoogleCategoryRepository']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\GoogleCategoryRepository'] : $this->getGoogleCategoryRepositoryService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Handler\ConfigurationHandler' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Handler\ConfigurationHandler
-     */
-    protected function getConfigurationHandlerService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\ConfigurationHandler'] = new \PrestaShop\Module\PrestashopFacebook\Handler\ConfigurationHandler(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Handler\ErrorHandler\ErrorHandler' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Handler\ErrorHandler\ErrorHandler
-     */
-    protected function getErrorHandlerService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\ErrorHandler\\ErrorHandler'] = new \PrestaShop\Module\PrestashopFacebook\Handler\ErrorHandler\ErrorHandler(${($_ = isset($this->services['ps_facebook']) ? $this->services['ps_facebook'] : $this->getPsFacebookService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Config\\Env']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Config\\Env'] : ($this->services['PrestaShop\\Module\\PrestashopFacebook\\Config\\Env'] = new \PrestaShop\Module\PrestashopFacebook\Config\Env())) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Handler\EventBusProductHandler' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Handler\EventBusProductHandler
-     */
-    protected function getEventBusProductHandlerService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\EventBusProductHandler'] = new \PrestaShop\Module\PrestashopFacebook\Handler\EventBusProductHandler(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\ProductRepository']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\ProductRepository'] : $this->getProductRepositoryService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Handler\MessengerHandler' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Handler\MessengerHandler
-     */
-    protected function getMessengerHandlerService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\MessengerHandler'] = new \PrestaShop\Module\PrestashopFacebook\Handler\MessengerHandler(${($_ = isset($this->services['ps_facebook.language']) ? $this->services['ps_facebook.language'] : $this->getPsFacebook_LanguageService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Config\\Env']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Config\\Env'] : ($this->services['PrestaShop\\Module\\PrestashopFacebook\\Config\\Env'] = new \PrestaShop\Module\PrestashopFacebook\Config\Env())) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Handler\PixelHandler' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Handler\PixelHandler
-     */
-    protected function getPixelHandlerService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\PixelHandler'] = new \PrestaShop\Module\PrestashopFacebook\Handler\PixelHandler(${($_ = isset($this->services['ps_facebook']) ? $this->services['ps_facebook'] : $this->getPsFacebookService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Handler\PrevalidationScanRefreshHandler' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Handler\PrevalidationScanRefreshHandler
-     */
-    protected function getPrevalidationScanRefreshHandlerService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Handler\\PrevalidationScanRefreshHandler'] = new \PrestaShop\Module\PrestashopFacebook\Handler\PrevalidationScanRefreshHandler(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\PrevalidationScanCacheProvider']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\PrevalidationScanCacheProvider'] : $this->getPrevalidationScanCacheProviderService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\ProductRepository']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\ProductRepository'] : $this->getProductRepositoryService()) && false ?: '_'}, ${($_ = isset($this->services['ps_facebook.shop']) ? $this->services['ps_facebook.shop'] : $this->getPsFacebook_ShopService()) && false ?: '_'}->id);
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Manager\FbeFeatureManager' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Manager\FbeFeatureManager
-     */
-    protected function getFbeFeatureManagerService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Manager\\FbeFeatureManager'] = new \PrestaShop\Module\PrestashopFacebook\Manager\FbeFeatureManager(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\Client\\FacebookClient']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\Client\\FacebookClient'] : $this->getFacebookClientService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Presenter\ModuleUpgradePresenter' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Presenter\ModuleUpgradePresenter
-     */
-    protected function getModuleUpgradePresenterService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Presenter\\ModuleUpgradePresenter'] = new \PrestaShop\Module\PrestashopFacebook\Presenter\ModuleUpgradePresenter(${($_ = isset($this->services['ps_facebook.context']) ? $this->services['ps_facebook.context'] : $this->getPsFacebook_ContextService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Provider\AccessTokenProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Provider\AccessTokenProvider
-     */
-    protected function getAccessTokenProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\AccessTokenProvider'] = new \PrestaShop\Module\PrestashopFacebook\Provider\AccessTokenProvider(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\ResponseListener']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\ResponseListener'] : $this->getResponseListenerService()) && false ?: '_'}, ${($_ = isset($this->services['ps_facebook.controller']) ? $this->services['ps_facebook.controller'] : $this->getPsFacebook_ControllerService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Factory\\PsApiClientFactory']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Factory\\PsApiClientFactory'] : $this->getPsApiClientFactoryService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Provider\EventDataProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Provider\EventDataProvider
-     */
-    protected function getEventDataProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\EventDataProvider'] = new \PrestaShop\Module\PrestashopFacebook\Provider\EventDataProvider(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ToolsAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ToolsAdapter'] : ($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ToolsAdapter'] = new \PrestaShop\Module\PrestashopFacebook\Adapter\ToolsAdapter())) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\ProductRepository']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\ProductRepository'] : $this->getProductRepositoryService()) && false ?: '_'}, ${($_ = isset($this->services['ps_facebook.context']) ? $this->services['ps_facebook.context'] : $this->getPsFacebook_ContextService()) && false ?: '_'}, ${($_ = isset($this->services['ps_facebook']) ? $this->services['ps_facebook'] : $this->getPsFacebookService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\ProductAvailabilityProvider']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\ProductAvailabilityProvider'] : ($this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\ProductAvailabilityProvider'] = new \PrestaShop\Module\PrestashopFacebook\Provider\ProductAvailabilityProvider())) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\GoogleCategoryRepository']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\GoogleCategoryRepository'] : $this->getGoogleCategoryRepositoryService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\GoogleCategoryProvider']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\GoogleCategoryProvider'] : $this->getGoogleCategoryProviderService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Provider\FacebookDataProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Provider\FacebookDataProvider
-     */
-    protected function getFacebookDataProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\FacebookDataProvider'] = new \PrestaShop\Module\PrestashopFacebook\Provider\FacebookDataProvider(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\Client\\FacebookClient']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\Client\\FacebookClient'] : $this->getFacebookClientService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Provider\FbeDataProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Provider\FbeDataProvider
-     */
-    protected function getFbeDataProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\FbeDataProvider'] = new \PrestaShop\Module\PrestashopFacebook\Provider\FbeDataProvider(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Provider\FbeFeatureDataProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Provider\FbeFeatureDataProvider
-     */
-    protected function getFbeFeatureDataProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\FbeFeatureDataProvider'] = new \PrestaShop\Module\PrestashopFacebook\Provider\FbeFeatureDataProvider(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\Client\\FacebookClient']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\Client\\FacebookClient'] : $this->getFacebookClientService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Provider\GoogleCategoryProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Provider\GoogleCategoryProvider
-     */
-    protected function getGoogleCategoryProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\GoogleCategoryProvider'] = new \PrestaShop\Module\PrestashopFacebook\Provider\GoogleCategoryProvider(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\GoogleCategoryRepository']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\GoogleCategoryRepository'] : $this->getGoogleCategoryRepositoryService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Provider\MultishopDataProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Provider\MultishopDataProvider
-     */
-    protected function getMultishopDataProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\MultishopDataProvider'] = new \PrestaShop\Module\PrestashopFacebook\Provider\MultishopDataProvider(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\ShopRepository']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\ShopRepository'] : ($this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\ShopRepository'] = new \PrestaShop\Module\PrestashopFacebook\Repository\ShopRepository())) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\Ps_facebook\\Tracker\\Segment']) ? $this->services['PrestaShop\\Module\\Ps_facebook\\Tracker\\Segment'] : $this->getSegmentService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Provider\PrevalidationScanCacheProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Provider\PrevalidationScanCacheProvider
-     */
-    protected function getPrevalidationScanCacheProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\PrevalidationScanCacheProvider'] = new \PrestaShop\Module\PrestashopFacebook\Provider\PrevalidationScanCacheProvider(${($_ = isset($this->services['ps_facebook']) ? $this->services['ps_facebook'] : $this->getPsFacebookService()) && false ?: '_'}, ${($_ = isset($this->services['ps_facebook.cache']) ? $this->services['ps_facebook.cache'] : $this->getPsFacebook_CacheService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Provider\PrevalidationScanDataProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Provider\PrevalidationScanDataProvider
-     */
-    protected function getPrevalidationScanDataProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\PrevalidationScanDataProvider'] = new \PrestaShop\Module\PrestashopFacebook\Provider\PrevalidationScanDataProvider(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\PrevalidationScanCacheProvider']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\PrevalidationScanCacheProvider'] : $this->getPrevalidationScanCacheProviderService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Provider\ProductAvailabilityProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Provider\ProductAvailabilityProvider
-     */
-    protected function getProductAvailabilityProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\ProductAvailabilityProvider'] = new \PrestaShop\Module\PrestashopFacebook\Provider\ProductAvailabilityProvider();
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Provider\ProductSyncReportProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Provider\ProductSyncReportProvider
-     */
-    protected function getProductSyncReportProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Provider\\ProductSyncReportProvider'] = new \PrestaShop\Module\PrestashopFacebook\Provider\ProductSyncReportProvider(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Factory\\PsApiClientFactory']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Factory\\PsApiClientFactory'] : $this->getPsApiClientFactoryService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\ResponseListener']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\API\\ResponseListener'] : $this->getResponseListenerService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Repository\GoogleCategoryRepository' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Repository\GoogleCategoryRepository
-     */
-    protected function getGoogleCategoryRepositoryService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\GoogleCategoryRepository'] = new \PrestaShop\Module\PrestashopFacebook\Repository\GoogleCategoryRepository(${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Repository\ProductRepository' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Repository\ProductRepository
-     */
-    protected function getProductRepositoryService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\ProductRepository'] = new \PrestaShop\Module\PrestashopFacebook\Repository\ProductRepository(${($_ = isset($this->services['ps_facebook.language']) ? $this->services['ps_facebook.language'] : $this->getPsFacebook_LanguageService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Repository\ServerInformationRepository' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Repository\ServerInformationRepository
-     */
-    protected function getServerInformationRepositoryService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\ServerInformationRepository'] = new \PrestaShop\Module\PrestashopFacebook\Repository\ServerInformationRepository(${($_ = isset($this->services['PrestaShop\\PsAccountsInstaller\\Installer\\Facade\\PsAccounts']) ? $this->services['PrestaShop\\PsAccountsInstaller\\Installer\\Facade\\PsAccounts'] : $this->getPsAccountsService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Repository\ShopRepository' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Repository\ShopRepository
-     */
-    protected function getShopRepositoryService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\ShopRepository'] = new \PrestaShop\Module\PrestashopFacebook\Repository\ShopRepository();
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PrestashopFacebook\Repository\TabRepository' shared service.
-     *
-     * @return \PrestaShop\Module\PrestashopFacebook\Repository\TabRepository
-     */
-    protected function getTabRepositoryService()
-    {
-        return $this->services['PrestaShop\\Module\\PrestashopFacebook\\Repository\\TabRepository'] = new \PrestaShop\Module\PrestashopFacebook\Repository\TabRepository();
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\Ps_facebook\Tracker\Segment' shared service.
-     *
-     * @return \PrestaShop\Module\Ps_facebook\Tracker\Segment
-     */
-    protected function getSegmentService()
-    {
-        return $this->services['PrestaShop\\Module\\Ps_facebook\\Tracker\\Segment'] = new \PrestaShop\Module\Ps_facebook\Tracker\Segment(${($_ = isset($this->services['ps_facebook.context']) ? $this->services['ps_facebook.context'] : $this->getPsFacebook_ContextService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Config\\Env']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Config\\Env'] : ($this->services['PrestaShop\\Module\\PrestashopFacebook\\Config\\Env'] = new \PrestaShop\Module\PrestashopFacebook\Config\Env())) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PrestashopFacebook\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapterService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\PsAccountsInstaller\\Installer\\Facade\\PsAccounts']) ? $this->services['PrestaShop\\PsAccountsInstaller\\Installer\\Facade\\PsAccounts'] : $this->getPsAccountsService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Adapter\ConfigurationAdapter' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Adapter\ConfigurationAdapter
-     */
-    protected function getConfigurationAdapter2Service()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Adapter\\ConfigurationAdapter'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Adapter\ConfigurationAdapter(${($_ = isset($this->services['psxmarketingwithgoogle.shop']) ? $this->services['psxmarketingwithgoogle.shop'] : $this->getPsxmarketingwithgoogle_ShopService()) && false ?: '_'}->id);
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Buffer\TemplateBuffer' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Buffer\TemplateBuffer
-     */
-    protected function getTemplateBuffer2Service()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Buffer\\TemplateBuffer'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Buffer\TemplateBuffer();
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Config\Env' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Config\Env
-     */
-    protected function getEnv2Service()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Config\\Env'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Config\Env();
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Handler\ErrorHandler' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Handler\ErrorHandler
-     */
-    protected function getErrorHandler2Service()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Handler\\ErrorHandler'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Handler\ErrorHandler();
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Handler\RemarketingHookHandler' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Handler\RemarketingHookHandler
-     */
-    protected function getRemarketingHookHandlerService()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Handler\\RemarketingHookHandler'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Handler\RemarketingHookHandler(${($_ = isset($this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapter2Service()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Buffer\\TemplateBuffer']) ? $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Buffer\\TemplateBuffer'] : ($this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Buffer\\TemplateBuffer'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Buffer\TemplateBuffer())) && false ?: '_'}, ${($_ = isset($this->services['psxmarketingwithgoogle.context']) ? $this->services['psxmarketingwithgoogle.context'] : $this->getPsxmarketingwithgoogle_ContextService()) && false ?: '_'}, ${($_ = isset($this->services['psxmarketingwithgoogle']) ? $this->services['psxmarketingwithgoogle'] : $this->getPsxmarketingwithgoogleService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Provider\CartEventDataProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Provider\CartEventDataProvider
-     */
-    protected function getCartEventDataProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\CartEventDataProvider'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Provider\CartEventDataProvider(${($_ = isset($this->services['psxmarketingwithgoogle.context']) ? $this->services['psxmarketingwithgoogle.context'] : $this->getPsxmarketingwithgoogle_ContextService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Provider\ConversionEventDataProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Provider\ConversionEventDataProvider
-     */
-    protected function getConversionEventDataProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\ConversionEventDataProvider'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Provider\ConversionEventDataProvider(${($_ = isset($this->services['psxmarketingwithgoogle.context']) ? $this->services['psxmarketingwithgoogle.context'] : $this->getPsxmarketingwithgoogle_ContextService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Provider\PageViewEventDataProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Provider\PageViewEventDataProvider
-     */
-    protected function getPageViewEventDataProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\PageViewEventDataProvider'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Provider\PageViewEventDataProvider(${($_ = isset($this->services['psxmarketingwithgoogle.context']) ? $this->services['psxmarketingwithgoogle.context'] : $this->getPsxmarketingwithgoogle_ContextService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Provider\ProductDataProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Provider\ProductDataProvider
-     */
-    protected function getProductDataProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\ProductDataProvider'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Provider\ProductDataProvider(${($_ = isset($this->services['psxmarketingwithgoogle.context']) ? $this->services['psxmarketingwithgoogle.context'] : $this->getPsxmarketingwithgoogle_ContextService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Provider\PurchaseEventDataProvider' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Provider\PurchaseEventDataProvider
-     */
-    protected function getPurchaseEventDataProviderService()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\PurchaseEventDataProvider'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Provider\PurchaseEventDataProvider(${($_ = isset($this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\ProductDataProvider']) ? $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Provider\\ProductDataProvider'] : $this->getProductDataProviderService()) && false ?: '_'}, ${($_ = isset($this->services['psxmarketingwithgoogle.context']) ? $this->services['psxmarketingwithgoogle.context'] : $this->getPsxmarketingwithgoogle_ContextService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapter2Service()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\LanguageRepository']) ? $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\LanguageRepository'] : ($this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\LanguageRepository'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Repository\LanguageRepository())) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\CountryRepository']) ? $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\CountryRepository'] : $this->getCountryRepositoryService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Repository\AttributesRepository' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Repository\AttributesRepository
-     */
-    protected function getAttributesRepositoryService()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\AttributesRepository'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Repository\AttributesRepository(${($_ = isset($this->services['psxmarketingwithgoogle.context']) ? $this->services['psxmarketingwithgoogle.context'] : $this->getPsxmarketingwithgoogle_ContextService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Repository\CarrierRepository' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Repository\CarrierRepository
-     */
-    protected function getCarrierRepositoryService()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\CarrierRepository'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Repository\CarrierRepository(${($_ = isset($this->services['psxmarketingwithgoogle.db']) ? $this->services['psxmarketingwithgoogle.db'] : $this->getPsxmarketingwithgoogle_DbService()) && false ?: '_'}, ${($_ = isset($this->services['psxmarketingwithgoogle.context']) ? $this->services['psxmarketingwithgoogle.context'] : $this->getPsxmarketingwithgoogle_ContextService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Repository\CountryRepository' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Repository\CountryRepository
-     */
-    protected function getCountryRepositoryService()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\CountryRepository'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Repository\CountryRepository(${($_ = isset($this->services['psxmarketingwithgoogle.db']) ? $this->services['psxmarketingwithgoogle.db'] : $this->getPsxmarketingwithgoogle_DbService()) && false ?: '_'}, ${($_ = isset($this->services['psxmarketingwithgoogle.context']) ? $this->services['psxmarketingwithgoogle.context'] : $this->getPsxmarketingwithgoogle_ContextService()) && false ?: '_'}, ${($_ = isset($this->services['psxmarketingwithgoogle.country']) ? $this->services['psxmarketingwithgoogle.country'] : $this->getPsxmarketingwithgoogle_CountryService()) && false ?: '_'}, ${($_ = isset($this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Adapter\\ConfigurationAdapter']) ? $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Adapter\\ConfigurationAdapter'] : $this->getConfigurationAdapter2Service()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Repository\CurrencyRepository' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Repository\CurrencyRepository
-     */
-    protected function getCurrencyRepositoryService()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\CurrencyRepository'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Repository\CurrencyRepository(${($_ = isset($this->services['psxmarketingwithgoogle.currency']) ? $this->services['psxmarketingwithgoogle.currency'] : $this->getPsxmarketingwithgoogle_CurrencyService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Repository\LanguageRepository' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Repository\LanguageRepository
-     */
-    protected function getLanguageRepositoryService()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\LanguageRepository'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Repository\LanguageRepository();
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Repository\ProductRepository' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Repository\ProductRepository
-     */
-    protected function getProductRepository2Service()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\ProductRepository'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Repository\ProductRepository();
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Repository\StateRepository' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Repository\StateRepository
-     */
-    protected function getStateRepositoryService()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\StateRepository'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Repository\StateRepository(${($_ = isset($this->services['psxmarketingwithgoogle.db']) ? $this->services['psxmarketingwithgoogle.db'] : $this->getPsxmarketingwithgoogle_DbService()) && false ?: '_'}, ${($_ = isset($this->services['psxmarketingwithgoogle.context']) ? $this->services['psxmarketingwithgoogle.context'] : $this->getPsxmarketingwithgoogle_ContextService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Repository\TabRepository' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Repository\TabRepository
-     */
-    protected function getTabRepository2Service()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\TabRepository'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Repository\TabRepository();
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Repository\TaxRepository' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Repository\TaxRepository
-     */
-    protected function getTaxRepositoryService()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Repository\\TaxRepository'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Repository\TaxRepository(${($_ = isset($this->services['psxmarketingwithgoogle.db']) ? $this->services['psxmarketingwithgoogle.db'] : $this->getPsxmarketingwithgoogle_DbService()) && false ?: '_'}, ${($_ = isset($this->services['psxmarketingwithgoogle.context']) ? $this->services['psxmarketingwithgoogle.context'] : $this->getPsxmarketingwithgoogle_ContextService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\Module\PsxMarketingWithGoogle\Tracker\Segment' shared service.
-     *
-     * @return \PrestaShop\Module\PsxMarketingWithGoogle\Tracker\Segment
-     */
-    protected function getSegment2Service()
-    {
-        return $this->services['PrestaShop\\Module\\PsxMarketingWithGoogle\\Tracker\\Segment'] = new \PrestaShop\Module\PsxMarketingWithGoogle\Tracker\Segment(${($_ = isset($this->services['psxmarketingwithgoogle.context']) ? $this->services['psxmarketingwithgoogle.context'] : $this->getPsxmarketingwithgoogle_ContextService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts' shared service.
-     *
-     * @return \PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts
-     */
-    protected function getPsAccountsService()
-    {
-        return $this->services['PrestaShop\\PsAccountsInstaller\\Installer\\Facade\\PsAccounts'] = new \PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts(${($_ = isset($this->services['PrestaShop\\PsAccountsInstaller\\Installer\\Installer']) ? $this->services['PrestaShop\\PsAccountsInstaller\\Installer\\Installer'] : ($this->services['PrestaShop\\PsAccountsInstaller\\Installer\\Installer'] = new \PrestaShop\PsAccountsInstaller\Installer\Installer('3.0.0'))) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'PrestaShop\PsAccountsInstaller\Installer\Installer' shared service.
-     *
-     * @return \PrestaShop\PsAccountsInstaller\Installer\Installer
-     */
-    protected function getInstallerService()
-    {
-        return $this->services['PrestaShop\\PsAccountsInstaller\\Installer\\Installer'] = new \PrestaShop\PsAccountsInstaller\Installer\Installer('3.0.0');
-    }
-
-    /**
-     * Gets the public 'Prestashop\ModuleLibGuzzleAdapter\ClientFactory' shared service.
-     *
-     * @return \Prestashop\ModuleLibGuzzleAdapter\ClientFactory
-     */
-    protected function getClientFactoryService()
-    {
-        return $this->services['Prestashop\\ModuleLibGuzzleAdapter\\ClientFactory'] = new \Prestashop\ModuleLibGuzzleAdapter\ClientFactory();
     }
 
     /**
@@ -1191,7 +362,7 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
 
         $a->setSQLLogger($b);
 
-        return $this->services['doctrine.dbal.default_connection'] = ${($_ = isset($this->services['doctrine.dbal.connection_factory']) ? $this->services['doctrine.dbal.connection_factory'] : ($this->services['doctrine.dbal.connection_factory'] = new \Doctrine\Bundle\DoctrineBundle\ConnectionFactory([]))) && false ?: '_'}->createConnection(['driver' => 'pdo_mysql', 'host' => 'mariadb', 'port' => '', 'dbname' => 'prestashop', 'user' => 'root', 'password' => 'root', 'charset' => 'utf8mb4', 'driverOptions' => [1002 => 'SET sql_mode=(SELECT REPLACE(@@sql_mode,\'ONLY_FULL_GROUP_BY\',\'\'))'], 'defaultTableOptions' => []], $a, new \Symfony\Bridge\Doctrine\ContainerAwareEventManager($this), ['enum' => 'string']);
+        return $this->services['doctrine.dbal.default_connection'] = ${($_ = isset($this->services['doctrine.dbal.connection_factory']) ? $this->services['doctrine.dbal.connection_factory'] : ($this->services['doctrine.dbal.connection_factory'] = new \Doctrine\Bundle\DoctrineBundle\ConnectionFactory([]))) && false ?: '_'}->createConnection(['driver' => 'pdo_mysql', 'host' => 'mariadb', 'port' => '', 'dbname' => 'prestashop', 'user' => 'root', 'password' => 'root', 'charset' => 'UTF8', 'driverOptions' => [1002 => 'SET sql_mode=(SELECT REPLACE(@@sql_mode,\'ONLY_FULL_GROUP_BY\',\'\'))'], 'serverVersion' => 5.0999999999999996, 'defaultTableOptions' => []], $a, new \Symfony\Bridge\Doctrine\ContainerAwareEventManager($this), ['enum' => 'string']);
     }
 
     /**
@@ -1203,22 +374,17 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
     {
         $a = new \Doctrine\ORM\Configuration();
 
-        $b = new \Doctrine\Persistence\Mapping\Driver\MappingDriverChain();
+        $b = new \Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain();
 
-        $c = ${($_ = isset($this->services['annotation_reader']) ? $this->services['annotation_reader'] : ($this->services['annotation_reader'] = new \Doctrine\Common\Annotations\AnnotationReader())) && false ?: '_'};
-        $d = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($c, [0 => '/var/www/html/modules/ps_checkout/src/Entity']);
-        $d->addExcludePaths([0 => '/var/www/html/modules/ps_checkout/src/Entity/index.php']);
-        $e = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($c, [0 => '/var/www/html/modules/productcomments/src/Entity']);
-        $e->addExcludePaths([0 => '/var/www/html/modules/productcomments/src/Entity/index.php']);
+        $c = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver(${($_ = isset($this->services['annotation_reader']) ? $this->services['annotation_reader'] : ($this->services['annotation_reader'] = new \Doctrine\Common\Annotations\AnnotationReader())) && false ?: '_'}, [0 => '/var/www/html/modules/ps_checkout/src/Entity']);
+        $c->addExcludePaths([0 => '/var/www/html/modules/ps_checkout/src/Entity/index.php']);
 
-        $b->addDriver(new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($c, [0 => '/var/www/html/src/PrestaShopBundle/Entity']), 'PrestaShop');
-        $b->addDriver($d, 'PrestaShop\\Module\\PrestashopCheckout\\Entity');
-        $b->addDriver($e, 'PrestaShop\\Module\\ProductComment\\Entity');
+        $b->addDriver($c, 'PrestaShop\\Module\\PrestashopCheckout\\Entity');
 
-        $a->setEntityNamespaces(['PrestaShopBundle\\Entity' => 'PrestaShop']);
-        $a->setMetadataCacheImpl(${($_ = isset($this->services['doctrine.orm.cache.provider.cache.doctrine.orm.default.metadata']) ? $this->services['doctrine.orm.cache.provider.cache.doctrine.orm.default.metadata'] : $this->getDoctrine_Orm_Cache_Provider_Cache_Doctrine_Orm_Default_MetadataService()) && false ?: '_'});
-        $a->setQueryCacheImpl(${($_ = isset($this->services['doctrine.orm.cache.provider.cache.doctrine.orm.default.query']) ? $this->services['doctrine.orm.cache.provider.cache.doctrine.orm.default.query'] : $this->getDoctrine_Orm_Cache_Provider_Cache_Doctrine_Orm_Default_QueryService()) && false ?: '_'});
-        $a->setResultCacheImpl(${($_ = isset($this->services['doctrine.orm.cache.provider.cache.doctrine.orm.default.result']) ? $this->services['doctrine.orm.cache.provider.cache.doctrine.orm.default.result'] : $this->getDoctrine_Orm_Cache_Provider_Cache_Doctrine_Orm_Default_ResultService()) && false ?: '_'});
+        $a->setEntityNamespaces([]);
+        $a->setMetadataCacheImpl(${($_ = isset($this->services['doctrine_cache.providers.doctrine.orm.default_metadata_cache']) ? $this->services['doctrine_cache.providers.doctrine.orm.default_metadata_cache'] : $this->getDoctrineCache_Providers_Doctrine_Orm_DefaultMetadataCacheService()) && false ?: '_'});
+        $a->setQueryCacheImpl(${($_ = isset($this->services['doctrine_cache.providers.doctrine.orm.default_query_cache']) ? $this->services['doctrine_cache.providers.doctrine.orm.default_query_cache'] : $this->getDoctrineCache_Providers_Doctrine_Orm_DefaultQueryCacheService()) && false ?: '_'});
+        $a->setResultCacheImpl(${($_ = isset($this->services['doctrine_cache.providers.doctrine.orm.default_result_cache']) ? $this->services['doctrine_cache.providers.doctrine.orm.default_result_cache'] : $this->getDoctrineCache_Providers_Doctrine_Orm_DefaultResultCacheService()) && false ?: '_'});
         $a->setMetadataDriverImpl($b);
         $a->setProxyDir('/var/www/html/var/cache/dev//doctrine/orm/Proxies');
         $a->setProxyNamespace('Proxies');
@@ -1227,11 +393,10 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
         $a->setDefaultRepositoryClassName('Doctrine\\ORM\\EntityRepository');
         $a->setNamingStrategy(${($_ = isset($this->services['prestashop.database.naming_strategy']) ? $this->services['prestashop.database.naming_strategy'] : ($this->services['prestashop.database.naming_strategy'] = new \PrestaShopBundle\Service\Database\DoctrineNamingStrategy('ps_'))) && false ?: '_'});
         $a->setQuoteStrategy(new \Doctrine\ORM\Mapping\DefaultQuoteStrategy());
-        $a->setEntityListenerResolver(${($_ = isset($this->services['doctrine.orm.default_entity_listener_resolver']) ? $this->services['doctrine.orm.default_entity_listener_resolver'] : ($this->services['doctrine.orm.default_entity_listener_resolver'] = new \Doctrine\Bundle\DoctrineBundle\Mapping\ContainerEntityListenerResolver($this))) && false ?: '_'});
+        $a->setEntityListenerResolver(${($_ = isset($this->services['doctrine.orm.default_entity_listener_resolver']) ? $this->services['doctrine.orm.default_entity_listener_resolver'] : ($this->services['doctrine.orm.default_entity_listener_resolver'] = new \Doctrine\Bundle\DoctrineBundle\Mapping\ContainerAwareEntityListenerResolver($this))) && false ?: '_'});
         $a->setRepositoryFactory(new \Doctrine\Bundle\DoctrineBundle\Repository\ContainerRepositoryFactory(new \Symfony\Component\DependencyInjection\ServiceLocator([])));
         $a->addCustomStringFunction('regexp', 'DoctrineExtensions\\Query\\Mysql\\Regexp');
         $a->addEntityNamespace('ModulepsCheckout', 'PrestaShop\\Module\\PrestashopCheckout\\Entity');
-        $a->addEntityNamespace('Moduleproductcomments', 'PrestaShop\\Module\\ProductComment\\Entity');
 
         $this->services['doctrine.orm.default_entity_manager'] = $instance = \Doctrine\ORM\EntityManager::create(${($_ = isset($this->services['doctrine.dbal.default_connection']) ? $this->services['doctrine.dbal.default_connection'] : $this->getDoctrine_Dbal_DefaultConnectionService()) && false ?: '_'}, $a);
 
@@ -1241,23 +406,45 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
     }
 
     /**
-     * Gets the public 'prestashop.adapter.context_state_manager' shared service.
+     * Gets the public 'doctrine_cache.providers.doctrine.orm.default_metadata_cache' shared service.
      *
-     * @return \PrestaShop\PrestaShop\Adapter\ContextStateManager
+     * @return \Doctrine\Common\Cache\ArrayCache
      */
-    protected function getPrestashop_Adapter_ContextStateManagerService()
+    protected function getDoctrineCache_Providers_Doctrine_Orm_DefaultMetadataCacheService()
     {
-        return $this->services['prestashop.adapter.context_state_manager'] = new \PrestaShop\PrestaShop\Adapter\ContextStateManager(${($_ = isset($this->services['prestashop.adapter.legacy.context']) ? $this->services['prestashop.adapter.legacy.context'] : $this->getPrestashop_Adapter_Legacy_ContextService()) && false ?: '_'});
+        $this->services['doctrine_cache.providers.doctrine.orm.default_metadata_cache'] = $instance = new \Doctrine\Common\Cache\ArrayCache();
+
+        $instance->setNamespace('sf_orm_default_d4a178e95b6cbf266751522a8dec0379ccd2cdf43a4e6b775137af54a1938fd7');
+
+        return $instance;
     }
 
     /**
-     * Gets the public 'prestashop.adapter.data_provider.country' shared service.
+     * Gets the public 'doctrine_cache.providers.doctrine.orm.default_query_cache' shared service.
      *
-     * @return \PrestaShop\PrestaShop\Adapter\Country\CountryDataProvider
+     * @return \Doctrine\Common\Cache\ArrayCache
      */
-    protected function getPrestashop_Adapter_DataProvider_CountryService()
+    protected function getDoctrineCache_Providers_Doctrine_Orm_DefaultQueryCacheService()
     {
-        return $this->services['prestashop.adapter.data_provider.country'] = new \PrestaShop\PrestaShop\Adapter\Country\CountryDataProvider();
+        $this->services['doctrine_cache.providers.doctrine.orm.default_query_cache'] = $instance = new \Doctrine\Common\Cache\ArrayCache();
+
+        $instance->setNamespace('sf_orm_default_d4a178e95b6cbf266751522a8dec0379ccd2cdf43a4e6b775137af54a1938fd7');
+
+        return $instance;
+    }
+
+    /**
+     * Gets the public 'doctrine_cache.providers.doctrine.orm.default_result_cache' shared service.
+     *
+     * @return \Doctrine\Common\Cache\ArrayCache
+     */
+    protected function getDoctrineCache_Providers_Doctrine_Orm_DefaultResultCacheService()
+    {
+        $this->services['doctrine_cache.providers.doctrine.orm.default_result_cache'] = $instance = new \Doctrine\Common\Cache\ArrayCache();
+
+        $instance->setNamespace('sf_orm_default_d4a178e95b6cbf266751522a8dec0379ccd2cdf43a4e6b775137af54a1938fd7');
+
+        return $instance;
     }
 
     /**
@@ -1308,76 +495,6 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
     protected function getPrestashop_Adapter_ToolsService()
     {
         return $this->services['prestashop.adapter.tools'] = new \PrestaShop\PrestaShop\Adapter\Tools();
-    }
-
-    /**
-     * Gets the public 'prestashop.adapter.validate' shared service.
-     *
-     * @return \PrestaShop\PrestaShop\Adapter\Validate
-     */
-    protected function getPrestashop_Adapter_ValidateService()
-    {
-        return $this->services['prestashop.adapter.validate'] = new \PrestaShop\PrestaShop\Adapter\Validate();
-    }
-
-    /**
-     * Gets the public 'prestashop.core.circuit_breaker.advanced_factory' shared service.
-     *
-     * @return \PrestaShop\CircuitBreaker\AdvancedCircuitBreakerFactory
-     */
-    protected function getPrestashop_Core_CircuitBreaker_AdvancedFactoryService()
-    {
-        return $this->services['prestashop.core.circuit_breaker.advanced_factory'] = new \PrestaShop\CircuitBreaker\AdvancedCircuitBreakerFactory();
-    }
-
-    /**
-     * Gets the public 'prestashop.core.circuit_breaker.doctrine_cache' shared service.
-     *
-     * @return \Doctrine\Common\Cache\FilesystemCache
-     */
-    protected function getPrestashop_Core_CircuitBreaker_DoctrineCacheService()
-    {
-        return $this->services['prestashop.core.circuit_breaker.doctrine_cache'] = new \Doctrine\Common\Cache\FilesystemCache((${($_ = isset($this->services['prestashop.adapter.environment']) ? $this->services['prestashop.adapter.environment'] : ($this->services['prestashop.adapter.environment'] = new \PrestaShop\PrestaShop\Adapter\Environment(true))) && false ?: '_'}->getCacheDir() . "/circuit_breaker"));
-    }
-
-    /**
-     * Gets the public 'prestashop.core.circuit_breaker.guzzle.cache_storage' shared service.
-     *
-     * @return \GuzzleHttp\Subscriber\Cache\CacheStorage
-     */
-    protected function getPrestashop_Core_CircuitBreaker_Guzzle_CacheStorageService()
-    {
-        return $this->services['prestashop.core.circuit_breaker.guzzle.cache_storage'] = new \GuzzleHttp\Subscriber\Cache\CacheStorage(${($_ = isset($this->services['prestashop.core.circuit_breaker.doctrine_cache']) ? $this->services['prestashop.core.circuit_breaker.doctrine_cache'] : $this->getPrestashop_Core_CircuitBreaker_DoctrineCacheService()) && false ?: '_'}, 'circuit_breaker_', 86400);
-    }
-
-    /**
-     * Gets the public 'prestashop.core.circuit_breaker.guzzle.cache_subscriber' shared service.
-     *
-     * @return \GuzzleHttp\Subscriber\Cache\CacheSubscriber
-     */
-    protected function getPrestashop_Core_CircuitBreaker_Guzzle_CacheSubscriberService()
-    {
-        return $this->services['prestashop.core.circuit_breaker.guzzle.cache_subscriber'] = ${($_ = isset($this->services['prestashop.core.circuit_breaker.guzzle.cache_subscriber_factory']) ? $this->services['prestashop.core.circuit_breaker.guzzle.cache_subscriber_factory'] : ($this->services['prestashop.core.circuit_breaker.guzzle.cache_subscriber_factory'] = new \PrestaShopBundle\Cache\Factory\CacheSubscriberFactory())) && false ?: '_'}->create(${($_ = isset($this->services['prestashop.core.circuit_breaker.guzzle.cache_storage']) ? $this->services['prestashop.core.circuit_breaker.guzzle.cache_storage'] : $this->getPrestashop_Core_CircuitBreaker_Guzzle_CacheStorageService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'prestashop.core.circuit_breaker.guzzle.cache_subscriber_factory' shared service.
-     *
-     * @return \PrestaShopBundle\Cache\Factory\CacheSubscriberFactory
-     */
-    protected function getPrestashop_Core_CircuitBreaker_Guzzle_CacheSubscriberFactoryService()
-    {
-        return $this->services['prestashop.core.circuit_breaker.guzzle.cache_subscriber_factory'] = new \PrestaShopBundle\Cache\Factory\CacheSubscriberFactory();
-    }
-
-    /**
-     * Gets the public 'prestashop.core.circuit_breaker.storage' shared service.
-     *
-     * @return \PrestaShop\CircuitBreaker\Storage\DoctrineCache
-     */
-    protected function getPrestashop_Core_CircuitBreaker_StorageService()
-    {
-        return $this->services['prestashop.core.circuit_breaker.storage'] = new \PrestaShop\CircuitBreaker\Storage\DoctrineCache(${($_ = isset($this->services['prestashop.core.circuit_breaker.doctrine_cache']) ? $this->services['prestashop.core.circuit_breaker.doctrine_cache'] : $this->getPrestashop_Core_CircuitBreaker_DoctrineCacheService()) && false ?: '_'});
     }
 
     /**
@@ -1523,16 +640,6 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
     }
 
     /**
-     * Gets the public 'prestashop.core.localization.locale.context_locale' shared service.
-     *
-     * @return \PrestaShop\PrestaShop\Core\Localization\Locale
-     */
-    protected function getPrestashop_Core_Localization_Locale_ContextLocaleService()
-    {
-        return $this->services['prestashop.core.localization.locale.context_locale'] = ${($_ = isset($this->services['prestashop.core.localization.locale.repository']) ? $this->services['prestashop.core.localization.locale.repository'] : $this->getPrestashop_Core_Localization_Locale_RepositoryService()) && false ?: '_'}->getLocale(${($_ = isset($this->services['prestashop.adapter.legacy.context']) ? $this->services['prestashop.adapter.legacy.context'] : $this->getPrestashop_Adapter_Legacy_ContextService()) && false ?: '_'}->getContext()->language->getLocale());
-    }
-
-    /**
      * Gets the public 'prestashop.core.localization.locale.repository' shared service.
      *
      * @return \PrestaShop\PrestaShop\Core\Localization\Locale\Repository
@@ -1540,36 +647,6 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
     protected function getPrestashop_Core_Localization_Locale_RepositoryService()
     {
         return $this->services['prestashop.core.localization.locale.repository'] = new \PrestaShop\PrestaShop\Core\Localization\Locale\Repository(${($_ = isset($this->services['prestashop.core.localization.cldr.locale_repository']) ? $this->services['prestashop.core.localization.cldr.locale_repository'] : $this->getPrestashop_Core_Localization_Cldr_LocaleRepositoryService()) && false ?: '_'}, ${($_ = isset($this->services['prestashop.core.localization.currency.repository']) ? $this->services['prestashop.core.localization.currency.repository'] : $this->getPrestashop_Core_Localization_Currency_RepositoryService()) && false ?: '_'});
-    }
-
-    /**
-     * Gets the public 'prestashop.core.string.character_cleaner' shared service.
-     *
-     * @return \PrestaShop\PrestaShop\Core\String\CharacterCleaner
-     */
-    protected function getPrestashop_Core_String_CharacterCleanerService()
-    {
-        return $this->services['prestashop.core.string.character_cleaner'] = new \PrestaShop\PrestaShop\Core\String\CharacterCleaner();
-    }
-
-    /**
-     * Gets the public 'product_comment_criterion_repository' shared service.
-     *
-     * @return \PrestaShop\Module\ProductComment\Repository\ProductCommentCriterionRepository
-     */
-    protected function getProductCommentCriterionRepositoryService()
-    {
-        return $this->services['product_comment_criterion_repository'] = new \PrestaShop\Module\ProductComment\Repository\ProductCommentCriterionRepository(${($_ = isset($this->services['doctrine.dbal.default_connection']) ? $this->services['doctrine.dbal.default_connection'] : $this->getDoctrine_Dbal_DefaultConnectionService()) && false ?: '_'}, 'ps_');
-    }
-
-    /**
-     * Gets the public 'product_comment_repository' shared service.
-     *
-     * @return \PrestaShop\Module\ProductComment\Repository\ProductCommentRepository
-     */
-    protected function getProductCommentRepositoryService()
-    {
-        return $this->services['product_comment_repository'] = new \PrestaShop\Module\ProductComment\Repository\ProductCommentRepository(${($_ = isset($this->services['doctrine.dbal.default_connection']) ? $this->services['doctrine.dbal.default_connection'] : $this->getDoctrine_Dbal_DefaultConnectionService()) && false ?: '_'}, 'ps_', ${($_ = isset($this->services['prestashop.adapter.legacy.configuration']) ? $this->services['prestashop.adapter.legacy.configuration'] : ($this->services['prestashop.adapter.legacy.configuration'] = new \PrestaShop\PrestaShop\Adapter\Configuration())) && false ?: '_'}->get("PRODUCT_COMMENTS_ALLOW_GUESTS"), ${($_ = isset($this->services['prestashop.adapter.legacy.configuration']) ? $this->services['prestashop.adapter.legacy.configuration'] : ($this->services['prestashop.adapter.legacy.configuration'] = new \PrestaShop\PrestaShop\Adapter\Configuration())) && false ?: '_'}->get("PRODUCT_COMMENTS_MINIMAL_TIME"));
     }
 
     /**
@@ -1619,7 +696,7 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
      */
     protected function getPsCheckout_Cache_DirectoryService()
     {
-        return $this->services['ps_checkout.cache.directory'] = new \PrestaShop\ModuleLibCacheDirectoryProvider\Cache\CacheDirectoryProvider('1.7.8.7', '/var/www/html', true);
+        return $this->services['ps_checkout.cache.directory'] = new \PrestaShop\ModuleLibCacheDirectoryProvider\Cache\CacheDirectoryProvider('1.7.6.5', '/var/www/html', true);
     }
 
     /**
@@ -1629,7 +706,7 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
      */
     protected function getPsCheckout_Cache_Paypal_MerchantIntegrationService()
     {
-        return $this->services['ps_checkout.cache.paypal.merchant_integration'] = new \Symfony\Component\Cache\Simple\FilesystemCache('merchant-integration', 86400, ${($_ = isset($this->services['ps_checkout.cache.directory']) ? $this->services['ps_checkout.cache.directory'] : ($this->services['ps_checkout.cache.directory'] = new \PrestaShop\ModuleLibCacheDirectoryProvider\Cache\CacheDirectoryProvider('1.7.8.7', '/var/www/html', true))) && false ?: '_'}->getPath());
+        return $this->services['ps_checkout.cache.paypal.merchant_integration'] = new \Symfony\Component\Cache\Simple\FilesystemCache('merchant-integration', 86400, ${($_ = isset($this->services['ps_checkout.cache.directory']) ? $this->services['ps_checkout.cache.directory'] : ($this->services['ps_checkout.cache.directory'] = new \PrestaShop\ModuleLibCacheDirectoryProvider\Cache\CacheDirectoryProvider('1.7.6.5', '/var/www/html', true))) && false ?: '_'}->getPath());
     }
 
     /**
@@ -1639,7 +716,7 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
      */
     protected function getPsCheckout_Cache_Paypal_OrderService()
     {
-        return $this->services['ps_checkout.cache.paypal.order'] = new \Symfony\Component\Cache\Simple\FilesystemCache('paypal-orders', 3600, ${($_ = isset($this->services['ps_checkout.cache.directory']) ? $this->services['ps_checkout.cache.directory'] : ($this->services['ps_checkout.cache.directory'] = new \PrestaShop\ModuleLibCacheDirectoryProvider\Cache\CacheDirectoryProvider('1.7.8.7', '/var/www/html', true))) && false ?: '_'}->getPath());
+        return $this->services['ps_checkout.cache.paypal.order'] = new \Symfony\Component\Cache\Simple\FilesystemCache('paypal-orders', 3600, ${($_ = isset($this->services['ps_checkout.cache.directory']) ? $this->services['ps_checkout.cache.directory'] : ($this->services['ps_checkout.cache.directory'] = new \PrestaShop\ModuleLibCacheDirectoryProvider\Cache\CacheDirectoryProvider('1.7.6.5', '/var/www/html', true))) && false ?: '_'}->getPath());
     }
 
     /**
@@ -1829,7 +906,7 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
      */
     protected function getPsCheckout_LoggerService()
     {
-        return $this->services['ps_checkout.logger'] = ${($_ = isset($this->services['ps_checkout.logger.factory']) ? $this->services['ps_checkout.logger.factory'] : $this->getPsCheckout_Logger_FactoryService()) && false ?: '_'}->build(${($_ = isset($this->services['ps_checkout.logger.directory']) ? $this->services['ps_checkout.logger.directory'] : ($this->services['ps_checkout.logger.directory'] = new \PrestaShop\Module\PrestashopCheckout\Logger\LoggerDirectory('1.7.8.7', '/var/www/html'))) && false ?: '_'});
+        return $this->services['ps_checkout.logger'] = ${($_ = isset($this->services['ps_checkout.logger.factory']) ? $this->services['ps_checkout.logger.factory'] : $this->getPsCheckout_Logger_FactoryService()) && false ?: '_'}->build(${($_ = isset($this->services['ps_checkout.logger.directory']) ? $this->services['ps_checkout.logger.directory'] : ($this->services['ps_checkout.logger.directory'] = new \PrestaShop\Module\PrestashopCheckout\Logger\LoggerDirectory('1.7.6.5', '/var/www/html'))) && false ?: '_'});
     }
 
     /**
@@ -1849,7 +926,7 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
      */
     protected function getPsCheckout_Logger_DirectoryService()
     {
-        return $this->services['ps_checkout.logger.directory'] = new \PrestaShop\Module\PrestashopCheckout\Logger\LoggerDirectory('1.7.8.7', '/var/www/html');
+        return $this->services['ps_checkout.logger.directory'] = new \PrestaShop\Module\PrestashopCheckout\Logger\LoggerDirectory('1.7.6.5', '/var/www/html');
     }
 
     /**
@@ -1889,7 +966,7 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
      */
     protected function getPsCheckout_Logger_Handler_FactoryService()
     {
-        return $this->services['ps_checkout.logger.handler.factory'] = new \PrestaShop\Module\PrestashopCheckout\Logger\LoggerHandlerFactory(${($_ = isset($this->services['ps_checkout.logger.directory']) ? $this->services['ps_checkout.logger.directory'] : ($this->services['ps_checkout.logger.directory'] = new \PrestaShop\Module\PrestashopCheckout\Logger\LoggerDirectory('1.7.8.7', '/var/www/html'))) && false ?: '_'}->getPath(), ${($_ = isset($this->services['ps_checkout.logger.filename']) ? $this->services['ps_checkout.logger.filename'] : $this->getPsCheckout_Logger_FilenameService()) && false ?: '_'}->get(), ${($_ = isset($this->services['ps_checkout.logger.configuration']) ? $this->services['ps_checkout.logger.configuration'] : $this->getPsCheckout_Logger_ConfigurationService()) && false ?: '_'}->getMaxFiles(), ${($_ = isset($this->services['ps_checkout.logger.configuration']) ? $this->services['ps_checkout.logger.configuration'] : $this->getPsCheckout_Logger_ConfigurationService()) && false ?: '_'}->getLevel());
+        return $this->services['ps_checkout.logger.handler.factory'] = new \PrestaShop\Module\PrestashopCheckout\Logger\LoggerHandlerFactory(${($_ = isset($this->services['ps_checkout.logger.directory']) ? $this->services['ps_checkout.logger.directory'] : ($this->services['ps_checkout.logger.directory'] = new \PrestaShop\Module\PrestashopCheckout\Logger\LoggerDirectory('1.7.6.5', '/var/www/html'))) && false ?: '_'}->getPath(), ${($_ = isset($this->services['ps_checkout.logger.filename']) ? $this->services['ps_checkout.logger.filename'] : $this->getPsCheckout_Logger_FilenameService()) && false ?: '_'}->get(), ${($_ = isset($this->services['ps_checkout.logger.configuration']) ? $this->services['ps_checkout.logger.configuration'] : $this->getPsCheckout_Logger_ConfigurationService()) && false ?: '_'}->getMaxFiles(), ${($_ = isset($this->services['ps_checkout.logger.configuration']) ? $this->services['ps_checkout.logger.configuration'] : $this->getPsCheckout_Logger_ConfigurationService()) && false ?: '_'}->getLevel());
     }
 
     /**
@@ -2173,216 +1250,6 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
     }
 
     /**
-     * Gets the public 'ps_facebook' shared service.
-     *
-     * @return \Ps_facebook
-     */
-    protected function getPsFacebookService()
-    {
-        return $this->services['ps_facebook'] = \Module::getInstanceByName('ps_facebook');
-    }
-
-    /**
-     * Gets the public 'ps_facebook.cache' shared service.
-     *
-     * @return \string
-     */
-    protected function getPsFacebook_CacheService()
-    {
-        return $this->services['ps_facebook.cache'] = \PrestaShop\Module\PrestashopFacebook\Factory\CacheFactory::getCachePath();
-    }
-
-    /**
-     * Gets the public 'ps_facebook.context' shared service.
-     *
-     * @return \Context
-     */
-    protected function getPsFacebook_ContextService()
-    {
-        return $this->services['ps_facebook.context'] = \PrestaShop\Module\PrestashopFacebook\Factory\ContextFactory::getContext();
-    }
-
-    /**
-     * Gets the public 'ps_facebook.controller' shared service.
-     *
-     * @return \Controller
-     */
-    protected function getPsFacebook_ControllerService()
-    {
-        return $this->services['ps_facebook.controller'] = \PrestaShop\Module\PrestashopFacebook\Factory\ContextFactory::getController();
-    }
-
-    /**
-     * Gets the public 'ps_facebook.cookie' shared service.
-     *
-     * @return \Cookie
-     */
-    protected function getPsFacebook_CookieService()
-    {
-        return $this->services['ps_facebook.cookie'] = \PrestaShop\Module\PrestashopFacebook\Factory\ContextFactory::getCookie();
-    }
-
-    /**
-     * Gets the public 'ps_facebook.currency' shared service.
-     *
-     * @return \Currency
-     */
-    protected function getPsFacebook_CurrencyService()
-    {
-        return $this->services['ps_facebook.currency'] = \PrestaShop\Module\PrestashopFacebook\Factory\ContextFactory::getCurrency();
-    }
-
-    /**
-     * Gets the public 'ps_facebook.language' shared service.
-     *
-     * @return \Language
-     */
-    protected function getPsFacebook_LanguageService()
-    {
-        return $this->services['ps_facebook.language'] = \PrestaShop\Module\PrestashopFacebook\Factory\ContextFactory::getLanguage();
-    }
-
-    /**
-     * Gets the public 'ps_facebook.link' shared service.
-     *
-     * @return \Shop
-     */
-    protected function getPsFacebook_LinkService()
-    {
-        return $this->services['ps_facebook.link'] = \PrestaShop\Module\PrestashopFacebook\Factory\ContextFactory::getLink();
-    }
-
-    /**
-     * Gets the public 'ps_facebook.shop' shared service.
-     *
-     * @return \Shop
-     */
-    protected function getPsFacebook_ShopService()
-    {
-        return $this->services['ps_facebook.shop'] = \PrestaShop\Module\PrestashopFacebook\Factory\ContextFactory::getShop();
-    }
-
-    /**
-     * Gets the public 'ps_facebook.smarty' shared service.
-     *
-     * @return \Smarty
-     */
-    protected function getPsFacebook_SmartyService()
-    {
-        return $this->services['ps_facebook.smarty'] = \PrestaShop\Module\PrestashopFacebook\Factory\ContextFactory::getSmarty();
-    }
-
-    /**
-     * Gets the public 'psxmarketingwithgoogle' shared service.
-     *
-     * @return \PsxMarketingWithGoogle
-     */
-    protected function getPsxmarketingwithgoogleService()
-    {
-        return $this->services['psxmarketingwithgoogle'] = \Module::getInstanceByName('psxmarketingwithgoogle');
-    }
-
-    /**
-     * Gets the public 'psxmarketingwithgoogle.context' shared service.
-     *
-     * @return \Context
-     */
-    protected function getPsxmarketingwithgoogle_ContextService()
-    {
-        return $this->services['psxmarketingwithgoogle.context'] = \PrestaShop\Module\PsxMarketingWithGoogle\Factory\ContextFactory::getContext();
-    }
-
-    /**
-     * Gets the public 'psxmarketingwithgoogle.controller' shared service.
-     *
-     * @return \Controller
-     */
-    protected function getPsxmarketingwithgoogle_ControllerService()
-    {
-        return $this->services['psxmarketingwithgoogle.controller'] = \PrestaShop\Module\PsxMarketingWithGoogle\Factory\ContextFactory::getController();
-    }
-
-    /**
-     * Gets the public 'psxmarketingwithgoogle.cookie' shared service.
-     *
-     * @return \Cookie
-     */
-    protected function getPsxmarketingwithgoogle_CookieService()
-    {
-        return $this->services['psxmarketingwithgoogle.cookie'] = \PrestaShop\Module\PsxMarketingWithGoogle\Factory\ContextFactory::getCookie();
-    }
-
-    /**
-     * Gets the public 'psxmarketingwithgoogle.country' shared service.
-     *
-     * @return \Country
-     */
-    protected function getPsxmarketingwithgoogle_CountryService()
-    {
-        return $this->services['psxmarketingwithgoogle.country'] = \PrestaShop\Module\PsxMarketingWithGoogle\Factory\ContextFactory::getCountry();
-    }
-
-    /**
-     * Gets the public 'psxmarketingwithgoogle.currency' shared service.
-     *
-     * @return \Currency
-     */
-    protected function getPsxmarketingwithgoogle_CurrencyService()
-    {
-        return $this->services['psxmarketingwithgoogle.currency'] = \PrestaShop\Module\PsxMarketingWithGoogle\Factory\ContextFactory::getCurrency();
-    }
-
-    /**
-     * Gets the public 'psxmarketingwithgoogle.db' shared service.
-     *
-     * @return \Db
-     */
-    protected function getPsxmarketingwithgoogle_DbService()
-    {
-        return $this->services['psxmarketingwithgoogle.db'] = \Db::getInstance();
-    }
-
-    /**
-     * Gets the public 'psxmarketingwithgoogle.language' shared service.
-     *
-     * @return \Language
-     */
-    protected function getPsxmarketingwithgoogle_LanguageService()
-    {
-        return $this->services['psxmarketingwithgoogle.language'] = \PrestaShop\Module\PsxMarketingWithGoogle\Factory\ContextFactory::getLanguage();
-    }
-
-    /**
-     * Gets the public 'psxmarketingwithgoogle.link' shared service.
-     *
-     * @return \Shop
-     */
-    protected function getPsxmarketingwithgoogle_LinkService()
-    {
-        return $this->services['psxmarketingwithgoogle.link'] = \PrestaShop\Module\PsxMarketingWithGoogle\Factory\ContextFactory::getLink();
-    }
-
-    /**
-     * Gets the public 'psxmarketingwithgoogle.shop' shared service.
-     *
-     * @return \Shop
-     */
-    protected function getPsxmarketingwithgoogle_ShopService()
-    {
-        return $this->services['psxmarketingwithgoogle.shop'] = \PrestaShop\Module\PsxMarketingWithGoogle\Factory\ContextFactory::getShop();
-    }
-
-    /**
-     * Gets the public 'psxmarketingwithgoogle.smarty' shared service.
-     *
-     * @return \Smarty
-     */
-    protected function getPsxmarketingwithgoogle_SmartyService()
-    {
-        return $this->services['psxmarketingwithgoogle.smarty'] = \PrestaShop\Module\PsxMarketingWithGoogle\Factory\ContextFactory::getSmarty();
-    }
-
-    /**
      * Gets the private 'annotation_reader' shared service.
      *
      * @return \Doctrine\Common\Annotations\AnnotationReader
@@ -2390,66 +1257,6 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
     protected function getAnnotationReaderService()
     {
         return $this->services['annotation_reader'] = new \Doctrine\Common\Annotations\AnnotationReader();
-    }
-
-    /**
-     * Gets the private 'cache.doctrine.orm.default.metadata' shared service.
-     *
-     * @return \Symfony\Component\Cache\Adapter\ArrayAdapter
-     */
-    protected function getCache_Doctrine_Orm_Default_MetadataService()
-    {
-        return $this->services['cache.doctrine.orm.default.metadata'] = new \Symfony\Component\Cache\Adapter\ArrayAdapter();
-    }
-
-    /**
-     * Gets the private 'cache.doctrine.orm.default.query' shared service.
-     *
-     * @return \Symfony\Component\Cache\Adapter\ArrayAdapter
-     */
-    protected function getCache_Doctrine_Orm_Default_QueryService()
-    {
-        return $this->services['cache.doctrine.orm.default.query'] = new \Symfony\Component\Cache\Adapter\ArrayAdapter();
-    }
-
-    /**
-     * Gets the private 'cache.doctrine.orm.default.result' shared service.
-     *
-     * @return \Symfony\Component\Cache\Adapter\ArrayAdapter
-     */
-    protected function getCache_Doctrine_Orm_Default_ResultService()
-    {
-        return $this->services['cache.doctrine.orm.default.result'] = new \Symfony\Component\Cache\Adapter\ArrayAdapter();
-    }
-
-    /**
-     * Gets the private 'configuration' shared service.
-     *
-     * @return \PrestaShop\PrestaShop\Adapter\Configuration
-     */
-    protected function getConfigurationService()
-    {
-        return $this->services['configuration'] = new \PrestaShop\PrestaShop\Adapter\Configuration();
-    }
-
-    /**
-     * Gets the private 'context' shared service.
-     *
-     * @return \Context
-     */
-    protected function getContextService()
-    {
-        return $this->services['context'] = \Context::getContext();
-    }
-
-    /**
-     * Gets the private 'db' shared service.
-     *
-     * @return \Db
-     */
-    protected function getDbService()
-    {
-        return $this->services['db'] = \Db::getInstance();
     }
 
     /**
@@ -2603,43 +1410,13 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
     }
 
     /**
-     * Gets the private 'doctrine.orm.cache.provider.cache.doctrine.orm.default.metadata' shared service.
-     *
-     * @return \Symfony\Component\Cache\DoctrineProvider
-     */
-    protected function getDoctrine_Orm_Cache_Provider_Cache_Doctrine_Orm_Default_MetadataService()
-    {
-        return $this->services['doctrine.orm.cache.provider.cache.doctrine.orm.default.metadata'] = new \Symfony\Component\Cache\DoctrineProvider(${($_ = isset($this->services['cache.doctrine.orm.default.metadata']) ? $this->services['cache.doctrine.orm.default.metadata'] : ($this->services['cache.doctrine.orm.default.metadata'] = new \Symfony\Component\Cache\Adapter\ArrayAdapter())) && false ?: '_'});
-    }
-
-    /**
-     * Gets the private 'doctrine.orm.cache.provider.cache.doctrine.orm.default.query' shared service.
-     *
-     * @return \Symfony\Component\Cache\DoctrineProvider
-     */
-    protected function getDoctrine_Orm_Cache_Provider_Cache_Doctrine_Orm_Default_QueryService()
-    {
-        return $this->services['doctrine.orm.cache.provider.cache.doctrine.orm.default.query'] = new \Symfony\Component\Cache\DoctrineProvider(${($_ = isset($this->services['cache.doctrine.orm.default.query']) ? $this->services['cache.doctrine.orm.default.query'] : ($this->services['cache.doctrine.orm.default.query'] = new \Symfony\Component\Cache\Adapter\ArrayAdapter())) && false ?: '_'});
-    }
-
-    /**
-     * Gets the private 'doctrine.orm.cache.provider.cache.doctrine.orm.default.result' shared service.
-     *
-     * @return \Symfony\Component\Cache\DoctrineProvider
-     */
-    protected function getDoctrine_Orm_Cache_Provider_Cache_Doctrine_Orm_Default_ResultService()
-    {
-        return $this->services['doctrine.orm.cache.provider.cache.doctrine.orm.default.result'] = new \Symfony\Component\Cache\DoctrineProvider(${($_ = isset($this->services['cache.doctrine.orm.default.result']) ? $this->services['cache.doctrine.orm.default.result'] : ($this->services['cache.doctrine.orm.default.result'] = new \Symfony\Component\Cache\Adapter\ArrayAdapter())) && false ?: '_'});
-    }
-
-    /**
      * Gets the private 'doctrine.orm.default_entity_listener_resolver' shared service.
      *
-     * @return \Doctrine\Bundle\DoctrineBundle\Mapping\ContainerEntityListenerResolver
+     * @return \Doctrine\Bundle\DoctrineBundle\Mapping\ContainerAwareEntityListenerResolver
      */
     protected function getDoctrine_Orm_DefaultEntityListenerResolverService()
     {
-        return $this->services['doctrine.orm.default_entity_listener_resolver'] = new \Doctrine\Bundle\DoctrineBundle\Mapping\ContainerEntityListenerResolver($this);
+        return $this->services['doctrine.orm.default_entity_listener_resolver'] = new \Doctrine\Bundle\DoctrineBundle\Mapping\ContainerAwareEntityListenerResolver($this);
     }
 
     /**
@@ -2823,16 +1600,6 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
     }
 
     /**
-     * Gets the private 'prestashop.adapter.module.repository.module_repository' shared service.
-     *
-     * @return \PrestaShop\PrestaShop\Adapter\Module\Repository\ModuleRepository
-     */
-    protected function getPrestashop_Adapter_Module_Repository_ModuleRepositoryService()
-    {
-        return $this->services['prestashop.adapter.module.repository.module_repository'] = new \PrestaShop\PrestaShop\Adapter\Module\Repository\ModuleRepository();
-    }
-
-    /**
      * Gets the private 'prestashop.core.filter.front_end_object.cart' shared service.
      *
      * @return \PrestaShop\PrestaShop\Core\Filter\FrontEndObject\CartFilter
@@ -2940,16 +1707,6 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
         return $this->services['prestashop.database.naming_strategy'] = new \PrestaShopBundle\Service\Database\DoctrineNamingStrategy('ps_');
     }
 
-    /**
-     * Gets the private 'prestashop.translation.translator_language_loader' shared service.
-     *
-     * @return \PrestaShopBundle\Translation\TranslatorLanguageLoader
-     */
-    protected function getPrestashop_Translation_TranslatorLanguageLoaderService()
-    {
-        return $this->services['prestashop.translation.translator_language_loader'] = new \PrestaShopBundle\Translation\TranslatorLanguageLoader(${($_ = isset($this->services['prestashop.adapter.module.repository.module_repository']) ? $this->services['prestashop.adapter.module.repository.module_repository'] : ($this->services['prestashop.adapter.module.repository.module_repository'] = new \PrestaShop\PrestaShop\Adapter\Module\Repository\ModuleRepository())) && false ?: '_'});
-    }
-
     public function getParameter($name)
     {
         $name = (string) $name;
@@ -3045,89 +1802,87 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
             'mailer_host' => '127.0.0.1',
             'mailer_user' => NULL,
             'mailer_password' => NULL,
-            'secret' => 'W9ufggjwJt7BkNFYmLiVENQ2ELP3xVVftORah0EExYAWgskgb8vxHMkd0uxdB4YY',
+            'secret' => 'hFOLSye4mx1hndi4kKD5hxAW6FJaj9oFcBe8JUPjU4Nc21Gr23YcKUcY',
             'ps_caching' => 'CacheMemcache',
             'ps_cache_enable' => false,
             'ps_creation_date' => '2022-12-07',
             'locale' => 'pl-PL',
             'use_debug_toolbar' => true,
-            'cookie_key' => 'gEsVMQJKGNfCvSFKTHO8sRhN17mGHRMtUNd3NGYSJR4bZIImZa5d9USTfeH4IZBI',
-            'cookie_iv' => 'krtjNtwxNvPjEz0ZeHBtZcpr4hHMRgG5',
-            'new_cookie_key' => 'def0000078c783f389c7ca6c52bfdad4a9ebe31dec460a6984a540580b7fbba5fe5905cba2712aa9e8ad5e5ab6f21d12ee5b1c9b8352d2dad89c3969fe6acdfb295f8773',
+            'cookie_key' => 'i48bdjgjtycLvUKz2zKIVAx31MhHvTWqiuarIuIHw4Uk3mNBgMORY61K',
+            'cookie_iv' => 'awTYT6P9',
+            'new_cookie_key' => 'def00000edf9cbbad6eaf75933b6a26a8c502d6dd7a4ba3a77ea92a80800fce9032b1338077153ca88b8a540ac34f004af9df34adac69507de0b72808ef8c88b658634b9',
             'cache.driver' => 'array',
             'kernel.bundles' => [
 
             ],
-            'kernel.root_dir' => '/var/www/html/app',
-            'kernel.project_dir' => '/var/www/html',
+            'kernel.root_dir' => '/var/www/html/app/',
             'kernel.name' => 'app',
             'kernel.debug' => true,
             'kernel.environment' => 'dev',
             'kernel.cache_dir' => '/var/www/html/var/cache/dev/',
             'kernel.active_modules' => [
-                0 => 'blockwishlist',
-                1 => 'contactform',
-                2 => 'dashactivity',
-                3 => 'dashtrends',
-                4 => 'dashgoals',
-                5 => 'dashproducts',
-                6 => 'graphnvd3',
-                7 => 'gridhtml',
-                8 => 'gsitemap',
-                9 => 'pagesnotfound',
-                10 => 'productcomments',
-                11 => 'ps_banner',
-                12 => 'ps_categorytree',
-                13 => 'ps_checkpayment',
-                14 => 'ps_contactinfo',
-                15 => 'ps_crossselling',
-                16 => 'ps_currencyselector',
-                17 => 'ps_customeraccountlinks',
-                18 => 'ps_customersignin',
-                19 => 'ps_customtext',
-                20 => 'ps_dataprivacy',
-                21 => 'ps_emailsubscription',
-                22 => 'ps_faviconnotificationbo',
-                23 => 'ps_featuredproducts',
-                24 => 'ps_imageslider',
-                25 => 'ps_languageselector',
-                26 => 'ps_linklist',
-                27 => 'ps_mainmenu',
-                28 => 'ps_searchbar',
-                29 => 'ps_sharebuttons',
-                30 => 'ps_shoppingcart',
-                31 => 'ps_socialfollow',
-                32 => 'ps_themecusto',
-                33 => 'ps_wirepayment',
-                34 => 'statsbestcategories',
-                35 => 'statsbestcustomers',
-                36 => 'statsbestproducts',
-                37 => 'statsbestsuppliers',
-                38 => 'statsbestvouchers',
-                39 => 'statscarrier',
-                40 => 'statscatalog',
-                41 => 'statscheckup',
-                42 => 'statsdata',
-                43 => 'statsforecast',
-                44 => 'statsnewsletter',
+                0 => 'contactform',
+                1 => 'dashactivity',
+                2 => 'dashtrends',
+                3 => 'dashgoals',
+                4 => 'dashproducts',
+                5 => 'graphnvd3',
+                6 => 'gridhtml',
+                7 => 'gsitemap',
+                8 => 'ps_banner',
+                9 => 'ps_categorytree',
+                10 => 'ps_checkpayment',
+                11 => 'ps_contactinfo',
+                12 => 'ps_currencyselector',
+                13 => 'ps_customeraccountlinks',
+                14 => 'ps_customersignin',
+                15 => 'ps_customtext',
+                16 => 'ps_emailsubscription',
+                17 => 'ps_faviconnotificationbo',
+                18 => 'ps_featuredproducts',
+                19 => 'ps_imageslider',
+                20 => 'ps_languageselector',
+                21 => 'ps_linklist',
+                22 => 'ps_mainmenu',
+                23 => 'ps_searchbar',
+                24 => 'ps_sharebuttons',
+                25 => 'ps_shoppingcart',
+                26 => 'ps_socialfollow',
+                27 => 'ps_themecusto',
+                28 => 'ps_wirepayment',
+                29 => 'pagesnotfound',
+                30 => 'sekeywords',
+                31 => 'statsbestcategories',
+                32 => 'statsbestcustomers',
+                33 => 'statsbestproducts',
+                34 => 'statsbestsuppliers',
+                35 => 'statsbestvouchers',
+                36 => 'statscarrier',
+                37 => 'statscatalog',
+                38 => 'statscheckup',
+                39 => 'statsdata',
+                40 => 'statsequipment',
+                41 => 'statsforecast',
+                42 => 'statslive',
+                43 => 'statsnewsletter',
+                44 => 'statsorigin',
                 45 => 'statspersonalinfos',
                 46 => 'statsproduct',
                 47 => 'statsregistrations',
                 48 => 'statssales',
                 49 => 'statssearch',
                 50 => 'statsstock',
-                51 => 'welcome',
-                52 => 'gamification',
-                53 => 'psaddonsconnect',
-                54 => 'psgdpr',
-                55 => 'ps_mbo',
-                56 => 'ps_buybuttonlite',
-                57 => 'ps_checkout',
-                58 => 'ps_metrics',
-                59 => 'ps_facebook',
-                60 => 'psxmarketingwithgoogle',
-                61 => 'blockreassurance',
-                62 => 'ps_facetedsearch',
+                51 => 'statsvisits',
+                52 => 'welcome',
+                53 => 'gamification',
+                54 => 'psaddonsconnect',
+                55 => 'psgdpr',
+                56 => 'ps_mbo',
+                57 => 'ps_buybuttonlite',
+                58 => 'ps_checkout',
+                59 => 'ps_metrics',
+                60 => 'blockreassurance',
+                61 => 'ps_facetedsearch',
             ],
             'ps_cache_dir' => '/var/www/html/var/cache/dev/',
             'mail_themes_uri' => '/mails/themes',
@@ -3214,7 +1969,7 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
             'doctrine.orm.cache.xcache.class' => 'Doctrine\\Common\\Cache\\XcacheCache',
             'doctrine.orm.cache.wincache.class' => 'Doctrine\\Common\\Cache\\WinCacheCache',
             'doctrine.orm.cache.zenddata.class' => 'Doctrine\\Common\\Cache\\ZendDataCache',
-            'doctrine.orm.metadata.driver_chain.class' => 'Doctrine\\Persistence\\Mapping\\Driver\\MappingDriverChain',
+            'doctrine.orm.metadata.driver_chain.class' => 'Doctrine\\Common\\Persistence\\Mapping\\Driver\\MappingDriverChain',
             'doctrine.orm.metadata.annotation.class' => 'Doctrine\\ORM\\Mapping\\Driver\\AnnotationDriver',
             'doctrine.orm.metadata.xml.class' => 'Doctrine\\ORM\\Mapping\\Driver\\SimplifiedXmlDriver',
             'doctrine.orm.metadata.yml.class' => 'Doctrine\\ORM\\Mapping\\Driver\\SimplifiedYamlDriver',
@@ -3231,7 +1986,7 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
             'doctrine.orm.naming_strategy.underscore.class' => 'Doctrine\\ORM\\Mapping\\UnderscoreNamingStrategy',
             'doctrine.orm.quote_strategy.default.class' => 'Doctrine\\ORM\\Mapping\\DefaultQuoteStrategy',
             'doctrine.orm.quote_strategy.ansi.class' => 'Doctrine\\ORM\\Mapping\\AnsiQuoteStrategy',
-            'doctrine.orm.entity_listener_resolver.class' => 'Doctrine\\Bundle\\DoctrineBundle\\Mapping\\ContainerEntityListenerResolver',
+            'doctrine.orm.entity_listener_resolver.class' => 'Doctrine\\Bundle\\DoctrineBundle\\Mapping\\ContainerAwareEntityListenerResolver',
             'doctrine.orm.second_level_cache.default_cache_factory.class' => 'Doctrine\\ORM\\Cache\\DefaultCacheFactory',
             'doctrine.orm.second_level_cache.default_region.class' => 'Doctrine\\ORM\\Cache\\Region\\DefaultRegion',
             'doctrine.orm.second_level_cache.filelock_region.class' => 'Doctrine\\ORM\\Cache\\Region\\FileLockRegion',

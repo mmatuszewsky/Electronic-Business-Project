@@ -77,12 +77,11 @@ class FormHelperTableLayoutTest extends AbstractTableLayoutTest
         ]);
     }
 
-    /**
-     * @after
-     */
-    public function doTearDown()
+    protected function tearDown()
     {
         $this->engine = null;
+
+        parent::tearDown();
     }
 
     protected function renderForm(FormView $view, array $vars = [])

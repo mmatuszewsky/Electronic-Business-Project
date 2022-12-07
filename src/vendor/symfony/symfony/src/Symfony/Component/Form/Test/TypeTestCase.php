@@ -17,7 +17,7 @@ use Symfony\Component\Form\Test\Traits\ValidatorExtensionTrait;
 
 abstract class TypeTestCase extends FormIntegrationTestCase
 {
-    use ForwardCompatTestTrait;
+    use TestCaseSetUpTearDownTrait;
 
     /**
      * @var FormBuilder

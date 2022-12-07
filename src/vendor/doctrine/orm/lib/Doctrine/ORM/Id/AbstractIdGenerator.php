@@ -26,8 +26,8 @@ abstract class AbstractIdGenerator
     /**
      * Generates an identifier for an entity.
      *
-     * @param EntityManager $em
-     * @param object|null $entity
+     * @param EntityManager|EntityManager $em
+     * @param \Doctrine\ORM\Mapping\Entity $entity
      * @return mixed
      */
     abstract public function generate(EntityManager $em, $entity);
@@ -40,7 +40,7 @@ abstract class AbstractIdGenerator
      * By default, this method returns FALSE. Generators that have this requirement
      * must override this method and return TRUE.
      *
-     * @return bool
+     * @return boolean
      */
     public function isPostInsertGenerator()
     {

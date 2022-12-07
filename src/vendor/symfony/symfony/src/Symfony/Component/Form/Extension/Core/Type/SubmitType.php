@@ -33,7 +33,7 @@ class SubmitType extends AbstractType implements SubmitButtonTypeInterface
      */
     public function getParent()
     {
-        return ButtonType::class;
+        return __NAMESPACE__.'\ButtonType';
     }
 
     /**

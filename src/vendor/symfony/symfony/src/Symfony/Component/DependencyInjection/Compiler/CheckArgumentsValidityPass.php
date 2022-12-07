@@ -81,7 +81,5 @@ class CheckArgumentsValidityPass extends AbstractRecursivePass
                 }
             }
         }
-
-        return null;
     }
 }

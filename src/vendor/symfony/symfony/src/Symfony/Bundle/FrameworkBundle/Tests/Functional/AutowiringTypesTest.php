@@ -20,7 +20,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpKernel\Debug\TraceableEventDispatcher;
 use Symfony\Component\Templating\EngineInterface as ComponentEngineInterface;
 
-class AutowiringTypesTest extends AbstractWebTestCase
+class AutowiringTypesTest extends WebTestCase
 {
     public function testAnnotationReaderAutowiring()
     {

@@ -34,7 +34,7 @@ class TemplateFinderTest extends TestCase
         $kernel
             ->expects($this->once())
             ->method('getBundles')
-            ->willReturn(['BaseBundle' => new BaseBundle()])
+            ->will($this->returnValue(['BaseBundle' => new BaseBundle()]))
         ;
 
         $parser = new TemplateFilenameParser();

@@ -50,7 +50,7 @@ class CollectionCacheEntry implements CacheEntry
      *
      * @param array $values array containing property values
      *
-     * @return CollectionCacheEntry
+     * @return self
      */
     public static function __set_state(array $values)
     {

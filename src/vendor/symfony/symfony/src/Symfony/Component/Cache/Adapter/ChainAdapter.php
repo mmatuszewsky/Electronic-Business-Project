@@ -46,9 +46,6 @@ class ChainAdapter implements AdapterInterface, PruneableInterface, ResettableIn
             if (!$adapter instanceof CacheItemPoolInterface) {
                 throw new InvalidArgumentException(sprintf('The class "%s" does not implement the "%s" interface.', \get_class($adapter), CacheItemPoolInterface::class));
             }
-            if (\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true) && $adapter instanceof ApcuAdapter && !filter_var(ini_get('apc.enable_cli'), \FILTER_VALIDATE_BOOLEAN)) {
-                continue; // skip putting APCu in the chain when the backend is disabled
-            }
 
             if ($adapter instanceof AdapterInterface) {
                 $this->adapters[] = $adapter;
@@ -59,12 +56,16 @@ class ChainAdapter implements AdapterInterface, PruneableInterface, ResettableIn
         $this->adapterCount = \count($this->adapters);
 
         $this->syncItem = \Closure::bind(
-            static function ($sourceItem, $item) use ($defaultLifetime) {
+            function ($sourceItem, $item) use ($defaultLifetime) {
                 $item->value = $sourceItem->value;
+                $item->expiry = $sourceItem->expiry;
                 $item->isHit = $sourceItem->isHit;
 
-                if (0 < $defaultLifetime) {
-                    $item->expiresAfter($defaultLifetime);
+                if (0 < $sourceItem->defaultLifetime && $sourceItem->defaultLifetime < $defaultLifetime) {
+                    $defaultLifetime = $sourceItem->defaultLifetime;
+                }
+                if (0 < $defaultLifetime && ($item->defaultLifetime <= 0 || $defaultLifetime < $item->defaultLifetime)) {
+                    $item->defaultLifetime = $defaultLifetime;
                 }
 
                 return $item;

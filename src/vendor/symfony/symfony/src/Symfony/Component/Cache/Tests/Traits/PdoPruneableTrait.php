@@ -24,11 +24,11 @@ trait PdoPruneableTrait
         $getPdoConn = $o->getMethod('getConnection');
         $getPdoConn->setAccessible(true);
 
-        /** @var \Doctrine\DBAL\Statement|\PDOStatement $select */
+        /** @var \Doctrine\DBAL\Statement $select */
         $select = $getPdoConn->invoke($cache)->prepare('SELECT 1 FROM cache_items WHERE item_id LIKE :id');
         $select->bindValue(':id', sprintf('%%%s', $name));
-        $result = $select->execute();
+        $select->execute();
 
-        return 1 !== (int) (\is_object($result) ? $result->fetchOne() : $select->fetch(\PDO::FETCH_COLUMN));
+        return 0 === \count($select->fetchAll(\PDO::FETCH_COLUMN));
     }
 }

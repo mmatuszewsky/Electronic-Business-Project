@@ -99,7 +99,7 @@ EOF
         }
 
         if (!$socket = stream_socket_server($host, $errno, $errstr)) {
-            throw new RuntimeException(sprintf('Server start failed on "%s": ', $host).$errstr.' '.$errno);
+            throw new RuntimeException(sprintf('Server start failed on "%s": %s %s.', $host, $errstr, $errno));
         }
 
         foreach ($this->getLogs($socket) as $clientId => $message) {
@@ -114,7 +114,7 @@ EOF
                 continue;
             }
 
-            $this->displayLog($output, $clientId, $record);
+            $this->displayLog($input, $output, $clientId, $record);
         }
     }
 
@@ -141,7 +141,7 @@ EOF
         }
     }
 
-    private function displayLog(OutputInterface $output, $clientId, array $record)
+    private function displayLog(InputInterface $input, OutputInterface $output, $clientId, array $record)
     {
         if ($this->handler->isHandling($record)) {
             if (isset($record['log_id'])) {

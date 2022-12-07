@@ -1,5 +1,4 @@
 <?php
-
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,175 +20,137 @@
 namespace Doctrine\ORM\Internal;
 
 /**
- * CommitOrderCalculator implements topological sorting, which is an ordering
- * algorithm for directed graphs (DG) and/or directed acyclic graphs (DAG) by
- * using a depth-first searching (DFS) to traverse the graph built in memory.
- * This algorithm have a linear running time based on nodes (V) and dependency
- * between the nodes (E), resulting in a computational complexity of O(V + E).
+ * The CommitOrderCalculator is used by the UnitOfWork to sort out the
+ * correct order in which changes to entities need to be persisted.
  *
- * @since  2.0
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author Roman Borschel <roman@code-factory.org>
+ * @since 	2.0
+ * @author 	Roman Borschel <roman@code-factory.org>
+ * @author	Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class CommitOrderCalculator
 {
-    const NOT_VISITED = 0;
-    const IN_PROGRESS = 1;
-    const VISITED     = 2;
+    const NOT_VISITED = 1;
+    const IN_PROGRESS = 2;
+    const VISITED = 3;
 
     /**
-     * Matrix of nodes (aka. vertex).
-     * Keys are provided hashes and values are the node definition objects.
-     *
-     * The node state definition contains the following properties:
-     *
-     * - <b>state</b> (integer)
-     * Whether the node is NOT_VISITED or IN_PROGRESS
-     *
-     * - <b>value</b> (object)
-     * Actual node value
-     *
-     * - <b>dependencyList</b> (array<string>)
-     * Map of node dependencies defined as hashes.
-     *
-     * @var array<\stdClass>
+     * @var array
      */
-    private $nodeList = [];
+    private $_nodeStates = array();
 
     /**
-     * Volatile variable holding calculated nodes during sorting process.
+     * The nodes to sort.
      *
      * @var array
      */
-    private $sortedNodeList = [];
+    private $_classes = array();
 
     /**
-     * Checks for node (vertex) existence in graph.
-     *
-     * @param string $hash
-     *
-     * @return boolean
+     * @var array
      */
-    public function hasNode($hash)
-    {
-        return isset($this->nodeList[$hash]);
-    }
+    private $_relatedClasses = array();
 
     /**
-     * Adds a new node (vertex) to the graph, assigning its hash and value.
-     *
-     * @param string $hash
-     * @param object $node
+     * @var array
+     */
+    private $_sorted = array();
+
+    /**
+     * Clears the current graph.
      *
      * @return void
      */
-    public function addNode($hash, $node)
+    public function clear()
     {
-        $vertex = new \stdClass();
-
-        $vertex->hash           = $hash;
-        $vertex->state          = self::NOT_VISITED;
-        $vertex->value          = $node;
-        $vertex->dependencyList = [];
-
-        $this->nodeList[$hash] = $vertex;
+        $this->_classes = array();
+        $this->_relatedClasses = array();
     }
 
     /**
-     * Adds a new dependency (edge) to the graph using their hashes.
+     * Gets a valid commit order for all current nodes.
      *
-     * @param string  $fromHash
-     * @param string  $toHash
-     * @param integer $weight
+     * Uses a depth-first search (DFS) to traverse the graph.
+     * The desired topological sorting is the reverse postorder of these searches.
+     *
+     * @return array The list of ordered classes.
+     */
+    public function getCommitOrder()
+    {
+        // Check whether we need to do anything. 0 or 1 node is easy.
+        $nodeCount = count($this->_classes);
+
+        if ($nodeCount <= 1) {
+            return ($nodeCount == 1) ? array_values($this->_classes) : array();
+        }
+
+        // Init
+        foreach ($this->_classes as $node) {
+            $this->_nodeStates[$node->name] = self::NOT_VISITED;
+        }
+
+        // Go
+        foreach ($this->_classes as $node) {
+            if ($this->_nodeStates[$node->name] == self::NOT_VISITED) {
+                $this->_visitNode($node);
+            }
+        }
+
+        $sorted = array_reverse($this->_sorted);
+
+        $this->_sorted = $this->_nodeStates = array();
+
+        return $sorted;
+    }
+
+    /**
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $node
      *
      * @return void
      */
-    public function addDependency($fromHash, $toHash, $weight)
+    private function _visitNode($node)
     {
-        $vertex = $this->nodeList[$fromHash];
-        $edge   = new \stdClass();
+        $this->_nodeStates[$node->name] = self::IN_PROGRESS;
 
-        $edge->from   = $fromHash;
-        $edge->to     = $toHash;
-        $edge->weight = $weight;
-
-        $vertex->dependencyList[$toHash] = $edge;
-    }
-
-    /**
-     * Return a valid order list of all current nodes.
-     * The desired topological sorting is the reverse post order of these searches.
-     *
-     * {@internal Highly performance-sensitive method.}
-     *
-     * @return array
-     */
-    public function sort()
-    {
-        foreach ($this->nodeList as $vertex) {
-            if ($vertex->state !== self::NOT_VISITED) {
-                continue;
-            }
-
-            $this->visit($vertex);
-        }
-
-        $sortedList = $this->sortedNodeList;
-
-        $this->nodeList       = [];
-        $this->sortedNodeList = [];
-
-        return array_reverse($sortedList);
-    }
-
-    /**
-     * Visit a given node definition for reordering.
-     *
-     * {@internal Highly performance-sensitive method.}
-     *
-     * @param \stdClass $vertex
-     */
-    private function visit($vertex)
-    {
-        $vertex->state = self::IN_PROGRESS;
-
-        foreach ($vertex->dependencyList as $edge) {
-            $adjacentVertex = $this->nodeList[$edge->to];
-
-            switch ($adjacentVertex->state) {
-                case self::VISITED:
-                    // Do nothing, since node was already visited
-                    break;
-
-                case self::IN_PROGRESS:
-                    if (isset($adjacentVertex->dependencyList[$vertex->hash]) &&
-                        $adjacentVertex->dependencyList[$vertex->hash]->weight < $edge->weight) {
-
-                        // If we have some non-visited dependencies in the in-progress dependency, we
-                        // need to visit them before adding the node.
-                        foreach ($adjacentVertex->dependencyList as $adjacentEdge) {
-                            $adjacentEdgeVertex = $this->nodeList[$adjacentEdge->to];
-
-                            if ($adjacentEdgeVertex->state === self::NOT_VISITED) {
-                                $this->visit($adjacentEdgeVertex);
-                            }
-                        }
-
-                        $adjacentVertex->state = self::VISITED;
-
-                        $this->sortedNodeList[] = $adjacentVertex->value;
-                    }
-                    break;
-
-                case self::NOT_VISITED:
-                    $this->visit($adjacentVertex);
+        if (isset($this->_relatedClasses[$node->name])) {
+            foreach ($this->_relatedClasses[$node->name] as $relatedNode) {
+                if ($this->_nodeStates[$relatedNode->name] == self::NOT_VISITED) {
+                    $this->_visitNode($relatedNode);
+                }
             }
         }
 
-        if ($vertex->state !== self::VISITED) {
-            $vertex->state = self::VISITED;
+        $this->_nodeStates[$node->name] = self::VISITED;
+        $this->_sorted[] = $node;
+    }
 
-            $this->sortedNodeList[] = $vertex->value;
-        }
+    /**
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $fromClass
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $toClass
+     *
+     * @return void
+     */
+    public function addDependency($fromClass, $toClass)
+    {
+        $this->_relatedClasses[$fromClass->name][] = $toClass;
+    }
+
+    /**
+     * @param string $className
+     *
+     * @return bool
+     */
+    public function hasClass($className)
+    {
+        return isset($this->_classes[$className]);
+    }
+
+    /**
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     *
+     * @return void
+     */
+    public function addClass($class)
+    {
+        $this->_classes[$class->name] = $class;
     }
 }

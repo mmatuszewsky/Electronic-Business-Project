@@ -122,8 +122,7 @@ class Setup
     public static function createConfiguration($isDevMode = false, $proxyDir = null, Cache $cache = null)
     {
         $proxyDir = $proxyDir ?: sys_get_temp_dir();
-
-        $cache = self::createCacheConfiguration($isDevMode, $proxyDir, $cache);
+        $cache    = self::createCacheConfiguration($isDevMode, $proxyDir, $cache);
 
         $config = new Configuration();
         $config->setMetadataCacheImpl($cache);
@@ -136,7 +135,14 @@ class Setup
         return $config;
     }
 
-    private static function createCacheConfiguration(bool $isDevMode, string $proxyDir, ?Cache $cache) :  Cache
+    /**
+     * @param bool       $isDevMode
+     * @param string     $proxyDir
+     * @param Cache|null $cache
+     *
+     * @return Cache
+     */
+    private static function createCacheConfiguration($isDevMode, $proxyDir, Cache $cache = null)
     {
         $cache = self::createCacheInstance($isDevMode, $cache);
 
@@ -155,7 +161,13 @@ class Setup
         return $cache;
     }
 
-    private static function createCacheInstance(bool $isDevMode, ?Cache $cache) : Cache
+    /**
+     * @param bool       $isDevMode
+     * @param Cache|null $cache
+     *
+     * @return Cache
+     */
+    private static function createCacheInstance($isDevMode, Cache $cache = null)
     {
         if ($cache !== null) {
             return $cache;
@@ -165,17 +177,20 @@ class Setup
             return new ArrayCache();
         }
 
-        if (extension_loaded('apcu')) {
-            return new \Doctrine\Common\Cache\ApcuCache();
+        if (extension_loaded('apc')) {
+            return new \Doctrine\Common\Cache\ApcCache();
         }
 
+        if (extension_loaded('xcache')) {
+            return new \Doctrine\Common\Cache\XcacheCache();
+        }
 
-        if (extension_loaded('memcached')) {
-            $memcached = new \Memcached();
-            $memcached->addServer('127.0.0.1', 11211);
+        if (extension_loaded('memcache')) {
+            $memcache = new \Memcache();
+            $memcache->connect('127.0.0.1');
 
-            $cache = new \Doctrine\Common\Cache\MemcachedCache();
-            $cache->setMemcached($memcached);
+            $cache = new \Doctrine\Common\Cache\MemcacheCache();
+            $cache->setMemcache($memcache);
 
             return $cache;
         }

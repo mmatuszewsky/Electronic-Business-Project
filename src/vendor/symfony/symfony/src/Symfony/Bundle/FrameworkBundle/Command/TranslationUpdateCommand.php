@@ -55,7 +55,7 @@ class TranslationUpdateCommand extends ContainerAwareCommand
     public function __construct($writer = null, TranslationReaderInterface $reader = null, ExtractorInterface $extractor = null, $defaultLocale = null, $defaultTransPath = null, $defaultViewsPath = null)
     {
         if (!$writer instanceof TranslationWriterInterface) {
-            @trigger_error(sprintf('%s() expects an instance of "%s" as first argument since Symfony 3.4. Not passing it is deprecated and will throw a TypeError in 4.0.', __METHOD__, TranslationWriterInterface::class), \E_USER_DEPRECATED);
+            @trigger_error(sprintf('%s() expects an instance of "%s" as first argument since Symfony 3.4. Not passing it is deprecated and will throw a TypeError in 4.0.', __METHOD__, TranslationWriterInterface::class), E_USER_DEPRECATED);
 
             parent::__construct($writer);
 
@@ -200,16 +200,16 @@ EOF
             }
         }
 
-        $io->title('Translation Messages Extractor and Dumper');
-        $io->comment(sprintf('Generating "<info>%s</info>" translation files for "<info>%s</info>"', $input->getArgument('locale'), $currentName));
+        $errorIo->title('Translation Messages Extractor and Dumper');
+        $errorIo->comment(sprintf('Generating "<info>%s</info>" translation files for "<info>%s</info>"', $input->getArgument('locale'), $currentName));
 
         // load any messages from templates
         $extractedCatalogue = new MessageCatalogue($input->getArgument('locale'));
-        $io->comment('Parsing templates...');
+        $errorIo->comment('Parsing templates...');
         $prefix = $input->getOption('prefix');
         // @deprecated since version 3.4, to be removed in 4.0 along with the --no-prefix option
         if ($input->getOption('no-prefix')) {
-            @trigger_error('The "--no-prefix" option is deprecated since Symfony 3.4 and will be removed in 4.0. Use the "--prefix" option with an empty string as value instead.', \E_USER_DEPRECATED);
+            @trigger_error('The "--no-prefix" option is deprecated since Symfony 3.4 and will be removed in 4.0. Use the "--prefix" option with an empty string as value instead.', E_USER_DEPRECATED);
             $prefix = '';
         }
         $this->extractor->setPrefix($prefix);
@@ -221,7 +221,7 @@ EOF
 
         // load any existing messages from the translation files
         $currentCatalogue = new MessageCatalogue($input->getArgument('locale'));
-        $io->comment('Loading translation files...');
+        $errorIo->comment('Loading translation files...');
         foreach ($transPaths as $path) {
             if (is_dir($path)) {
                 $this->reader->read($path, $currentCatalogue);
@@ -242,7 +242,7 @@ EOF
         if (!\count($operation->getDomains())) {
             $errorIo->warning('No translation messages were found.');
 
-            return null;
+            return;
         }
 
         $resultMessage = 'Translation files were successfully updated';
@@ -274,7 +274,7 @@ EOF
             }
 
             if ('xlf' == $input->getOption('output-format')) {
-                $io->comment('Xliff output version is <info>1.2</info>');
+                $errorIo->comment('Xliff output version is <info>1.2</info>');
             }
 
             $resultMessage = sprintf('%d message%s successfully extracted', $extractedMessagesCount, $extractedMessagesCount > 1 ? 's were' : ' was');
@@ -286,7 +286,7 @@ EOF
 
         // save the files
         if (true === $input->getOption('force')) {
-            $io->comment('Writing files...');
+            $errorIo->comment('Writing files...');
 
             $bundleTransPath = false;
             foreach ($transPaths as $path) {
@@ -306,9 +306,7 @@ EOF
             }
         }
 
-        $io->success($resultMessage.'.');
-
-        return null;
+        $errorIo->success($resultMessage.'.');
     }
 
     private function filterCatalogue(MessageCatalogue $catalogue, $domain)

@@ -58,15 +58,13 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $tableAlias = $this->getSQLTableAlias($rootClass->name);
 
          // Append discriminator column
-        $discrColumn     = $this->class->discriminatorColumn['name'];
-        $discrColumnType = $this->class->discriminatorColumn['type'];
-
+        $discrColumn    = $this->class->discriminatorColumn['name'];
         $columnList[]   = $tableAlias . '.' . $discrColumn;
 
         $resultColumnName = $this->platform->getSQLResultCasing($discrColumn);
 
         $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);
-        $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumn, false, $discrColumnType);
+        $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumn);
 
         // Append subclass columns
         foreach ($this->class->subClasses as $subClassName) {
@@ -83,18 +81,26 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
             // Foreign key columns
             foreach ($subClass->associationMappings as $assoc) {
-                if ( ! $assoc['isOwningSide'] || ! ($assoc['type'] & ClassMetadata::TO_ONE) || isset($assoc['inherited'])) {
+                if ( ! $assoc['isOwningSide']
+                        || ! ($assoc['type'] & ClassMetadata::TO_ONE)
+                        || isset($assoc['inherited'])) {
                     continue;
                 }
 
-                $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+                foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
+                    $className      = isset($assoc['inherited']) ? $assoc['inherited'] : $this->class->name;
 
-                foreach ($assoc['joinColumns'] as $joinColumn) {
+                    $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+
                     $columnList[] = $this->getSelectJoinColumnSQL(
                         $tableAlias,
-                        $joinColumn['name'],
-                        $this->quoteStrategy->getJoinColumnName($joinColumn, $subClass, $this->platform),
-                        PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em)
+                        $srcColumn,
+                        $className,
+                        PersisterHelper::getTypeOfColumn(
+                            $assoc['sourceToTargetKeyColumns'][$srcColumn],
+                            $targetClass,
+                            $this->em
+                        )
                     );
                 }
             }
@@ -159,7 +165,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
      */
     protected function getSelectConditionDiscriminatorValueSQL()
     {
-        $values = [];
+        $values = array();
 
         if ($this->class->discriminatorValue !== null) { // discriminators can be 0
             $values[] = $this->conn->quote($this->class->discriminatorValue);

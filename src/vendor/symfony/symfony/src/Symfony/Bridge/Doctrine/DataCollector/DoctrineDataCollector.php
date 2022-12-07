@@ -11,11 +11,10 @@
 
 namespace Symfony\Bridge\Doctrine\DataCollector;
 
-use Doctrine\Common\Persistence\ManagerRegistry as LegacyManagerRegistry;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
@@ -36,10 +35,7 @@ class DoctrineDataCollector extends DataCollector
      */
     private $loggers = [];
 
-    /**
-     * @param ManagerRegistry|LegacyManagerRegistry $registry
-     */
-    public function __construct($registry)
+    public function __construct(ManagerRegistry $registry)
     {
         $this->registry = $registry;
         $this->connections = $registry->getConnectionNames();
@@ -49,7 +45,8 @@ class DoctrineDataCollector extends DataCollector
     /**
      * Adds the stack logger for a connection.
      *
-     * @param string $name
+     * @param string     $name
+     * @param DebugStack $logger
      */
     public function addLogger($name, DebugStack $logger)
     {
@@ -140,9 +137,6 @@ class DoctrineDataCollector extends DataCollector
         }
         if (!\is_array($query['params'])) {
             $query['params'] = [$query['params']];
-        }
-        if (!\is_array($query['types'])) {
-            $query['types'] = [];
         }
         foreach ($query['params'] as $j => $param) {
             if (isset($query['types'][$j])) {

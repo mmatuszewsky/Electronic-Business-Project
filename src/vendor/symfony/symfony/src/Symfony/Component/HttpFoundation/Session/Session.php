@@ -193,7 +193,9 @@ class Session implements SessionInterface, \IteratorAggregate, \Countable
      */
     public function save()
     {
-        $this->storage->save();
+        if ($this->isStarted()) {
+            $this->storage->save();
+        }
     }
 
     /**
@@ -253,9 +255,7 @@ class Session implements SessionInterface, \IteratorAggregate, \Countable
      */
     public function getBag($name)
     {
-        $bag = $this->storage->getBag($name);
-
-        return method_exists($bag, 'getBag') ? $bag->getBag() : $bag;
+        return $this->storage->getBag($name)->getBag();
     }
 
     /**

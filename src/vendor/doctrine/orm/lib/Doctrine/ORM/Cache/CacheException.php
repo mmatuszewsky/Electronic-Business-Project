@@ -62,9 +62,8 @@ class CacheException extends ORMException
 
     /**
      * @param string $entityName
-     * @param string $field
      *
-     * @return CacheException
+     * @return \Doctrine\ORM\Cache\CacheException
      */
     public static function nonCacheableEntityAssociation($entityName, $field)
     {

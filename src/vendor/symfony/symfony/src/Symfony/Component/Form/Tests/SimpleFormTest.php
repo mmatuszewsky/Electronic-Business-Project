@@ -94,10 +94,12 @@ class SimpleFormTest extends AbstractFormTest
         $this->assertSame('bar', $form->getViewData());
     }
 
+    /**
+     * @expectedException        \Symfony\Component\Form\Exception\TransformationFailedException
+     * @expectedExceptionMessage Unable to transform data for property path "name": No mapping for value "arg"
+     */
     public function testDataTransformationFailure()
     {
-        $this->expectException('Symfony\Component\Form\Exception\TransformationFailedException');
-        $this->expectExceptionMessage('Unable to transform data for property path "name": No mapping for value "arg"');
         $model = new FixedDataTransformer([
             'default' => 'foo',
         ]);
@@ -117,26 +119,13 @@ class SimpleFormTest extends AbstractFormTest
     // https://github.com/symfony/symfony/commit/d4f4038f6daf7cf88ca7c7ab089473cce5ebf7d8#commitcomment-1632879
     public function testDataIsInitializedFromSubmit()
     {
-        $preSetData = false;
-        $preSubmit = false;
-
         $mock = $this->getMockBuilder('\stdClass')
             ->setMethods(['preSetData', 'preSubmit'])
             ->getMock();
-        $mock->expects($this->once())
-            ->method('preSetData')
-            ->with($this->callback(function () use (&$preSetData, $preSubmit) {
-                $preSetData = true;
-
-                return false === $preSubmit;
-            }));
-        $mock->expects($this->once())
-            ->method('preSubmit')
-            ->with($this->callback(function () use ($preSetData, &$preSubmit) {
-                $preSubmit = true;
-
-                return false === $preSetData;
-            }));
+        $mock->expects($this->at(0))
+            ->method('preSetData');
+        $mock->expects($this->at(1))
+            ->method('preSubmit');
 
         $config = new FormConfigBuilder('name', null, $this->dispatcher);
         $config->addEventListener(FormEvents::PRE_SET_DATA, [$mock, 'preSetData']);
@@ -171,9 +160,11 @@ class SimpleFormTest extends AbstractFormTest
         $this->assertNull($form->getData());
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\AlreadySubmittedException
+     */
     public function testSubmitThrowsExceptionIfAlreadySubmitted()
     {
-        $this->expectException('Symfony\Component\Form\Exception\AlreadySubmittedException');
         $this->form->submit([]);
         $this->form->submit([]);
     }
@@ -372,9 +363,11 @@ class SimpleFormTest extends AbstractFormTest
         $this->assertCount(0, $this->form->getErrors());
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\AlreadySubmittedException
+     */
     public function testSetParentThrowsExceptionIfAlreadySubmitted()
     {
-        $this->expectException('Symfony\Component\Form\Exception\AlreadySubmittedException');
         $this->form->submit([]);
         $this->form->setParent($this->getBuilder('parent')->getForm());
     }
@@ -392,9 +385,11 @@ class SimpleFormTest extends AbstractFormTest
         $this->assertFalse($this->form->isSubmitted());
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\AlreadySubmittedException
+     */
     public function testSetDataThrowsExceptionIfAlreadySubmitted()
     {
-        $this->expectException('Symfony\Component\Form\Exception\AlreadySubmittedException');
         $this->form->submit([]);
         $this->form->setData(null);
     }
@@ -736,7 +731,7 @@ class SimpleFormTest extends AbstractFormTest
         $type->expects($this->once())
             ->method('createView')
             ->with($form)
-            ->willReturn($view);
+            ->will($this->returnValue($view));
 
         $this->assertSame($view, $form->createView());
     }
@@ -753,12 +748,12 @@ class SimpleFormTest extends AbstractFormTest
 
         $parentType->expects($this->once())
             ->method('createView')
-            ->willReturn($parentView);
+            ->will($this->returnValue($parentView));
 
         $type->expects($this->once())
             ->method('createView')
             ->with($form, $parentView)
-            ->willReturn($view);
+            ->will($this->returnValue($view));
 
         $this->assertSame($view, $form->createView());
     }
@@ -773,7 +768,7 @@ class SimpleFormTest extends AbstractFormTest
         $type->expects($this->once())
             ->method('createView')
             ->with($form, $parentView)
-            ->willReturn($view);
+            ->will($this->returnValue($view));
 
         $this->assertSame($view, $form->createView($parentView));
     }
@@ -793,10 +788,12 @@ class SimpleFormTest extends AbstractFormTest
         $this->assertNull($form->getParent());
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\LogicException
+     * @expectedExceptionMessage A form with an empty name cannot have a parent form.
+     */
     public function testFormCannotHaveEmptyNameNotInRootLevel()
     {
-        $this->expectException('Symfony\Component\Form\Exception\LogicException');
-        $this->expectExceptionMessage('A form with an empty name cannot have a parent form.');
         $this->getBuilder()
             ->setCompound(true)
             ->setDataMapper($this->getDataMapper())
@@ -903,9 +900,11 @@ class SimpleFormTest extends AbstractFormTest
         $this->assertSame($arrayAccess, $form->getViewData());
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\LogicException
+     */
     public function testViewDataMustBeObjectIfDataClassIsSet()
     {
-        $this->expectException('Symfony\Component\Form\Exception\LogicException');
         $config = new FormConfigBuilder('name', 'stdClass', $this->dispatcher);
         $config->addViewTransformer(new FixedDataTransformer([
             '' => '',
@@ -916,10 +915,12 @@ class SimpleFormTest extends AbstractFormTest
         $form->setData('foo');
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\RuntimeException
+     * @expectedExceptionMessage A cycle was detected. Listeners to the PRE_SET_DATA event must not call setData(). You should call setData() on the FormEvent object instead.
+     */
     public function testSetDataCannotInvokeItself()
     {
-        $this->expectException('Symfony\Component\Form\Exception\RuntimeException');
-        $this->expectExceptionMessage('A cycle was detected. Listeners to the PRE_SET_DATA event must not call setData(). You should call setData() on the FormEvent object instead.');
         // Cycle detection to prevent endless loops
         $config = new FormConfigBuilder('name', 'stdClass', $this->dispatcher);
         $config->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
@@ -988,9 +989,11 @@ class SimpleFormTest extends AbstractFormTest
         $this->assertSame('view[foo]', $parent->get('child')->getViewData());
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\RuntimeException
+     */
     public function testInheritDataDisallowsSetData()
     {
-        $this->expectException('Symfony\Component\Form\Exception\RuntimeException');
         $form = $this->getBuilder()
             ->setInheritData(true)
             ->getForm();
@@ -998,9 +1001,11 @@ class SimpleFormTest extends AbstractFormTest
         $form->setData('foo');
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\RuntimeException
+     */
     public function testGetDataRequiresParentToBeSetIfInheritData()
     {
-        $this->expectException('Symfony\Component\Form\Exception\RuntimeException');
         $form = $this->getBuilder()
             ->setInheritData(true)
             ->getForm();
@@ -1008,9 +1013,11 @@ class SimpleFormTest extends AbstractFormTest
         $form->getData();
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\RuntimeException
+     */
     public function testGetNormDataRequiresParentToBeSetIfInheritData()
     {
-        $this->expectException('Symfony\Component\Form\Exception\RuntimeException');
         $form = $this->getBuilder()
             ->setInheritData(true)
             ->getForm();
@@ -1018,9 +1025,11 @@ class SimpleFormTest extends AbstractFormTest
         $form->getNormData();
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\RuntimeException
+     */
     public function testGetViewDataRequiresParentToBeSetIfInheritData()
     {
-        $this->expectException('Symfony\Component\Form\Exception\RuntimeException');
         $form = $this->getBuilder()
             ->setInheritData(true)
             ->getForm();
@@ -1068,9 +1077,11 @@ class SimpleFormTest extends AbstractFormTest
         $form->initialize();
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\RuntimeException
+     */
     public function testInitializeFailsIfParent()
     {
-        $this->expectException('Symfony\Component\Form\Exception\RuntimeException');
         $parent = $this->getBuilder()->setRequired(false)->getForm();
         $child = $this->getBuilder()->setRequired(true)->getForm();
 
@@ -1079,10 +1090,12 @@ class SimpleFormTest extends AbstractFormTest
         $child->initialize();
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\RuntimeException
+     * @expectedExceptionMessage A cycle was detected. Listeners to the PRE_SET_DATA event must not call getData() if the form data has not already been set. You should call getData() on the FormEvent object instead.
+     */
     public function testCannotCallGetDataInPreSetDataListenerIfDataHasNotAlreadyBeenSet()
     {
-        $this->expectException('Symfony\Component\Form\Exception\RuntimeException');
-        $this->expectExceptionMessage('A cycle was detected. Listeners to the PRE_SET_DATA event must not call getData() if the form data has not already been set. You should call getData() on the FormEvent object instead.');
         $config = new FormConfigBuilder('name', 'stdClass', $this->dispatcher);
         $config->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
             $event->getForm()->getData();
@@ -1092,10 +1105,12 @@ class SimpleFormTest extends AbstractFormTest
         $form->setData('foo');
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\RuntimeException
+     * @expectedExceptionMessage A cycle was detected. Listeners to the PRE_SET_DATA event must not call getNormData() if the form data has not already been set.
+     */
     public function testCannotCallGetNormDataInPreSetDataListener()
     {
-        $this->expectException('Symfony\Component\Form\Exception\RuntimeException');
-        $this->expectExceptionMessage('A cycle was detected. Listeners to the PRE_SET_DATA event must not call getNormData() if the form data has not already been set.');
         $config = new FormConfigBuilder('name', 'stdClass', $this->dispatcher);
         $config->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
             $event->getForm()->getNormData();
@@ -1105,10 +1120,12 @@ class SimpleFormTest extends AbstractFormTest
         $form->setData('foo');
     }
 
+    /**
+     * @expectedException \Symfony\Component\Form\Exception\RuntimeException
+     * @expectedExceptionMessage A cycle was detected. Listeners to the PRE_SET_DATA event must not call getViewData() if the form data has not already been set.
+     */
     public function testCannotCallGetViewDataInPreSetDataListener()
     {
-        $this->expectException('Symfony\Component\Form\Exception\RuntimeException');
-        $this->expectExceptionMessage('A cycle was detected. Listeners to the PRE_SET_DATA event must not call getViewData() if the form data has not already been set.');
         $config = new FormConfigBuilder('name', 'stdClass', $this->dispatcher);
         $config->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
             $event->getForm()->getViewData();

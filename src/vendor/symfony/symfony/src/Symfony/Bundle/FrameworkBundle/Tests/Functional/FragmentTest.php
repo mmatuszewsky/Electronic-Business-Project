@@ -11,7 +11,7 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Tests\Functional;
 
-class FragmentTest extends AbstractWebTestCase
+class FragmentTest extends WebTestCase
 {
     /**
      * @dataProvider getConfigs
