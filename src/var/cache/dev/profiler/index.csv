@@ -1,3 +1,0 @@
-bb219a,172.22.0.1,GET,http://localhost:8080/admin861mwygdy/index.php/modules/metrics/api/getShopData?_token=qmNQ2QDDEw3ipqVvQOpNAtek9ZtmeYGP1rYx-tbt-L4,1670426624,,200
-697394,172.22.0.1,POST,http://localhost:8080/admin861mwygdy/index.php/common/notifications?_token=qmNQ2QDDEw3ipqVvQOpNAtek9ZtmeYGP1rYx-tbt-L4&rand=1670426623650,1670426624,,200
-eabfaa,172.22.0.1,POST,http://localhost:8080/admin861mwygdy/index.php/common/notifications?_token=qmNQ2QDDEw3ipqVvQOpNAtek9ZtmeYGP1rYx-tbt-L4&rand=1670426623774,1670426635,,200

@@ -1,40 +1,40 @@
 version: '3.9'
 
-services:
-    prestashop:
-        image: prestashop/prestashop:1.7
-        container_name: prestashop
-        environment:
-            DB_SERVER: prestashop
-        ports:
-            - 8080:80
-        volumes:
-            - ./src:/var/www/html
-        networks:
-            - prestashop
-    mysql:
-        image: mysql:8
-        container_name: prestashop-db
-        command: --default-authentication-plugin=mysql_native_password
-        environment:
-            MYSQL_DATABASE: prestashop
-            MYSQL_ROOT_PASSWORD: prestashop
-        ports:
-            - 3306:3306
-        networks:
-            - prestashop
-        volumes:
-            - ./docker/mysql:/docker-entrypoint-initdb.d
-    phpmyadmin:
-        image: phpmyadmin/phpmyadmin
-        container_name: phpmyadmin
-        environment:
-            PMA_HOST: mysql
-        ports:
-            - 1235:80
-        networks:
-            - prestashop
-        depends_on:
-            - mysql
-networks:
-    prestashop:
+services: 
+  prestashop:
+    image: prestashop/prestashop:1.7
+    ports:
+      - 80:80
+      - 443:443
+    links:
+      - mariadb:mariadb
+    depends_on:
+      - mariadb
+    volumes:
+      - ./src:/var/www/html
+    environment:
+      - PS_DEV_MODE=1
+      - DB_SERVER=mariadb
+      - DB_USER=root
+      - DB_PASSWD=root
+      - DB_NAME=prestashop
+      - PS_INSTALL_AUTO=0
+
+  mariadb:
+    image: mariadb
+    volumes:
+     - ./docker/mariadb:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=prestashop
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - mariadb
+    ports: 
+      - 81:80 
+    environment:
+      - PMA_HOST=mariadb
+      - PMA_USER=root
+      - PMA_PASSWORD=root

@@ -1191,7 +1191,7 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
 
         $a->setSQLLogger($b);
 
-        return $this->services['doctrine.dbal.default_connection'] = ${($_ = isset($this->services['doctrine.dbal.connection_factory']) ? $this->services['doctrine.dbal.connection_factory'] : ($this->services['doctrine.dbal.connection_factory'] = new \Doctrine\Bundle\DoctrineBundle\ConnectionFactory([]))) && false ?: '_'}->createConnection(['driver' => 'pdo_mysql', 'host' => 'mysql', 'port' => '', 'dbname' => 'prestashop', 'user' => 'root', 'password' => 'prestashop', 'charset' => 'utf8mb4', 'driverOptions' => [1002 => 'SET sql_mode=(SELECT REPLACE(@@sql_mode,\'ONLY_FULL_GROUP_BY\',\'\'))'], 'defaultTableOptions' => []], $a, new \Symfony\Bridge\Doctrine\ContainerAwareEventManager($this), ['enum' => 'string']);
+        return $this->services['doctrine.dbal.default_connection'] = ${($_ = isset($this->services['doctrine.dbal.connection_factory']) ? $this->services['doctrine.dbal.connection_factory'] : ($this->services['doctrine.dbal.connection_factory'] = new \Doctrine\Bundle\DoctrineBundle\ConnectionFactory([]))) && false ?: '_'}->createConnection(['driver' => 'pdo_mysql', 'host' => 'mariadb', 'port' => '', 'dbname' => 'prestashop', 'user' => 'root', 'password' => 'root', 'charset' => 'utf8mb4', 'driverOptions' => [1002 => 'SET sql_mode=(SELECT REPLACE(@@sql_mode,\'ONLY_FULL_GROUP_BY\',\'\'))'], 'defaultTableOptions' => []], $a, new \Symfony\Bridge\Doctrine\ContainerAwareEventManager($this), ['enum' => 'string']);
     }
 
     /**
@@ -3034,26 +3034,26 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
     protected function getDefaultParameters()
     {
         return [
-            'database_host' => 'mysql',
+            'database_host' => 'mariadb',
             'database_port' => '',
             'database_name' => 'prestashop',
             'database_user' => 'root',
-            'database_password' => 'prestashop',
+            'database_password' => 'root',
             'database_prefix' => 'ps_',
             'database_engine' => 'InnoDB',
             'mailer_transport' => 'smtp',
             'mailer_host' => '127.0.0.1',
             'mailer_user' => NULL,
             'mailer_password' => NULL,
-            'secret' => 'EdmMPkcUs2tUgtVyNetwJwGfKbcYI9jJK5iuXTqwbU0y0IRHV3nvvqk7Q69PyD8G',
+            'secret' => 'W9ufggjwJt7BkNFYmLiVENQ2ELP3xVVftORah0EExYAWgskgb8vxHMkd0uxdB4YY',
             'ps_caching' => 'CacheMemcache',
             'ps_cache_enable' => false,
             'ps_creation_date' => '2022-12-07',
             'locale' => 'pl-PL',
             'use_debug_toolbar' => true,
-            'cookie_key' => 'I1xjgXgZmdgKgtFWGSgXCFujPw4F4qnHrIkcjE0FqSUnpO6w0Vj00Tztv8xcJxYo',
-            'cookie_iv' => 'Mq2d5I3RWQJvqDgacBgciSwxpPViVoWH',
-            'new_cookie_key' => 'def00000f7d3767d8dd613c62d1de373b64d333ec924c3af7fd401a7b617a2588a8ad8fdc521d961c7554f01cf3b9f49344fe0fc980f35895a627a0c4f035b9b0ab0c130',
+            'cookie_key' => 'gEsVMQJKGNfCvSFKTHO8sRhN17mGHRMtUNd3NGYSJR4bZIImZa5d9USTfeH4IZBI',
+            'cookie_iv' => 'krtjNtwxNvPjEz0ZeHBtZcpr4hHMRgG5',
+            'new_cookie_key' => 'def0000078c783f389c7ca6c52bfdad4a9ebe31dec460a6984a540580b7fbba5fe5905cba2712aa9e8ad5e5ab6f21d12ee5b1c9b8352d2dad89c3969fe6acdfb295f8773',
             'cache.driver' => 'array',
             'kernel.bundles' => [
 
