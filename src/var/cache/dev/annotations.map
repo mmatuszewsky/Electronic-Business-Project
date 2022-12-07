@@ -160,11 +160,4 @@
   160 => 'PrestaShop\\Module\\Mbo\\Controller\\Admin\\ModuleRecommendedController',
   161 => 'PrestaShop\\Module\\Mbo\\Controller\\Admin\\ModuleSelectionController',
   162 => 'PrestaShop\\Module\\Mbo\\Controller\\Admin\\ThemeCatalogController',
-  163 => 'PrestaShop\\Module\\PrestashopCheckout\\Controller\\AbstractFrontController',
-  164 => 'PrestaShop\\Module\\PrestashopCheckout\\Entity\\PaypalAccount',
-  165 => 'PrestaShop\\Module\\PrestashopCheckout\\Entity\\PsAccount',
-  166 => 'PrestaShop\\Module\\Ps_metrics\\Controller\\Admin\\MetricsController',
-  167 => 'PrestaShop\\Module\\Ps_metrics\\Controller\\Admin\\MetricsLegacyStatsController',
-  168 => 'PrestaShop\\Module\\Ps_metrics\\Controller\\Admin\\MetricsOauthController',
-  169 => 'PrestaShop\\Module\\Ps_metrics\\Controller\\Admin\\MetricsResolverController',
 );
