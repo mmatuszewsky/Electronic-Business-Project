@@ -1,12 +1,11 @@
 <?php
 /**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.md.
+ * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -17,23 +16,23 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
+ * needs please refer to https://www.prestashop.com for more information.
  *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 
 use PrestaShop\PrestaShop\Adapter\ContainerBuilder;
 
 ob_start();
 
-require_once dirname(__FILE__) . '/../config/config.inc.php';
+require_once dirname(__FILE__).'/../config/config.inc.php';
 
 // Cart is needed for some requests
 Context::getContext()->cart = new Cart();
 Context::getContext()->container = ContainerBuilder::getContainer('webservice', _PS_MODE_DEV_);
-Context::getContext()->currency = Context::getContext()->currency ?? new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
 
 //set http auth headers for apache+php-cgi work around
 if (isset($_SERVER['HTTP_AUTHORIZATION']) && preg_match('/Basic\s+(.*)$/i', $_SERVER['HTTP_AUTHORIZATION'], $matches)) {
@@ -55,7 +54,7 @@ if (isset($_SERVER['PHP_AUTH_USER'])) {
 } elseif (isset($_GET['ws_key'])) {
     $key = $_GET['ws_key'];
 } else {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 401 Unauthorized');
+    header($_SERVER['SERVER_PROTOCOL'].' 401 Unauthorized');
     header('WWW-Authenticate: Basic realm="Welcome to PrestaShop Webservice, please enter the authentication key as the login. No password required."');
     die('401 Unauthorized');
 }
@@ -64,7 +63,7 @@ $input_xml = null;
 
 // if a XML is in PUT or in POST
 if (($_SERVER['REQUEST_METHOD'] == 'PUT') || ($_SERVER['REQUEST_METHOD'] == 'POST')) {
-    $putresource = fopen('php://input', 'rb');
+    $putresource = fopen("php://input", "rb");
     while ($putData = fread($putresource, 1024)) {
         $input_xml .= $putData;
     }
@@ -85,7 +84,7 @@ if (!class_exists($class_name)) {
 }
 // fetch the request
 WebserviceRequest::$ws_current_classname = $class_name;
-$request = call_user_func([$class_name, 'getInstance']);
+$request = call_user_func(array($class_name, 'getInstance'));
 
 $result = $request->fetch($key, $method, $_GET['url'], $params, $bad_class_name, $input_xml);
 
@@ -96,7 +95,7 @@ if (ob_get_length() != 0) {
 
 // Manage cache
 if (isset($_SERVER['HTTP_LOCAL_CONTENT_SHA1']) && $_SERVER['HTTP_LOCAL_CONTENT_SHA1'] == $result['content_sha1']) {
-    $result['status'] = $_SERVER['SERVER_PROTOCOL'] . ' 304 Not Modified';
+    $result['status'] = $_SERVER['SERVER_PROTOCOL'].' 304 Not Modified';
 }
 
 if (is_array($result['headers'])) {

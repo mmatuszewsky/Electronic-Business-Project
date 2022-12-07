@@ -25,11 +25,11 @@ trait ClassResolverTrait
     /**
      * Gets a class name for a given class or instance.
      *
-     * @param object|string $value
+     * @param mixed $value
      *
      * @return string
      *
-     * @throws InvalidArgumentException If the class does not exist
+     * @throws InvalidArgumentException If the class does not exists
      */
     private function getClass($value)
     {
@@ -42,7 +42,7 @@ trait ClassResolverTrait
         }
 
         if (!\is_object($value)) {
-            throw new InvalidArgumentException(sprintf('Cannot create metadata for non-objects. Got: "%s".', \gettype($value)));
+            throw new InvalidArgumentException(sprintf('Cannot create metadata for non-objects. Got: "%s"', \gettype($value)));
         }
 
         return \get_class($value);

@@ -86,7 +86,9 @@ class IcuResFileDumper extends FileDumper
     {
         $padding = \strlen($data) % 4;
 
-        return $padding ? str_repeat("\xAA", 4 - $padding) : null;
+        if ($padding) {
+            return str_repeat("\xAA", 4 - $padding);
+        }
     }
 
     private function getPosition($data)

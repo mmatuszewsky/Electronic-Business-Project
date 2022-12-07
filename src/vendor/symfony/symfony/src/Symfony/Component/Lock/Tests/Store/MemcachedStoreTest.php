@@ -22,7 +22,7 @@ class MemcachedStoreTest extends AbstractStoreTest
 {
     use ExpiringStoreTestTrait;
 
-    public static function setUpBeforeClass()
+    public static function setupBeforeClass()
     {
         $memcached = new \Memcached();
         $memcached->addServer(getenv('MEMCACHED_HOST'), 11211);

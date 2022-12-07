@@ -263,9 +263,9 @@ class Router implements RouterInterface, RequestMatcherInterface
     }
 
     /**
-     * Gets the UrlMatcher or RequestMatcher instance associated with this Router.
+     * Gets the UrlMatcher instance associated with this Router.
      *
-     * @return UrlMatcherInterface|RequestMatcherInterface
+     * @return UrlMatcherInterface A UrlMatcherInterface instance
      */
     public function getMatcher()
     {

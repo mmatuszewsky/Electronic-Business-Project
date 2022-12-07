@@ -17,22 +17,6 @@ use Symfony\Component\Translation\IdentityTranslator;
 
 class IdentityTranslatorTest extends TestCase
 {
-    private $defaultLocale;
-
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->defaultLocale = \Locale::getDefault();
-    }
-
-    protected function tearDown()
-    {
-        parent::tearDown();
-
-        \Locale::setDefault($this->defaultLocale);
-    }
-
     /**
      * @dataProvider getTransTests
      */

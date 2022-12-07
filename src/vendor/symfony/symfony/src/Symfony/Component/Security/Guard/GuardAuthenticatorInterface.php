@@ -55,6 +55,8 @@ interface GuardAuthenticatorInterface extends AuthenticationEntryPointInterface
      *
      *     return ['api_key' => $request->headers->get('X-API-TOKEN')];
      *
+     * @param Request $request
+     *
      * @return mixed|null
      */
     public function getCredentials(Request $request);
@@ -66,6 +68,9 @@ interface GuardAuthenticatorInterface extends AuthenticationEntryPointInterface
      *
      * You may throw an AuthenticationException if you wish. If you return
      * null, then a UsernameNotFoundException is thrown for you.
+     *
+     * @param mixed                 $credentials
+     * @param UserProviderInterface $userProvider
      *
      * @throws AuthenticationException
      *
@@ -82,6 +87,9 @@ interface GuardAuthenticatorInterface extends AuthenticationEntryPointInterface
      *
      * The *credentials* are the return value from getCredentials()
      *
+     * @param mixed         $credentials
+     * @param UserInterface $user
+     *
      * @return bool
      *
      * @throws AuthenticationException
@@ -97,7 +105,8 @@ interface GuardAuthenticatorInterface extends AuthenticationEntryPointInterface
      *
      * @see AbstractGuardAuthenticator
      *
-     * @param string $providerKey The provider (i.e. firewall) key
+     * @param UserInterface $user
+     * @param string        $providerKey The provider (i.e. firewall) key
      *
      * @return GuardTokenInterface
      */
@@ -107,10 +116,13 @@ interface GuardAuthenticatorInterface extends AuthenticationEntryPointInterface
      * Called when authentication executed, but failed (e.g. wrong username password).
      *
      * This should return the Response sent back to the user, like a
-     * RedirectResponse to the login page or a 401 response.
+     * RedirectResponse to the login page or a 403 response.
      *
      * If you return null, the request will continue, but the user will
      * not be authenticated. This is probably not what you want to do.
+     *
+     * @param Request                 $request
+     * @param AuthenticationException $exception
      *
      * @return Response|null
      */
@@ -125,7 +137,9 @@ interface GuardAuthenticatorInterface extends AuthenticationEntryPointInterface
      * If you return null, the current request will continue, and the user
      * will be authenticated. This makes sense, for example, with an API.
      *
-     * @param string $providerKey The provider (i.e. firewall) key
+     * @param Request        $request
+     * @param TokenInterface $token
+     * @param string         $providerKey The provider (i.e. firewall) key
      *
      * @return Response|null
      */

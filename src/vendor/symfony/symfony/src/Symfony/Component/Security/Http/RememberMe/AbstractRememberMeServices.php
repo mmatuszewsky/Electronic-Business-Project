@@ -38,15 +38,16 @@ abstract class AbstractRememberMeServices implements RememberMeServicesInterface
     protected $options = [
         'secure' => false,
         'httponly' => true,
-        'samesite' => null,
     ];
     private $providerKey;
     private $secret;
     private $userProviders;
 
     /**
+     * @param array           $userProviders
      * @param string          $secret
      * @param string          $providerKey
+     * @param array           $options
      * @param LoggerInterface $logger
      *
      * @throws \InvalidArgumentException
@@ -100,10 +101,6 @@ abstract class AbstractRememberMeServices implements RememberMeServicesInterface
      */
     final public function autoLogin(Request $request)
     {
-        if (($cookie = $request->attributes->get(self::COOKIE_ATTR_NAME)) && null === $cookie->getValue()) {
-            return null;
-        }
-
         if (null === $cookie = $request->cookies->get($this->options['name'])) {
             return null;
         }
@@ -153,8 +150,6 @@ abstract class AbstractRememberMeServices implements RememberMeServicesInterface
 
             throw $e;
         }
-
-        return null;
     }
 
     /**
@@ -240,7 +235,7 @@ abstract class AbstractRememberMeServices implements RememberMeServicesInterface
             }
         }
 
-        throw new UnsupportedUserException(sprintf('There is no user provider for user "%s". Shouldn\'t the "supportsClass()" method of your user provider return true for this classname?', $class));
+        throw new UnsupportedUserException(sprintf('There is no user provider that supports class "%s".', $class));
     }
 
     /**
@@ -266,7 +261,7 @@ abstract class AbstractRememberMeServices implements RememberMeServicesInterface
     {
         foreach ($cookieParts as $cookiePart) {
             if (false !== strpos($cookiePart, self::COOKIE_DELIMITER)) {
-                throw new \InvalidArgumentException(sprintf('$cookieParts should not contain the cookie delimiter "%s".', self::COOKIE_DELIMITER));
+                throw new \InvalidArgumentException(sprintf('$cookieParts should not contain the cookie delimiter "%s"', self::COOKIE_DELIMITER));
             }
         }
 
@@ -282,7 +277,7 @@ abstract class AbstractRememberMeServices implements RememberMeServicesInterface
             $this->logger->debug('Clearing remember-me cookie.', ['name' => $this->options['name']]);
         }
 
-        $request->attributes->set(self::COOKIE_ATTR_NAME, new Cookie($this->options['name'], null, 1, $this->options['path'], $this->options['domain'], $this->options['secure'], $this->options['httponly'], false, $this->options['samesite']));
+        $request->attributes->set(self::COOKIE_ATTR_NAME, new Cookie($this->options['name'], null, 1, $this->options['path'], $this->options['domain'], $this->options['secure'], $this->options['httponly']));
     }
 
     /**

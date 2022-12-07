@@ -13,7 +13,6 @@ namespace Symfony\Component\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
@@ -27,7 +26,7 @@ class RangeValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint)
     {
         if (!$constraint instanceof Range) {
-            throw new UnexpectedTypeException($constraint, Range::class);
+            throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Range');
         }
 
         if (null === $value) {
@@ -49,28 +48,14 @@ class RangeValidator extends ConstraintValidator
         // Convert strings to DateTimes if comparing another DateTime
         // This allows to compare with any date/time value supported by
         // the DateTime constructor:
-        // https://php.net/datetime.formats
+        // http://php.net/manual/en/datetime.formats.php
         if ($value instanceof \DateTimeInterface) {
-            $dateTimeClass = null;
-
             if (\is_string($min)) {
-                $dateTimeClass = $value instanceof \DateTimeImmutable ? \DateTimeImmutable::class : \DateTime::class;
-
-                try {
-                    $min = new $dateTimeClass($min);
-                } catch (\Exception $e) {
-                    throw new ConstraintDefinitionException(sprintf('The min value "%s" could not be converted to a "%s" instance in the "%s" constraint.', $min, $dateTimeClass, \get_class($constraint)));
-                }
+                $min = new \DateTime($min);
             }
 
             if (\is_string($max)) {
-                $dateTimeClass = $dateTimeClass ?: ($value instanceof \DateTimeImmutable ? \DateTimeImmutable::class : \DateTime::class);
-
-                try {
-                    $max = new $dateTimeClass($max);
-                } catch (\Exception $e) {
-                    throw new ConstraintDefinitionException(sprintf('The max value "%s" could not be converted to a "%s" instance in the "%s" constraint.', $max, $dateTimeClass, \get_class($constraint)));
-                }
+                $max = new \DateTime($max);
             }
         }
 

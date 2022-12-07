@@ -14,6 +14,7 @@ interface RenameEntryInterface
     /**
      * Renames an entry on the Ldap server.
      *
+     * @param Entry  $entry
      * @param string $newRdn
      * @param bool   $removeOldRdn
      */

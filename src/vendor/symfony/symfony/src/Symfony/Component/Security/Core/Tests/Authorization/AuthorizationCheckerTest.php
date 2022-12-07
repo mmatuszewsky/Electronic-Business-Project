@@ -46,7 +46,7 @@ class AuthorizationCheckerTest extends TestCase
             ->expects($this->once())
             ->method('authenticate')
             ->with($this->equalTo($token))
-            ->willReturn($newToken);
+            ->will($this->returnValue($newToken));
 
         // default with() isn't a strict check
         $tokenComparison = function ($value) use ($newToken) {
@@ -58,7 +58,7 @@ class AuthorizationCheckerTest extends TestCase
             ->expects($this->once())
             ->method('decide')
             ->with($this->callback($tokenComparison))
-            ->willReturn(true);
+            ->will($this->returnValue(true));
 
         // first run the token has not been re-authenticated yet, after isGranted is called, it should be equal
         $this->assertNotSame($newToken, $this->tokenStorage->getToken());
@@ -66,9 +66,11 @@ class AuthorizationCheckerTest extends TestCase
         $this->assertSame($newToken, $this->tokenStorage->getToken());
     }
 
+    /**
+     * @expectedException \Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException
+     */
     public function testVoteWithoutAuthenticationToken()
     {
-        $this->expectException('Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException');
         $this->authorizationChecker->isGranted('ROLE_FOO');
     }
 
@@ -81,12 +83,12 @@ class AuthorizationCheckerTest extends TestCase
         $token
             ->expects($this->once())
             ->method('isAuthenticated')
-            ->willReturn(true);
+            ->will($this->returnValue(true));
 
         $this->accessDecisionManager
             ->expects($this->once())
             ->method('decide')
-            ->willReturn($decide);
+            ->will($this->returnValue($decide));
         $this->tokenStorage->setToken($token);
         $this->assertSame($decide, $this->authorizationChecker->isGranted('ROLE_FOO'));
     }

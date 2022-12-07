@@ -42,10 +42,6 @@ class UserPasswordEncoder implements UserPasswordEncoderInterface
      */
     public function isPasswordValid(UserInterface $user, $raw)
     {
-        if (null === $user->getPassword()) {
-            return false;
-        }
-
         $encoder = $this->encoderFactory->getEncoder($user);
 
         return $encoder->isPasswordValid($user->getPassword(), $raw, $user->getSalt());

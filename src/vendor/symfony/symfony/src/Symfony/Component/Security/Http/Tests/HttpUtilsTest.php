@@ -92,12 +92,12 @@ class HttpUtilsTest extends TestCase
             ->expects($this->any())
             ->method('generate')
             ->with('foobar', [], UrlGeneratorInterface::ABSOLUTE_URL)
-            ->willReturn('http://localhost/foo/bar')
+            ->will($this->returnValue('http://localhost/foo/bar'))
         ;
         $urlGenerator
             ->expects($this->any())
             ->method('getContext')
-            ->willReturn($this->getMockBuilder('Symfony\Component\Routing\RequestContext')->getMock())
+            ->will($this->returnValue($this->getMockBuilder('Symfony\Component\Routing\RequestContext')->getMock()))
         ;
 
         $response = $utils->createRedirectResponse($this->getRequest(), 'foobar');
@@ -125,12 +125,12 @@ class HttpUtilsTest extends TestCase
         $urlGenerator
             ->expects($this->once())
             ->method('generate')
-            ->willReturn('/foo/bar')
+            ->will($this->returnValue('/foo/bar'))
         ;
         $urlGenerator
             ->expects($this->any())
             ->method('getContext')
-            ->willReturn($this->getMockBuilder('Symfony\Component\Routing\RequestContext')->getMock())
+            ->will($this->returnValue($this->getMockBuilder('Symfony\Component\Routing\RequestContext')->getMock()))
         ;
 
         $subRequest = $utils->createRequest($this->getRequest(), 'foobar');
@@ -229,7 +229,7 @@ class HttpUtilsTest extends TestCase
             ->expects($this->any())
             ->method('match')
             ->with('/foo/bar')
-            ->willReturn(['_route' => 'foobar'])
+            ->will($this->returnValue(['_route' => 'foobar']))
         ;
 
         $utils = new HttpUtils(null, $urlMatcher);
@@ -244,16 +244,18 @@ class HttpUtilsTest extends TestCase
             ->expects($this->any())
             ->method('matchRequest')
             ->with($request)
-            ->willReturn(['_route' => 'foobar'])
+            ->will($this->returnValue(['_route' => 'foobar']))
         ;
 
         $utils = new HttpUtils(null, $urlMatcher);
         $this->assertTrue($utils->checkRequestPath($request, 'foobar'));
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
     public function testCheckRequestPathWithUrlMatcherLoadingException()
     {
-        $this->expectException('RuntimeException');
         $urlMatcher = $this->getMockBuilder('Symfony\Component\Routing\Matcher\UrlMatcherInterface')->getMock();
         $urlMatcher
             ->expects($this->any())
@@ -278,10 +280,12 @@ class HttpUtilsTest extends TestCase
         $this->assertFalse($utils->checkRequestPath($this->getRequest(), 'path/index.html'));
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Matcher must either implement UrlMatcherInterface or RequestMatcherInterface
+     */
     public function testUrlMatcher()
     {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('Matcher must either implement UrlMatcherInterface or RequestMatcherInterface');
         new HttpUtils($this->getUrlGenerator(), new \stdClass());
     }
 
@@ -303,10 +307,12 @@ class HttpUtilsTest extends TestCase
         $this->assertEquals('/foo/bar#fragment', $utils->generateUri(new Request(), 'route_name'));
     }
 
+    /**
+     * @expectedException \LogicException
+     * @expectedExceptionMessage You must provide a UrlGeneratorInterface instance to be able to use routes.
+     */
     public function testUrlGeneratorIsRequiredToGenerateUrl()
     {
-        $this->expectException('LogicException');
-        $this->expectExceptionMessage('You must provide a UrlGeneratorInterface instance to be able to use routes.');
         $utils = new HttpUtils();
         $utils->generateUri(new Request(), 'route_name');
     }
@@ -317,7 +323,7 @@ class HttpUtilsTest extends TestCase
         $urlGenerator
             ->expects($this->any())
             ->method('generate')
-            ->willReturn($generatedUrl)
+            ->will($this->returnValue($generatedUrl))
         ;
 
         return $urlGenerator;

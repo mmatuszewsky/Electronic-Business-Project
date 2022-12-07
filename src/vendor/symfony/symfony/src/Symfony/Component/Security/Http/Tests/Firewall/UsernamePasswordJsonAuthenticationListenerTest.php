@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\Security\Http\Tests\Firewall;
+namespace Symfony\Component\Security\Tests\Http\Firewall;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,7 +43,7 @@ class UsernamePasswordJsonAuthenticationListenerTest extends TestCase
         $httpUtils
             ->expects($this->any())
             ->method('checkRequestPath')
-            ->willReturn($matchCheckPath)
+            ->will($this->returnValue($matchCheckPath))
         ;
         $authenticationManager = $this->getMockBuilder(AuthenticationManagerInterface::class)->getMock();
 
@@ -104,10 +104,12 @@ class UsernamePasswordJsonAuthenticationListenerTest extends TestCase
         $this->assertEquals('ok', $event->getResponse()->getContent());
     }
 
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+     * @expectedExceptionMessage Invalid JSON
+     */
     public function testAttemptAuthenticationNoJson()
     {
-        $this->expectException('Symfony\Component\HttpKernel\Exception\BadRequestHttpException');
-        $this->expectExceptionMessage('Invalid JSON');
         $this->createListener();
         $request = new Request();
         $request->setRequestFormat('json');
@@ -116,10 +118,12 @@ class UsernamePasswordJsonAuthenticationListenerTest extends TestCase
         $this->listener->handle($event);
     }
 
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+     * @expectedExceptionMessage The key "username" must be provided
+     */
     public function testAttemptAuthenticationNoUsername()
     {
-        $this->expectException('Symfony\Component\HttpKernel\Exception\BadRequestHttpException');
-        $this->expectExceptionMessage('The key "username" must be provided');
         $this->createListener();
         $request = new Request([], [], [], [], [], ['HTTP_CONTENT_TYPE' => 'application/json'], '{"usr": "dunglas", "password": "foo"}');
         $event = new GetResponseEvent($this->getMockBuilder(KernelInterface::class)->getMock(), $request, KernelInterface::MASTER_REQUEST);
@@ -127,10 +131,12 @@ class UsernamePasswordJsonAuthenticationListenerTest extends TestCase
         $this->listener->handle($event);
     }
 
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+     * @expectedExceptionMessage The key "password" must be provided
+     */
     public function testAttemptAuthenticationNoPassword()
     {
-        $this->expectException('Symfony\Component\HttpKernel\Exception\BadRequestHttpException');
-        $this->expectExceptionMessage('The key "password" must be provided');
         $this->createListener();
         $request = new Request([], [], [], [], [], ['HTTP_CONTENT_TYPE' => 'application/json'], '{"username": "dunglas", "pass": "foo"}');
         $event = new GetResponseEvent($this->getMockBuilder(KernelInterface::class)->getMock(), $request, KernelInterface::MASTER_REQUEST);
@@ -138,10 +144,12 @@ class UsernamePasswordJsonAuthenticationListenerTest extends TestCase
         $this->listener->handle($event);
     }
 
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+     * @expectedExceptionMessage The key "username" must be a string.
+     */
     public function testAttemptAuthenticationUsernameNotAString()
     {
-        $this->expectException('Symfony\Component\HttpKernel\Exception\BadRequestHttpException');
-        $this->expectExceptionMessage('The key "username" must be a string.');
         $this->createListener();
         $request = new Request([], [], [], [], [], ['HTTP_CONTENT_TYPE' => 'application/json'], '{"username": 1, "password": "foo"}');
         $event = new GetResponseEvent($this->getMockBuilder(KernelInterface::class)->getMock(), $request, KernelInterface::MASTER_REQUEST);
@@ -149,10 +157,12 @@ class UsernamePasswordJsonAuthenticationListenerTest extends TestCase
         $this->listener->handle($event);
     }
 
+    /**
+     * @expectedException \Symfony\Component\HttpKernel\Exception\BadRequestHttpException
+     * @expectedExceptionMessage The key "password" must be a string.
+     */
     public function testAttemptAuthenticationPasswordNotAString()
     {
-        $this->expectException('Symfony\Component\HttpKernel\Exception\BadRequestHttpException');
-        $this->expectExceptionMessage('The key "password" must be a string.');
         $this->createListener();
         $request = new Request([], [], [], [], [], ['HTTP_CONTENT_TYPE' => 'application/json'], '{"username": "dunglas", "password": 1}');
         $event = new GetResponseEvent($this->getMockBuilder(KernelInterface::class)->getMock(), $request, KernelInterface::MASTER_REQUEST);

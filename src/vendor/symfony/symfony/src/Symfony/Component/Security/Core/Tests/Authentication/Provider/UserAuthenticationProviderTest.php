@@ -18,7 +18,6 @@ use Symfony\Component\Security\Core\Exception\CredentialsExpiredException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\Role\SwitchUserRole;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserAuthenticationProviderTest extends TestCase
 {
@@ -30,18 +29,22 @@ class UserAuthenticationProviderTest extends TestCase
         $this->assertFalse($provider->supports($this->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\TokenInterface')->getMock()));
     }
 
+    /**
+     * @expectedException \Symfony\Component\Security\Core\Exception\AuthenticationException
+     * @expectedExceptionMessage The token is not supported by this authentication provider.
+     */
     public function testAuthenticateWhenTokenIsNotSupported()
     {
-        $this->expectException('Symfony\Component\Security\Core\Exception\AuthenticationException');
-        $this->expectExceptionMessage('The token is not supported by this authentication provider.');
         $provider = $this->getProvider();
 
         $provider->authenticate($this->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\TokenInterface')->getMock());
     }
 
+    /**
+     * @expectedException \Symfony\Component\Security\Core\Exception\UsernameNotFoundException
+     */
     public function testAuthenticateWhenUsernameIsNotFound()
     {
-        $this->expectException('Symfony\Component\Security\Core\Exception\UsernameNotFoundException');
         $provider = $this->getProvider(false, false);
         $provider->expects($this->once())
                  ->method('retrieveUser')
@@ -51,9 +54,11 @@ class UserAuthenticationProviderTest extends TestCase
         $provider->authenticate($this->getSupportedToken());
     }
 
+    /**
+     * @expectedException \Symfony\Component\Security\Core\Exception\BadCredentialsException
+     */
     public function testAuthenticateWhenUsernameIsNotFoundAndHideIsTrue()
     {
-        $this->expectException('Symfony\Component\Security\Core\Exception\BadCredentialsException');
         $provider = $this->getProvider(false, true);
         $provider->expects($this->once())
                  ->method('retrieveUser')
@@ -63,42 +68,25 @@ class UserAuthenticationProviderTest extends TestCase
         $provider->authenticate($this->getSupportedToken());
     }
 
-    public function testAuthenticateWhenCredentialsAreInvalidAndHideIsTrue()
+    /**
+     * @expectedException \Symfony\Component\Security\Core\Exception\AuthenticationServiceException
+     */
+    public function testAuthenticateWhenProviderDoesNotReturnAnUserInterface()
     {
-        $provider = $this->getProvider();
+        $provider = $this->getProvider(false, true);
         $provider->expects($this->once())
-            ->method('retrieveUser')
-            ->willReturn($this->createMock(UserInterface::class))
+                 ->method('retrieveUser')
+                 ->will($this->returnValue(null))
         ;
-        $provider->expects($this->once())
-            ->method('checkAuthentication')
-            ->willThrowException(new BadCredentialsException())
-        ;
-
-        $this->expectException(BadCredentialsException::class);
-        $this->expectExceptionMessage('Bad credentials.');
 
         $provider->authenticate($this->getSupportedToken());
     }
 
     /**
-     * @group legacy
+     * @expectedException \Symfony\Component\Security\Core\Exception\CredentialsExpiredException
      */
-    public function testAuthenticateWhenProviderDoesNotReturnAnUserInterface()
-    {
-        $this->expectException('Symfony\Component\Security\Core\Exception\AuthenticationServiceException');
-        $provider = $this->getProvider(false, true);
-        $provider->expects($this->once())
-                 ->method('retrieveUser')
-                 ->willReturn(null)
-        ;
-
-        $provider->authenticate($this->getSupportedToken());
-    }
-
     public function testAuthenticateWhenPreChecksFails()
     {
-        $this->expectException(BadCredentialsException::class);
         $userChecker = $this->getMockBuilder('Symfony\Component\Security\Core\User\UserCheckerInterface')->getMock();
         $userChecker->expects($this->once())
                     ->method('checkPreAuth')
@@ -108,15 +96,17 @@ class UserAuthenticationProviderTest extends TestCase
         $provider = $this->getProvider($userChecker);
         $provider->expects($this->once())
                  ->method('retrieveUser')
-                 ->willReturn($this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')->getMock())
+                 ->will($this->returnValue($this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')->getMock()))
         ;
 
         $provider->authenticate($this->getSupportedToken());
     }
 
+    /**
+     * @expectedException \Symfony\Component\Security\Core\Exception\AccountExpiredException
+     */
     public function testAuthenticateWhenPostChecksFails()
     {
-        $this->expectException(BadCredentialsException::class);
         $userChecker = $this->getMockBuilder('Symfony\Component\Security\Core\User\UserCheckerInterface')->getMock();
         $userChecker->expects($this->once())
                     ->method('checkPostAuth')
@@ -126,37 +116,41 @@ class UserAuthenticationProviderTest extends TestCase
         $provider = $this->getProvider($userChecker);
         $provider->expects($this->once())
                  ->method('retrieveUser')
-                 ->willReturn($this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')->getMock())
+                 ->will($this->returnValue($this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')->getMock()))
         ;
 
         $provider->authenticate($this->getSupportedToken());
     }
 
+    /**
+     * @expectedException \Symfony\Component\Security\Core\Exception\BadCredentialsException
+     * @expectedExceptionMessage Bad credentials
+     */
     public function testAuthenticateWhenPostCheckAuthenticationFails()
     {
-        $this->expectException('Symfony\Component\Security\Core\Exception\BadCredentialsException');
-        $this->expectExceptionMessage('Bad credentials.');
         $provider = $this->getProvider();
         $provider->expects($this->once())
                  ->method('retrieveUser')
-                 ->willReturn($this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')->getMock())
+                 ->will($this->returnValue($this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')->getMock()))
         ;
         $provider->expects($this->once())
                  ->method('checkAuthentication')
-                 ->willThrowException(new CredentialsExpiredException())
+                 ->willThrowException(new BadCredentialsException())
         ;
 
         $provider->authenticate($this->getSupportedToken());
     }
 
+    /**
+     * @expectedException \Symfony\Component\Security\Core\Exception\BadCredentialsException
+     * @expectedExceptionMessage Foo
+     */
     public function testAuthenticateWhenPostCheckAuthenticationFailsWithHideFalse()
     {
-        $this->expectException('Symfony\Component\Security\Core\Exception\BadCredentialsException');
-        $this->expectExceptionMessage('Foo');
         $provider = $this->getProvider(false, false);
         $provider->expects($this->once())
                  ->method('retrieveUser')
-                 ->willReturn($this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')->getMock())
+                 ->will($this->returnValue($this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')->getMock()))
         ;
         $provider->expects($this->once())
                  ->method('checkAuthentication')
@@ -171,24 +165,24 @@ class UserAuthenticationProviderTest extends TestCase
         $user = $this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')->getMock();
         $user->expects($this->once())
              ->method('getRoles')
-             ->willReturn(['ROLE_FOO'])
+             ->will($this->returnValue(['ROLE_FOO']))
         ;
 
         $provider = $this->getProvider();
         $provider->expects($this->once())
                  ->method('retrieveUser')
-                 ->willReturn($user)
+                 ->will($this->returnValue($user))
         ;
 
         $token = $this->getSupportedToken();
         $token->expects($this->once())
               ->method('getCredentials')
-              ->willReturn('foo')
+              ->will($this->returnValue('foo'))
         ;
 
         $token->expects($this->once())
               ->method('getRoles')
-              ->willReturn([])
+              ->will($this->returnValue([]))
         ;
 
         $authToken = $provider->authenticate($token);
@@ -205,33 +199,33 @@ class UserAuthenticationProviderTest extends TestCase
         $user = $this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')->getMock();
         $user->expects($this->once())
              ->method('getRoles')
-             ->willReturn(['ROLE_FOO'])
+             ->will($this->returnValue(['ROLE_FOO']))
         ;
 
         $provider = $this->getProvider();
         $provider->expects($this->once())
                  ->method('retrieveUser')
-                 ->willReturn($user)
+                 ->will($this->returnValue($user))
         ;
 
         $token = $this->getSupportedToken();
         $token->expects($this->once())
               ->method('getCredentials')
-              ->willReturn('foo')
+              ->will($this->returnValue('foo'))
         ;
 
         $switchUserRole = new SwitchUserRole('foo', $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\TokenInterface')->getMock());
         $token->expects($this->once())
               ->method('getRoles')
-              ->willReturn([$switchUserRole])
+              ->will($this->returnValue([$switchUserRole]))
         ;
 
         $authToken = $provider->authenticate($token);
 
         $this->assertInstanceOf('Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken', $authToken);
         $this->assertSame($user, $authToken->getUser());
-        $this->assertContainsEquals(new Role('ROLE_FOO'), $authToken->getRoles());
-        $this->assertContainsEquals($switchUserRole, $authToken->getRoles());
+        $this->assertContains(new Role('ROLE_FOO'), $authToken->getRoles(), '', false, false);
+        $this->assertContains($switchUserRole, $authToken->getRoles(), '', false, false);
         $this->assertEquals('foo', $authToken->getCredentials());
         $this->assertEquals(['foo' => 'bar'], $authToken->getAttributes(), '->authenticate() copies token attributes');
     }
@@ -242,7 +236,7 @@ class UserAuthenticationProviderTest extends TestCase
         $mock
             ->expects($this->any())
             ->method('getProviderKey')
-            ->willReturn('key')
+            ->will($this->returnValue('key'))
         ;
 
         $mock->setAttributes(['foo' => 'bar']);

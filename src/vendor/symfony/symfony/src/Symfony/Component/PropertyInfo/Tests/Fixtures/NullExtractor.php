@@ -30,8 +30,6 @@ class NullExtractor implements PropertyListExtractorInterface, PropertyDescripti
     {
         $this->assertIsString($class);
         $this->assertIsString($property);
-
-        return null;
     }
 
     /**
@@ -41,8 +39,6 @@ class NullExtractor implements PropertyListExtractorInterface, PropertyDescripti
     {
         $this->assertIsString($class);
         $this->assertIsString($property);
-
-        return null;
     }
 
     /**
@@ -52,8 +48,6 @@ class NullExtractor implements PropertyListExtractorInterface, PropertyDescripti
     {
         $this->assertIsString($class);
         $this->assertIsString($property);
-
-        return null;
     }
 
     /**
@@ -63,8 +57,6 @@ class NullExtractor implements PropertyListExtractorInterface, PropertyDescripti
     {
         $this->assertIsString($class);
         $this->assertIsString($property);
-
-        return null;
     }
 
     /**
@@ -74,8 +66,6 @@ class NullExtractor implements PropertyListExtractorInterface, PropertyDescripti
     {
         $this->assertIsString($class);
         $this->assertIsString($property);
-
-        return null;
     }
 
     /**
@@ -84,8 +74,6 @@ class NullExtractor implements PropertyListExtractorInterface, PropertyDescripti
     public function getProperties($class, array $context = [])
     {
         $this->assertIsString($class);
-
-        return null;
     }
 
     private function assertIsString($string)

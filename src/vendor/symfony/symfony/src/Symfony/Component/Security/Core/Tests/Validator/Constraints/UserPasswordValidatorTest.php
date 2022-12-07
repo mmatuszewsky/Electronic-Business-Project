@@ -65,7 +65,7 @@ abstract class UserPasswordValidatorTest extends ConstraintValidatorTestCase
         $this->encoder->expects($this->once())
             ->method('isPasswordValid')
             ->with(static::PASSWORD, 'secret', static::SALT)
-            ->willReturn(true);
+            ->will($this->returnValue(true));
 
         $this->validator->validate('secret', $constraint);
 
@@ -81,7 +81,7 @@ abstract class UserPasswordValidatorTest extends ConstraintValidatorTestCase
         $this->encoder->expects($this->once())
             ->method('isPasswordValid')
             ->with(static::PASSWORD, 'secret', static::SALT)
-            ->willReturn(false);
+            ->will($this->returnValue(false));
 
         $this->validator->validate('secret', $constraint);
 
@@ -112,9 +112,11 @@ abstract class UserPasswordValidatorTest extends ConstraintValidatorTestCase
         ];
     }
 
+    /**
+     * @expectedException \Symfony\Component\Validator\Exception\ConstraintDefinitionException
+     */
     public function testUserIsNotValid()
     {
-        $this->expectException('Symfony\Component\Validator\Exception\ConstraintDefinitionException');
         $user = $this->getMockBuilder('Foo\Bar\User')->getMock();
 
         $this->tokenStorage = $this->createTokenStorage($user);
@@ -131,13 +133,13 @@ abstract class UserPasswordValidatorTest extends ConstraintValidatorTestCase
         $mock
             ->expects($this->any())
             ->method('getPassword')
-            ->willReturn(static::PASSWORD)
+            ->will($this->returnValue(static::PASSWORD))
         ;
 
         $mock
             ->expects($this->any())
             ->method('getSalt')
-            ->willReturn(static::SALT)
+            ->will($this->returnValue(static::SALT))
         ;
 
         return $mock;
@@ -155,7 +157,7 @@ abstract class UserPasswordValidatorTest extends ConstraintValidatorTestCase
         $mock
             ->expects($this->any())
             ->method('getEncoder')
-            ->willReturn($encoder)
+            ->will($this->returnValue($encoder))
         ;
 
         return $mock;
@@ -169,7 +171,7 @@ abstract class UserPasswordValidatorTest extends ConstraintValidatorTestCase
         $mock
             ->expects($this->any())
             ->method('getToken')
-            ->willReturn($token)
+            ->will($this->returnValue($token))
         ;
 
         return $mock;
@@ -181,7 +183,7 @@ abstract class UserPasswordValidatorTest extends ConstraintValidatorTestCase
         $mock
             ->expects($this->any())
             ->method('getUser')
-            ->willReturn($user)
+            ->will($this->returnValue($user))
         ;
 
         return $mock;

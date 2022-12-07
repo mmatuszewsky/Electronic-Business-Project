@@ -84,9 +84,7 @@ class PersistentTokenBasedRememberMeServices extends AbstractRememberMeServices
                 $this->options['path'],
                 $this->options['domain'],
                 $this->options['secure'],
-                $this->options['httponly'],
-                false,
-                $this->options['samesite']
+                $this->options['httponly']
             )
         );
 
@@ -119,9 +117,7 @@ class PersistentTokenBasedRememberMeServices extends AbstractRememberMeServices
                 $this->options['path'],
                 $this->options['domain'],
                 $this->options['secure'],
-                $this->options['httponly'],
-                false,
-                $this->options['samesite']
+                $this->options['httponly']
             )
         );
     }

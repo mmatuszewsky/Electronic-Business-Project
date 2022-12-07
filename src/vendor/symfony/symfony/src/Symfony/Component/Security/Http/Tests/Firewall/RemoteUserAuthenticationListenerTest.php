@@ -42,9 +42,11 @@ class RemoteUserAuthenticationListenerTest extends TestCase
         $this->assertSame($result, ['TheUser', null]);
     }
 
+    /**
+     * @expectedException \Symfony\Component\Security\Core\Exception\BadCredentialsException
+     */
     public function testGetPreAuthenticatedDataNoUser()
     {
-        $this->expectException('Symfony\Component\Security\Core\Exception\BadCredentialsException');
         $request = new Request([], [], [], [], [], []);
 
         $tokenStorage = $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface')->getMock();
@@ -60,7 +62,7 @@ class RemoteUserAuthenticationListenerTest extends TestCase
         $method = new \ReflectionMethod($listener, 'getPreAuthenticatedData');
         $method->setAccessible(true);
 
-        $method->invokeArgs($listener, [$request]);
+        $result = $method->invokeArgs($listener, [$request]);
     }
 
     public function testGetPreAuthenticatedDataWithDifferentKeys()

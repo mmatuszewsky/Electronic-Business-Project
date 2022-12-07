@@ -1,6 +1,7 @@
 {
+    "Version": "2.1.48.44",
     "Names": {
-        "Arab": "hija’iyah",
+        "Arab": "Arab",
         "Armn": "Armenia",
         "Beng": "Bangla",
         "Bopo": "Bopomofo",
@@ -33,9 +34,7 @@
         "Orya": "Odia",
         "Sinh": "Sinhala",
         "Taml": "Tamil",
-        "Telu": "Telugu",
         "Thaa": "Thaana",
-        "Thai": "Thailand",
         "Tibt": "Tibetan",
         "Zmth": "Notasi Matematika",
         "Zsye": "Emoji",

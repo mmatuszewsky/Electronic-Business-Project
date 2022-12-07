@@ -53,7 +53,7 @@ class XliffFileLoader implements LoaderInterface
         try {
             $dom = XmlUtils::loadFile($resource);
         } catch (\InvalidArgumentException $e) {
-            throw new InvalidResourceException(sprintf('Unable to load "%s": ', $resource).$e->getMessage(), $e->getCode(), $e);
+            throw new InvalidResourceException(sprintf('Unable to load "%s": %s', $resource, $e->getMessage()), $e->getCode(), $e);
         }
 
         $xliffVersion = $this->getVersionNumber($dom);
@@ -116,7 +116,9 @@ class XliffFileLoader implements LoaderInterface
     }
 
     /**
-     * @param string $domain
+     * @param \DOMDocument     $dom
+     * @param MessageCatalogue $catalogue
+     * @param string           $domain
      */
     private function extractXliff2(\DOMDocument $dom, MessageCatalogue $catalogue, $domain)
     {
@@ -180,8 +182,9 @@ class XliffFileLoader implements LoaderInterface
     /**
      * Validates and parses the given file into a DOMDocument.
      *
-     * @param string $file
-     * @param string $schema source of the schema
+     * @param string       $file
+     * @param \DOMDocument $dom
+     * @param string       $schema source of the schema
      *
      * @throws InvalidResourceException
      */
@@ -189,17 +192,15 @@ class XliffFileLoader implements LoaderInterface
     {
         $internalErrors = libxml_use_internal_errors(true);
 
-        if (\LIBXML_VERSION < 20900) {
-            $disableEntities = libxml_disable_entity_loader(false);
-            $isValid = @$dom->schemaValidateSource($schema);
+        $disableEntities = libxml_disable_entity_loader(false);
+
+        if (!@$dom->schemaValidateSource($schema)) {
             libxml_disable_entity_loader($disableEntities);
-        } else {
-            $isValid = @$dom->schemaValidateSource($schema);
+
+            throw new InvalidResourceException(sprintf('Invalid resource provided: "%s"; Errors: %s', $file, implode("\n", $this->getXmlErrors($internalErrors))));
         }
 
-        if (!$isValid) {
-            throw new InvalidResourceException(sprintf('Invalid resource provided: "%s"; Errors: ', $file).implode("\n", $this->getXmlErrors($internalErrors)));
-        }
+        libxml_disable_entity_loader($disableEntities);
 
         $dom->normalizeDocument();
 
@@ -264,7 +265,7 @@ class XliffFileLoader implements LoaderInterface
         $errors = [];
         foreach (libxml_get_errors() as $error) {
             $errors[] = sprintf('[%s %s] %s (in %s - line %d, column %d)',
-                \LIBXML_ERR_WARNING == $error->level ? 'WARNING' : 'ERROR',
+                LIBXML_ERR_WARNING == $error->level ? 'WARNING' : 'ERROR',
                 $error->code,
                 trim($error->message),
                 $error->file ?: 'n/a',
@@ -283,6 +284,8 @@ class XliffFileLoader implements LoaderInterface
      * Gets xliff file version based on the root "version" attribute.
      * Defaults to 1.2 for backwards compatibility.
      *
+     * @param \DOMDocument $dom
+     *
      * @throws InvalidArgumentException
      *
      * @return string
@@ -299,7 +302,7 @@ class XliffFileLoader implements LoaderInterface
             $namespace = $xliff->attributes->getNamedItem('xmlns');
             if ($namespace) {
                 if (0 !== substr_compare('urn:oasis:names:tc:xliff:document:', $namespace->nodeValue, 0, 34)) {
-                    throw new InvalidArgumentException(sprintf('Not a valid XLIFF namespace "%s".', $namespace));
+                    throw new InvalidArgumentException(sprintf('Not a valid XLIFF namespace "%s"', $namespace));
                 }
 
                 return substr($namespace, 34);
@@ -311,7 +314,8 @@ class XliffFileLoader implements LoaderInterface
     }
 
     /**
-     * @param string|null $encoding
+     * @param \SimpleXMLElement|null $noteElement
+     * @param string|null            $encoding
      *
      * @return array
      */

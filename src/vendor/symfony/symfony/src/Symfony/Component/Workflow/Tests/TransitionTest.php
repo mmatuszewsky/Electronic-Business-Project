@@ -7,11 +7,13 @@ use Symfony\Component\Workflow\Transition;
 
 class TransitionTest extends TestCase
 {
+    /**
+     * @expectedException \Symfony\Component\Workflow\Exception\InvalidArgumentException
+     * @expectedExceptionMessage The transition "foo.bar" contains invalid characters.
+     */
     public function testValidateName()
     {
-        $this->expectException('Symfony\Component\Workflow\Exception\InvalidArgumentException');
-        $this->expectExceptionMessage('The transition "foo.bar" contains invalid characters.');
-        new Transition('foo.bar', 'a', 'b');
+        $transition = new Transition('foo.bar', 'a', 'b');
     }
 
     public function testConstructor()

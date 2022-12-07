@@ -171,7 +171,7 @@ EOTXT
 
         $this->assertDumpMatchesFormat(
             <<<'EOTXT'
-class@anonymous {
+@anonymous {
   -foo: "foo"
 }
 EOTXT

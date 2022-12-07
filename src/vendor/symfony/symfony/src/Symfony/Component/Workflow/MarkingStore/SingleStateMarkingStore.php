@@ -29,7 +29,8 @@ class SingleStateMarkingStore implements MarkingStoreInterface
     private $propertyAccessor;
 
     /**
-     * @param string $property
+     * @param string                         $property
+     * @param PropertyAccessorInterface|null $propertyAccessor
      */
     public function __construct($property = 'marking', PropertyAccessorInterface $propertyAccessor = null)
     {
@@ -44,7 +45,7 @@ class SingleStateMarkingStore implements MarkingStoreInterface
     {
         $placeName = $this->propertyAccessor->getValue($subject, $this->property);
 
-        if (null === $placeName) {
+        if (!$placeName) {
             return new Marking();
         }
 

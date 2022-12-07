@@ -50,12 +50,12 @@ SplFileInfo {
 %A}
 EOTXT
             ],
-            ['https://example.com/about', <<<'EOTXT'
+            ['https://google.com/about', <<<'EOTXT'
 SplFileInfo {
-%Apath: "https://example.com"
+%Apath: "https://google.com"
   filename: "about"
   basename: "about"
-  pathname: "https://example.com/about"
+  pathname: "https://google.com/about"
   extension: ""
   realPath: false
 %A}
@@ -175,17 +175,14 @@ EOTXT;
         $expected = <<<EOTXT
 ArrayObject {
   +"foo": 234
-  -storage: array:1 [
-    0 => 123
-  ]
   flag::STD_PROP_LIST: false
   flag::ARRAY_AS_PROPS: false
   iteratorClass: "ArrayIterator"
+  storage: array:1 [
+    0 => 123
+  ]
 }
 EOTXT;
-        if (\PHP_VERSION_ID < 70400) {
-            $expected = str_replace('-storage:', 'storage:', $expected);
-        }
         $this->assertDumpEquals($expected, $var);
     }
 
@@ -199,26 +196,11 @@ EOTXT;
         $expected = <<<EOTXT
 Symfony\Component\VarDumper\Tests\Caster\MyArrayIterator {
   -foo: 123
-  -storage: array:1 [
-    0 => 234
-  ]
   flag::STD_PROP_LIST: false
   flag::ARRAY_AS_PROPS: false
-}
-EOTXT;
-        if (\PHP_VERSION_ID < 70400) {
-            $expected = str_replace('-storage:', 'storage:', $expected);
-        }
-        $this->assertDumpEquals($expected, $var);
-    }
-
-    public function testBadSplFileInfo()
-    {
-        $var = new BadSplFileInfo();
-
-        $expected = <<<EOTXT
-Symfony\Component\VarDumper\Tests\Caster\BadSplFileInfo {
-  ⚠: "The parent constructor was not called: the object is in an invalid state"
+  storage: array:1 [
+    0 => 234
+  ]
 }
 EOTXT;
         $this->assertDumpEquals($expected, $var);
@@ -228,11 +210,4 @@ EOTXT;
 class MyArrayIterator extends \ArrayIterator
 {
     private $foo = 123;
-}
-
-class BadSplFileInfo extends \SplFileInfo
-{
-    public function __construct()
-    {
-    }
 }

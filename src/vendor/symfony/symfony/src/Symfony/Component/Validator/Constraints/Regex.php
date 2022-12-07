@@ -71,7 +71,7 @@ class Regex extends Constraint
 
         // Quit if delimiters not at very beginning/end (e.g. when options are passed)
         if ($this->pattern[0] !== $this->pattern[\strlen($this->pattern) - 1]) {
-            return null;
+            return;
         }
 
         $delimiter = $this->pattern[0];

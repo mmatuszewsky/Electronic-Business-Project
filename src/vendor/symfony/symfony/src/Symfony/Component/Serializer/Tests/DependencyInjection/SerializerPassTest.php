@@ -23,10 +23,12 @@ use Symfony\Component\Serializer\DependencyInjection\SerializerPass;
  */
 class SerializerPassTest extends TestCase
 {
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage You must tag at least one service as "serializer.normalizer" to use the "serializer" service
+     */
     public function testThrowExceptionWhenNoNormalizers()
     {
-        $this->expectException('RuntimeException');
-        $this->expectExceptionMessage('You must tag at least one service as "serializer.normalizer" to use the "serializer" service');
         $container = new ContainerBuilder();
         $container->register('serializer');
 
@@ -34,10 +36,12 @@ class SerializerPassTest extends TestCase
         $serializerPass->process($container);
     }
 
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage You must tag at least one service as "serializer.encoder" to use the "serializer" service
+     */
     public function testThrowExceptionWhenNoEncoders()
     {
-        $this->expectException('RuntimeException');
-        $this->expectExceptionMessage('You must tag at least one service as "serializer.encoder" to use the "serializer" service');
         $container = new ContainerBuilder();
         $container->register('serializer')
             ->addArgument([])

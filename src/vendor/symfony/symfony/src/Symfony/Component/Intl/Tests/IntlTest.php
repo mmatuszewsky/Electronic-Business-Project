@@ -16,22 +16,6 @@ use Symfony\Component\Intl\Intl;
 
 class IntlTest extends TestCase
 {
-    private $defaultLocale;
-
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->defaultLocale = \Locale::getDefault();
-    }
-
-    protected function tearDown()
-    {
-        parent::tearDown();
-
-        \Locale::setDefault($this->defaultLocale);
-    }
-
     /**
      * @requires extension intl
      */
@@ -77,7 +61,7 @@ class IntlTest extends TestCase
 
     public function testGetDataDirectoryReturnsThePathToIcuData()
     {
-        $this->assertDirectoryExists(Intl::getDataDirectory());
+        $this->assertTrue(is_dir(Intl::getDataDirectory()));
     }
 
     /**

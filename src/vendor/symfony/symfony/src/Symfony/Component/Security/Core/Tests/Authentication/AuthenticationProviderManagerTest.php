@@ -24,15 +24,19 @@ use Symfony\Component\Security\Core\Exception\ProviderNotFoundException;
 
 class AuthenticationProviderManagerTest extends TestCase
 {
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testAuthenticateWithoutProviders()
     {
-        $this->expectException('InvalidArgumentException');
         new AuthenticationProviderManager([]);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testAuthenticateWithProvidersWithIncorrectInterface()
     {
-        $this->expectException('InvalidArgumentException');
         (new AuthenticationProviderManager([
             new \stdClass(),
         ]))->authenticate($this->getMockBuilder(TokenInterface::class)->getMock());
@@ -54,15 +58,9 @@ class AuthenticationProviderManagerTest extends TestCase
 
     public function testAuthenticateWhenProviderReturnsAccountStatusException()
     {
-        $secondAuthenticationProvider = $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface')->getMock();
-
         $manager = new AuthenticationProviderManager([
             $this->getAuthenticationProvider(true, null, 'Symfony\Component\Security\Core\Exception\AccountStatusException'),
-            $secondAuthenticationProvider,
         ]);
-
-        // AccountStatusException stops authentication
-        $secondAuthenticationProvider->expects($this->never())->method('supports');
 
         try {
             $manager->authenticate($token = $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\TokenInterface')->getMock());
@@ -179,13 +177,13 @@ class AuthenticationProviderManagerTest extends TestCase
         $provider = $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface')->getMock();
         $provider->expects($this->once())
                  ->method('supports')
-                 ->willReturn($supports)
+                 ->will($this->returnValue($supports))
         ;
 
         if (null !== $token) {
             $provider->expects($this->once())
                      ->method('authenticate')
-                     ->willReturn($token)
+                     ->will($this->returnValue($token))
             ;
         } elseif (null !== $exception) {
             $provider->expects($this->once())

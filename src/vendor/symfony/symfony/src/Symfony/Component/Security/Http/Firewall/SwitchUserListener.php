@@ -77,16 +77,9 @@ class SwitchUserListener implements ListenerInterface
     public function handle(GetResponseEvent $event)
     {
         $request = $event->getRequest();
+        $username = $request->get($this->usernameParameter) ?: $request->headers->get($this->usernameParameter);
 
-        // usernames can be falsy
-        $username = $request->get($this->usernameParameter);
-
-        if (null === $username || '' === $username) {
-            $username = $request->headers->get($this->usernameParameter);
-        }
-
-        // if it's still "empty", nothing to do.
-        if (null === $username || '' === $username) {
+        if (!$username) {
             return;
         }
 
@@ -100,7 +93,7 @@ class SwitchUserListener implements ListenerInterface
             try {
                 $this->tokenStorage->setToken($this->attemptSwitchUser($request, $username));
             } catch (AuthenticationException $e) {
-                throw new \LogicException('Switch User failed: '.$e->getMessage());
+                throw new \LogicException(sprintf('Switch User failed: "%s"', $e->getMessage()));
             }
         }
 
@@ -134,8 +127,7 @@ class SwitchUserListener implements ListenerInterface
                 return $token;
             }
 
-            // User already switched, exit before seamlessly switching to another user
-            $token = $this->attemptExitUser($request);
+            throw new \LogicException(sprintf('You are already switched to "%s" user.', $token->getUsername()));
         }
 
         if (false === $this->accessDecisionManager->decide($token, [$this->role])) {
@@ -153,7 +145,7 @@ class SwitchUserListener implements ListenerInterface
         $this->userChecker->checkPostAuth($user);
 
         $roles = $user->getRoles();
-        $roles[] = new SwitchUserRole('ROLE_PREVIOUS_ADMIN', $token);
+        $roles[] = new SwitchUserRole('ROLE_PREVIOUS_ADMIN', $this->tokenStorage->getToken());
 
         $token = new UsernamePasswordToken($user, $user->getPassword(), $this->providerKey, $roles);
 

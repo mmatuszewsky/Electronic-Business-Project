@@ -11,7 +11,6 @@
 
 namespace Symfony\Component\Ldap\Tests;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Ldap\Adapter\AdapterInterface;
 use Symfony\Component\Ldap\Adapter\ConnectionInterface;
@@ -20,7 +19,7 @@ use Symfony\Component\Ldap\Ldap;
 
 class LdapTest extends TestCase
 {
-    /** @var MockObject */
+    /** @var \PHPUnit_Framework_MockObject_MockObject */
     private $adapter;
 
     /** @var Ldap */
@@ -43,7 +42,7 @@ class LdapTest extends TestCase
         $this->adapter
             ->expects($this->once())
             ->method('getConnection')
-            ->willReturn($connection)
+            ->will($this->returnValue($connection))
         ;
         $this->ldap->bind('foo', 'bar');
     }
@@ -79,7 +78,7 @@ class LdapTest extends TestCase
 
     public function testCreateWithInvalidAdapterName()
     {
-        $this->expectException(DriverNotFoundException::class);
+        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}(DriverNotFoundException::class);
         Ldap::create('foo');
     }
 }

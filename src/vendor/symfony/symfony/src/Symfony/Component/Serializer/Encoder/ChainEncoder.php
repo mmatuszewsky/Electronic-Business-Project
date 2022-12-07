@@ -60,6 +60,7 @@ class ChainEncoder implements EncoderInterface /*, ContextAwareEncoderInterface*
      * Checks whether the normalization is needed for the given format.
      *
      * @param string $format
+     * @param array  $context
      *
      * @return bool
      */
@@ -83,6 +84,7 @@ class ChainEncoder implements EncoderInterface /*, ContextAwareEncoderInterface*
      * Gets the encoder supporting the format.
      *
      * @param string $format
+     * @param array  $context
      *
      * @return EncoderInterface
      *

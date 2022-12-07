@@ -18,12 +18,11 @@ namespace Symfony\Component\Lock\Tests\Store;
  */
 class RedisStoreTest extends AbstractRedisStoreTest
 {
-    public static function setUpBeforeClass()
+    public static function setupBeforeClass()
     {
-        try {
-            (new \Redis())->connect(getenv('REDIS_HOST'));
-        } catch (\Exception $e) {
-            self::markTestSkipped($e->getMessage());
+        if (!@((new \Redis())->connect(getenv('REDIS_HOST')))) {
+            $e = error_get_last();
+            self::markTestSkipped($e['message']);
         }
     }
 

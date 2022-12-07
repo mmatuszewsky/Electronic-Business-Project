@@ -34,7 +34,7 @@ class BasicAuthenticationListenerTest extends TestCase
         $tokenStorage
             ->expects($this->any())
             ->method('getToken')
-            ->willReturn(null)
+            ->will($this->returnValue(null))
         ;
         $tokenStorage
             ->expects($this->once())
@@ -47,7 +47,7 @@ class BasicAuthenticationListenerTest extends TestCase
             ->expects($this->once())
             ->method('authenticate')
             ->with($this->isInstanceOf('Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken'))
-            ->willReturn($token)
+            ->will($this->returnValue($token))
         ;
 
         $listener = new BasicAuthenticationListener(
@@ -61,7 +61,7 @@ class BasicAuthenticationListenerTest extends TestCase
         $event
             ->expects($this->any())
             ->method('getRequest')
-            ->willReturn($request)
+            ->will($this->returnValue($request))
         ;
 
         $listener->handle($event);
@@ -74,11 +74,13 @@ class BasicAuthenticationListenerTest extends TestCase
             'PHP_AUTH_PW' => 'ThePassword',
         ]);
 
+        $token = $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\TokenInterface')->getMock();
+
         $tokenStorage = $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface')->getMock();
         $tokenStorage
             ->expects($this->any())
             ->method('getToken')
-            ->willReturn(null)
+            ->will($this->returnValue(null))
         ;
         $tokenStorage
             ->expects($this->never())
@@ -92,7 +94,7 @@ class BasicAuthenticationListenerTest extends TestCase
             ->expects($this->any())
             ->method('start')
             ->with($this->equalTo($request), $this->isInstanceOf('Symfony\Component\Security\Core\Exception\AuthenticationException'))
-            ->willReturn($response)
+            ->will($this->returnValue($response))
         ;
 
         $listener = new BasicAuthenticationListener(
@@ -106,7 +108,7 @@ class BasicAuthenticationListenerTest extends TestCase
         $event
             ->expects($this->any())
             ->method('getRequest')
-            ->willReturn($request)
+            ->will($this->returnValue($request))
         ;
         $event
             ->expects($this->once())
@@ -138,7 +140,7 @@ class BasicAuthenticationListenerTest extends TestCase
         $event
             ->expects($this->any())
             ->method('getRequest')
-            ->willReturn($request)
+            ->will($this->returnValue($request))
         ;
 
         $listener->handle($event);
@@ -154,7 +156,7 @@ class BasicAuthenticationListenerTest extends TestCase
         $tokenStorage
             ->expects($this->any())
             ->method('getToken')
-            ->willReturn($token)
+            ->will($this->returnValue($token))
         ;
 
         $authenticationManager = $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface')->getMock();
@@ -174,16 +176,18 @@ class BasicAuthenticationListenerTest extends TestCase
         $event
             ->expects($this->any())
             ->method('getRequest')
-            ->willReturn($request)
+            ->will($this->returnValue($request))
         ;
 
         $listener->handle($event);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage $providerKey must not be empty
+     */
     public function testItRequiresProviderKey()
     {
-        $this->expectException('InvalidArgumentException');
-        $this->expectExceptionMessage('$providerKey must not be empty');
         new BasicAuthenticationListener(
             $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface')->getMock(),
             $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface')->getMock(),
@@ -205,7 +209,7 @@ class BasicAuthenticationListenerTest extends TestCase
         $tokenStorage
             ->expects($this->any())
             ->method('getToken')
-            ->willReturn($token)
+            ->will($this->returnValue($token))
         ;
         $tokenStorage
             ->expects($this->never())
@@ -219,7 +223,7 @@ class BasicAuthenticationListenerTest extends TestCase
             ->expects($this->any())
             ->method('start')
             ->with($this->equalTo($request), $this->isInstanceOf('Symfony\Component\Security\Core\Exception\AuthenticationException'))
-            ->willReturn($response)
+            ->will($this->returnValue($response))
         ;
 
         $listener = new BasicAuthenticationListener(
@@ -233,7 +237,7 @@ class BasicAuthenticationListenerTest extends TestCase
         $event
             ->expects($this->any())
             ->method('getRequest')
-            ->willReturn($request)
+            ->will($this->returnValue($request))
         ;
         $event
             ->expects($this->once())

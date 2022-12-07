@@ -14,7 +14,7 @@ namespace Symfony\Component\Lock\Store;
 use Symfony\Component\Cache\Traits\RedisProxy;
 use Symfony\Component\Lock\Exception\InvalidArgumentException;
 use Symfony\Component\Lock\Exception\LockConflictedException;
-use Symfony\Component\Lock\Exception\NotSupportedException;
+use Symfony\Component\Lock\Exception\LockExpiredException;
 use Symfony\Component\Lock\Key;
 use Symfony\Component\Lock\StoreInterface;
 
@@ -25,23 +25,21 @@ use Symfony\Component\Lock\StoreInterface;
  */
 class RedisStore implements StoreInterface
 {
-    use ExpiringStoreTrait;
-
     private $redis;
     private $initialTtl;
 
     /**
-     * @param \Redis|\RedisArray|\RedisCluster|\Predis\ClientInterface $redisClient
-     * @param float                                                    $initialTtl  the expiration delay of locks in seconds
+     * @param \Redis|\RedisArray|\RedisCluster|\Predis\Client $redisClient
+     * @param float                                           $initialTtl  the expiration delay of locks in seconds
      */
     public function __construct($redisClient, $initialTtl = 300.0)
     {
-        if (!$redisClient instanceof \Redis && !$redisClient instanceof \RedisArray && !$redisClient instanceof \RedisCluster && !$redisClient instanceof \Predis\ClientInterface && !$redisClient instanceof RedisProxy) {
-            throw new InvalidArgumentException(sprintf('"%s()" expects parameter 1 to be Redis, RedisArray, RedisCluster or Predis\ClientInterface, "%s" given.', __METHOD__, \is_object($redisClient) ? \get_class($redisClient) : \gettype($redisClient)));
+        if (!$redisClient instanceof \Redis && !$redisClient instanceof \RedisArray && !$redisClient instanceof \RedisCluster && !$redisClient instanceof \Predis\Client && !$redisClient instanceof RedisProxy) {
+            throw new InvalidArgumentException(sprintf('%s() expects parameter 1 to be Redis, RedisArray, RedisCluster or Predis\Client, %s given', __METHOD__, \is_object($redisClient) ? \get_class($redisClient) : \gettype($redisClient)));
         }
 
         if ($initialTtl <= 0) {
-            throw new InvalidArgumentException(sprintf('"%s()" expects a strictly positive TTL. Got %d.', __METHOD__, $initialTtl));
+            throw new InvalidArgumentException(sprintf('%s() expects a strictly positive TTL. Got %d.', __METHOD__, $initialTtl));
         }
 
         $this->redis = $redisClient;
@@ -68,12 +66,14 @@ class RedisStore implements StoreInterface
             throw new LockConflictedException();
         }
 
-        $this->checkNotExpired($key);
+        if ($key->isExpired()) {
+            throw new LockExpiredException(sprintf('Failed to store the "%s" lock.', $key));
+        }
     }
 
     public function waitAndSave(Key $key)
     {
-        throw new NotSupportedException(sprintf('The store "%s" does not support blocking locks.', static::class));
+        throw new InvalidArgumentException(sprintf('The store "%s" does not supports blocking locks.', \get_class($this)));
     }
 
     /**
@@ -94,7 +94,9 @@ class RedisStore implements StoreInterface
             throw new LockConflictedException();
         }
 
-        $this->checkNotExpired($key);
+        if ($key->isExpired()) {
+            throw new LockExpiredException(sprintf('Failed to put off the expiration of the "%s" lock within the specified time.', $key));
+        }
     }
 
     /**
@@ -126,6 +128,7 @@ class RedisStore implements StoreInterface
      *
      * @param string $script
      * @param string $resource
+     * @param array  $args
      *
      * @return mixed
      */
@@ -139,15 +142,17 @@ class RedisStore implements StoreInterface
             return $this->redis->_instance($this->redis->_target($resource))->eval($script, array_merge([$resource], $args), 1);
         }
 
-        if ($this->redis instanceof \Predis\ClientInterface) {
+        if ($this->redis instanceof \Predis\Client) {
             return \call_user_func_array([$this->redis, 'eval'], array_merge([$script, 1, $resource], $args));
         }
 
-        throw new InvalidArgumentException(sprintf('"%s()" expects being initialized with a Redis, RedisArray, RedisCluster or Predis\ClientInterface, "%s" given.', __METHOD__, \is_object($this->redis) ? \get_class($this->redis) : \gettype($this->redis)));
+        throw new InvalidArgumentException(sprintf('%s() expects being initialized with a Redis, RedisArray, RedisCluster or Predis\Client, %s given', __METHOD__, \is_object($this->redis) ? \get_class($this->redis) : \gettype($this->redis)));
     }
 
     /**
      * Retrieves an unique token for the given key.
+     *
+     * @param Key $key
      *
      * @return string
      */

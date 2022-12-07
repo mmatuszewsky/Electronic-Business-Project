@@ -39,7 +39,13 @@ class RememberMeListener implements ListenerInterface
     private $sessionStrategy;
 
     /**
-     * @param bool $catchExceptions
+     * @param TokenStorageInterface                       $tokenStorage
+     * @param RememberMeServicesInterface                 $rememberMeServices
+     * @param AuthenticationManagerInterface              $authenticationManager
+     * @param LoggerInterface|null                        $logger
+     * @param EventDispatcherInterface|null               $dispatcher
+     * @param bool                                        $catchExceptions
+     * @param SessionAuthenticationStrategyInterface|null $sessionStrategy
      */
     public function __construct(TokenStorageInterface $tokenStorage, RememberMeServicesInterface $rememberMeServices, AuthenticationManagerInterface $authenticationManager, LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null, $catchExceptions = true, SessionAuthenticationStrategyInterface $sessionStrategy = null)
     {

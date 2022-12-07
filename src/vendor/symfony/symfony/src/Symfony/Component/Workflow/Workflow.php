@@ -125,20 +125,22 @@ class Workflow
      */
     public function apply($subject, $transitionName)
     {
-        $marking = $this->getMarking($subject);
-        $transitions = [];
+        $transitions = $this->getEnabledTransitions($subject);
 
-        foreach ($this->definition->getTransitions() as $transition) {
-            if ($transitionName === $transition->getName() && $this->doCan($subject, $marking, $transition)) {
-                $transitions[] = $transition;
-            }
-        }
+        // We can shortcut the getMarking method in order to boost performance,
+        // since the "getEnabledTransitions" method already checks the Marking
+        // state
+        $marking = $this->markingStore->getMarking($subject);
 
-        if (!$transitions) {
-            throw new LogicException(sprintf('Unable to apply transition "%s" for workflow "%s".', $transitionName, $this->name));
-        }
+        $applied = false;
 
         foreach ($transitions as $transition) {
+            if ($transitionName !== $transition->getName()) {
+                continue;
+            }
+
+            $applied = true;
+
             $this->leave($subject, $transition, $marking);
 
             $this->transition($subject, $transition, $marking);
@@ -152,6 +154,10 @@ class Workflow
             $this->completed($subject, $transition, $marking);
 
             $this->announce($subject, $transition, $marking);
+        }
+
+        if (!$applied) {
+            throw new LogicException(sprintf('Unable to apply transition "%s" for workflow "%s".', $transitionName, $this->name));
         }
 
         return $marking;
@@ -215,7 +221,9 @@ class Workflow
     }
 
     /**
-     * @param object $subject
+     * @param object     $subject
+     * @param Marking    $marking
+     * @param Transition $transition
      *
      * @return bool|void boolean true if this transition is guarded, ie you cannot use it
      */

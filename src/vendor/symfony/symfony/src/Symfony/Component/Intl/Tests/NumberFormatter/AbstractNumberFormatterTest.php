@@ -11,7 +11,6 @@
 
 namespace Symfony\Component\Intl\Tests\NumberFormatter;
 
-use PHPUnit\Framework\Error\Warning;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Intl\Globals\IntlGlobals;
 use Symfony\Component\Intl\NumberFormatter\NumberFormatter;
@@ -36,7 +35,7 @@ abstract class AbstractNumberFormatterTest extends TestCase
     {
         return [
             [100, 'ALL', '100'],
-            [100, 'BRL', '100'],
+            [100, 'BRL', '100.00'],
             [100, 'CRC', '100'],
             [100, 'JPY', '100'],
             [100, 'CHF', '100'],
@@ -324,13 +323,13 @@ abstract class AbstractNumberFormatterTest extends TestCase
      */
     public function testFormatTypeCurrency($formatter, $value)
     {
-        if (\PHP_VERSION_ID >= 80000) {
-            $this->expectException(\ValueError::class);
-        } elseif (method_exists($this, 'expectWarning')) {
-            $this->expectWarning();
-        } else {
-            $this->expectException(Warning::class);
+        $exceptionCode = 'PHPUnit\Framework\Error\Warning';
+
+        if (class_exists('PHPUnit_Framework_Error_Warning')) {
+            $exceptionCode = 'PHPUnit_Framework_Error_Warning';
         }
+
+        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}($exceptionCode);
 
         $formatter->format($value, NumberFormatter::TYPE_CURRENCY);
     }
@@ -340,10 +339,6 @@ abstract class AbstractNumberFormatterTest extends TestCase
      */
     public function testFormatTypeCurrencyReturn($formatter, $value)
     {
-        if (\PHP_VERSION_ID >= 80000) {
-            $this->expectException(\ValueError::class);
-        }
-
         $this->assertFalse(@$formatter->format($value, NumberFormatter::TYPE_CURRENCY));
     }
 
@@ -383,16 +378,14 @@ abstract class AbstractNumberFormatterTest extends TestCase
 
     public function formatFractionDigitsProvider()
     {
-        yield [1.123, '1.123', null, 0];
-        yield [1.123, '1', 0, 0];
-        yield [1.123, '1.1', 1, 1];
-        yield [1.123, '1.12', 2, 2];
-        yield [1.123, '1.123', -1, 0];
-
-        if (\PHP_VERSION_ID < 80000) {
-            // This dataset will produce a TypeError on php 8.
-            yield [1.123, '1', 'abc', 0];
-        }
+        return [
+            [1.123, '1.123', null, 0],
+            [1.123, '1', 0, 0],
+            [1.123, '1.1', 1, 1],
+            [1.123, '1.12', 2, 2],
+            [1.123, '1.123', -1, 0],
+            [1.123, '1', 'abc', 0],
+        ];
     }
 
     /**
@@ -418,16 +411,14 @@ abstract class AbstractNumberFormatterTest extends TestCase
 
     public function formatGroupingUsedProvider()
     {
-        yield [1000, '1,000', null, 1];
-        yield [1000, '1000', 0, 0];
-        yield [1000, '1,000', 1, 1];
-        yield [1000, '1,000', 2, 1];
-        yield [1000, '1,000', -1, 1];
-
-        if (\PHP_VERSION_ID < 80000) {
-            // This dataset will produce a TypeError on php 8.
-            yield [1000, '1000', 'abc', 0];
-        }
+        return [
+            [1000, '1,000', null, 1],
+            [1000, '1000', 0, 0],
+            [1000, '1,000', 1, 1],
+            [1000, '1,000', 2, 1],
+            [1000, '1000', 'abc', 0],
+            [1000, '1,000', -1, 1],
+        ];
     }
 
     /**
@@ -616,7 +607,7 @@ abstract class AbstractNumberFormatterTest extends TestCase
 
         $r = new \ReflectionProperty('Symfony\Component\Intl\NumberFormatter\NumberFormatter', 'enSymbols');
         $r->setAccessible(true);
-        $expected = $r->getValue();
+        $expected = $r->getValue('Symfony\Component\Intl\NumberFormatter\NumberFormatter');
 
         for ($i = 0; $i <= 17; ++$i) {
             $this->assertSame($expected[1][$i], $decimalFormatter->getSymbol($i));
@@ -633,7 +624,7 @@ abstract class AbstractNumberFormatterTest extends TestCase
 
         $r = new \ReflectionProperty('Symfony\Component\Intl\NumberFormatter\NumberFormatter', 'enTextAttributes');
         $r->setAccessible(true);
-        $expected = $r->getValue();
+        $expected = $r->getValue('Symfony\Component\Intl\NumberFormatter\NumberFormatter');
 
         for ($i = 0; $i <= 5; ++$i) {
             $this->assertSame($expected[1][$i], $decimalFormatter->getTextAttribute($i));
@@ -715,13 +706,13 @@ abstract class AbstractNumberFormatterTest extends TestCase
 
     public function testParseTypeDefault()
     {
-        if (\PHP_VERSION_ID >= 80000) {
-            $this->expectException(\ValueError::class);
-        } elseif (method_exists($this, 'expectWarning')) {
-            $this->expectWarning();
-        } else {
-            $this->expectException(Warning::class);
+        $exceptionCode = 'PHPUnit\Framework\Error\Warning';
+
+        if (class_exists('PHPUnit_Framework_Error_Warning')) {
+            $exceptionCode = 'PHPUnit_Framework_Error_Warning';
         }
+
+        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}($exceptionCode);
 
         $formatter = $this->getNumberFormatter('en', NumberFormatter::DECIMAL);
         $formatter->parse('1', NumberFormatter::TYPE_DEFAULT);
@@ -757,11 +748,11 @@ abstract class AbstractNumberFormatterTest extends TestCase
         $formatter = $this->getNumberFormatter('en', NumberFormatter::DECIMAL);
 
         $parsedValue = $formatter->parse('2,147,483,647', NumberFormatter::TYPE_INT64);
-        $this->assertIsInt($parsedValue);
+        $this->assertInternalType('integer', $parsedValue);
         $this->assertEquals(2147483647, $parsedValue);
 
         $parsedValue = $formatter->parse('-2,147,483,648', NumberFormatter::TYPE_INT64);
-        $this->assertIsInt($parsedValue);
+        $this->assertInternalType('int', $parsedValue);
         $this->assertEquals(-2147483648, $parsedValue);
     }
 
@@ -772,11 +763,11 @@ abstract class AbstractNumberFormatterTest extends TestCase
         $formatter = $this->getNumberFormatter('en', NumberFormatter::DECIMAL);
 
         $parsedValue = $formatter->parse('2,147,483,647', NumberFormatter::TYPE_INT64);
-        $this->assertIsInt($parsedValue);
+        $this->assertInternalType('integer', $parsedValue);
         $this->assertEquals(2147483647, $parsedValue);
 
         $parsedValue = $formatter->parse('-2,147,483,648', NumberFormatter::TYPE_INT64);
-        $this->assertIsInt($parsedValue);
+        $this->assertInternalType('integer', $parsedValue);
         $this->assertEquals(-2147483647 - 1, $parsedValue);
     }
 
@@ -791,11 +782,11 @@ abstract class AbstractNumberFormatterTest extends TestCase
 
         // int 64 using only 32 bit range strangeness
         $parsedValue = $formatter->parse('2,147,483,648', NumberFormatter::TYPE_INT64);
-        $this->assertIsFloat($parsedValue);
+        $this->assertInternalType('float', $parsedValue);
         $this->assertEquals(2147483648, $parsedValue, '->parse() TYPE_INT64 does not use true 64 bit integers, using only the 32 bit range.');
 
         $parsedValue = $formatter->parse('-2,147,483,649', NumberFormatter::TYPE_INT64);
-        $this->assertIsFloat($parsedValue);
+        $this->assertInternalType('float', $parsedValue);
         $this->assertEquals(-2147483649, $parsedValue, '->parse() TYPE_INT64 does not use true 64 bit integers, using only the 32 bit range.');
     }
 
@@ -809,12 +800,12 @@ abstract class AbstractNumberFormatterTest extends TestCase
         $formatter = $this->getNumberFormatter('en', NumberFormatter::DECIMAL);
 
         $parsedValue = $formatter->parse('2,147,483,648', NumberFormatter::TYPE_INT64);
-        $this->assertIsInt($parsedValue);
+        $this->assertInternalType('integer', $parsedValue);
 
         $this->assertEquals(2147483648, $parsedValue, '->parse() TYPE_INT64 uses true 64 bit integers (PHP >= 5.3.14 and PHP >= 5.4.4).');
 
         $parsedValue = $formatter->parse('-2,147,483,649', NumberFormatter::TYPE_INT64);
-        $this->assertIsInt($parsedValue);
+        $this->assertInternalType('integer', $parsedValue);
 
         $this->assertEquals(-2147483649, $parsedValue, '->parse() TYPE_INT64 uses true 64 bit integers (PHP >= 5.3.14 and PHP >= 5.4.4).');
     }
@@ -826,7 +817,7 @@ abstract class AbstractNumberFormatterTest extends TestCase
     {
         $formatter = $this->getNumberFormatter('en', NumberFormatter::DECIMAL);
         $parsedValue = $formatter->parse($value, NumberFormatter::TYPE_DOUBLE);
-        $this->assertEqualsWithDelta($expectedValue, $parsedValue, 0.001);
+        $this->assertEquals($expectedValue, $parsedValue, '', 0.001);
     }
 
     public function parseTypeDoubleProvider()
@@ -841,13 +832,13 @@ abstract class AbstractNumberFormatterTest extends TestCase
 
     public function testParseTypeCurrency()
     {
-        if (\PHP_VERSION_ID >= 80000) {
-            $this->expectException(\ValueError::class);
-        } elseif (method_exists($this, 'expectWarning')) {
-            $this->expectWarning();
-        } else {
-            $this->expectException(Warning::class);
+        $exceptionCode = 'PHPUnit\Framework\Error\Warning';
+
+        if (class_exists('PHPUnit_Framework_Error_Warning')) {
+            $exceptionCode = 'PHPUnit_Framework_Error_Warning';
         }
+
+        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}($exceptionCode);
 
         $formatter = $this->getNumberFormatter('en', NumberFormatter::DECIMAL);
         $formatter->parse('1', NumberFormatter::TYPE_CURRENCY);

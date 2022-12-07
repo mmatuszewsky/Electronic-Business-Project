@@ -30,7 +30,6 @@ class PdoCasterTest extends TestCase
     {
         $pdo = new \PDO('sqlite::memory:');
         $pdo->setAttribute(\PDO::ATTR_STATEMENT_CLASS, ['PDOStatement', [$pdo]]);
-        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         $cast = PdoCaster::castPdo($pdo, [], new Stub(), false);
 
@@ -46,7 +45,7 @@ array:2 [
   "\x00~\x00inTransaction" => false
   "\x00~\x00attributes" => array:9 [
     "CASE" => NATURAL
-    "ERRMODE" => EXCEPTION
+    "ERRMODE" => SILENT
     "PERSISTENT" => false
     "DRIVER_NAME" => "sqlite"
     "ORACLE_NULLS" => NATURAL

@@ -11,7 +11,6 @@
 
 namespace Symfony\Component\Ldap\Tests;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Ldap\Adapter\CollectionInterface;
 use Symfony\Component\Ldap\Adapter\QueryInterface;
 use Symfony\Component\Ldap\Entry;
@@ -25,7 +24,7 @@ class LdapClientTest extends LdapTestCase
 {
     /** @var LdapClient */
     private $client;
-    /** @var MockObject */
+    /** @var \PHPUnit_Framework_MockObject_MockObject */
     private $ldap;
 
     protected function setUp()
@@ -71,7 +70,7 @@ class LdapClientTest extends LdapTestCase
         $collection
             ->expects($this->once())
             ->method('getIterator')
-            ->willReturn(new \ArrayIterator([
+            ->will($this->returnValue(new \ArrayIterator([
                 new Entry('cn=qux,dc=foo,dc=com', [
                     'cn' => ['qux'],
                     'dc' => ['com', 'foo'],
@@ -82,13 +81,13 @@ class LdapClientTest extends LdapTestCase
                     'dc' => ['com', 'foo'],
                     'givenName' => ['Baz'],
                 ]),
-            ]))
+            ])))
         ;
         $query = $this->getMockBuilder(QueryInterface::class)->getMock();
         $query
             ->expects($this->once())
             ->method('execute')
-            ->willReturn($collection)
+            ->will($this->returnValue($collection))
         ;
         $this->ldap
             ->expects($this->once())

@@ -18,22 +18,6 @@ use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
 class CurrencyValidatorTest extends ConstraintValidatorTestCase
 {
-    private $defaultLocale;
-
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->defaultLocale = \Locale::getDefault();
-    }
-
-    protected function tearDown()
-    {
-        parent::tearDown();
-
-        \Locale::setDefault($this->defaultLocale);
-    }
-
     protected function createValidator()
     {
         return new CurrencyValidator();
@@ -53,9 +37,11 @@ class CurrencyValidatorTest extends ConstraintValidatorTestCase
         $this->assertNoViolation();
     }
 
+    /**
+     * @expectedException \Symfony\Component\Validator\Exception\UnexpectedTypeException
+     */
     public function testExpectsStringCompatibleType()
     {
-        $this->expectException('Symfony\Component\Validator\Exception\UnexpectedTypeException');
         $this->validator->validate(new \stdClass(), new Currency());
     }
 

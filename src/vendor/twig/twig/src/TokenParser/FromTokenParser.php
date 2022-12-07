@@ -29,7 +29,7 @@ class FromTokenParser extends AbstractTokenParser
     {
         $macro = $this->parser->getExpressionParser()->parseExpression();
         $stream = $this->parser->getStream();
-        $stream->expect(Token::NAME_TYPE, 'import');
+        $stream->expect('import');
 
         $targets = [];
         do {
@@ -49,15 +49,14 @@ class FromTokenParser extends AbstractTokenParser
 
         $stream->expect(Token::BLOCK_END_TYPE);
 
-        $var = new AssignNameExpression($this->parser->getVarName(), $token->getLine());
-        $node = new ImportNode($macro, $var, $token->getLine(), $this->getTag());
+        $node = new ImportNode($macro, new AssignNameExpression($this->parser->getVarName(), $token->getLine()), $token->getLine(), $this->getTag());
 
         foreach ($targets as $name => $alias) {
             if ($this->parser->isReservedMacroName($name)) {
                 throw new SyntaxError(sprintf('"%s" cannot be an imported macro as it is a reserved keyword.', $name), $token->getLine(), $stream->getSourceContext());
             }
 
-            $this->parser->addImportedSymbol('function', $alias, 'get'.$name, $var);
+            $this->parser->addImportedSymbol('function', $alias, 'get'.$name, $node->getNode('var'));
         }
 
         return $node;

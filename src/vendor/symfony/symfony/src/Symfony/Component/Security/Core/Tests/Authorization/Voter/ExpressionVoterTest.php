@@ -51,7 +51,7 @@ class ExpressionVoterTest extends TestCase
         if ($tokenExpectsGetRoles) {
             $token->expects($this->once())
                 ->method('getRoles')
-                ->willReturn($roles);
+                ->will($this->returnValue($roles));
         }
 
         return $token;
@@ -64,7 +64,7 @@ class ExpressionVoterTest extends TestCase
         if ($expressionLanguageExpectsEvaluate) {
             $mock->expects($this->once())
                 ->method('evaluate')
-                ->willReturn(true);
+                ->will($this->returnValue(true));
         }
 
         return $mock;

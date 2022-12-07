@@ -29,7 +29,7 @@ class SecurityTest extends TestCase
 
         $tokenStorage->expects($this->once())
             ->method('getToken')
-            ->willReturn($token);
+            ->will($this->returnValue($token));
 
         $container = $this->createContainer('security.token_storage', $tokenStorage);
 
@@ -45,12 +45,12 @@ class SecurityTest extends TestCase
         $token = $this->getMockBuilder(TokenInterface::class)->getMock();
         $token->expects($this->any())
             ->method('getUser')
-            ->willReturn($userInToken);
+            ->will($this->returnValue($userInToken));
         $tokenStorage = $this->getMockBuilder(TokenStorageInterface::class)->getMock();
 
         $tokenStorage->expects($this->once())
             ->method('getToken')
-            ->willReturn($token);
+            ->will($this->returnValue($token));
 
         $container = $this->createContainer('security.token_storage', $tokenStorage);
 
@@ -75,7 +75,7 @@ class SecurityTest extends TestCase
         $authorizationChecker->expects($this->once())
             ->method('isGranted')
             ->with('SOME_ATTRIBUTE', 'SOME_SUBJECT')
-            ->willReturn(true);
+            ->will($this->returnValue(true));
 
         $container = $this->createContainer('security.authorization_checker', $authorizationChecker);
 
@@ -90,7 +90,7 @@ class SecurityTest extends TestCase
         $container->expects($this->atLeastOnce())
             ->method('get')
             ->with($serviceId)
-            ->willReturn($serviceObject);
+            ->will($this->returnValue($serviceObject));
 
         return $container;
     }

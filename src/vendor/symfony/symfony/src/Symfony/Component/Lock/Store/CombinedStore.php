@@ -16,6 +16,7 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Symfony\Component\Lock\Exception\InvalidArgumentException;
 use Symfony\Component\Lock\Exception\LockConflictedException;
+use Symfony\Component\Lock\Exception\LockExpiredException;
 use Symfony\Component\Lock\Exception\NotSupportedException;
 use Symfony\Component\Lock\Key;
 use Symfony\Component\Lock\StoreInterface;
@@ -28,7 +29,6 @@ use Symfony\Component\Lock\Strategy\StrategyInterface;
  */
 class CombinedStore implements StoreInterface, LoggerAwareInterface
 {
-    use ExpiringStoreTrait;
     use LoggerAwareTrait;
 
     /** @var StoreInterface[] */
@@ -37,7 +37,8 @@ class CombinedStore implements StoreInterface, LoggerAwareInterface
     private $strategy;
 
     /**
-     * @param StoreInterface[] $stores The list of synchronized stores
+     * @param StoreInterface[]  $stores   The list of synchronized stores
+     * @param StrategyInterface $strategy
      *
      * @throws InvalidArgumentException
      */
@@ -77,8 +78,6 @@ class CombinedStore implements StoreInterface, LoggerAwareInterface
             }
         }
 
-        $this->checkNotExpired($key);
-
         if ($this->strategy->isMet($successCount, $storesCount)) {
             return;
         }
@@ -93,7 +92,7 @@ class CombinedStore implements StoreInterface, LoggerAwareInterface
 
     public function waitAndSave(Key $key)
     {
-        throw new NotSupportedException(sprintf('The store "%s" does not support blocking locks.', static::class));
+        throw new NotSupportedException(sprintf('The store "%s" does not supports blocking locks.', \get_class($this)));
     }
 
     /**
@@ -126,7 +125,9 @@ class CombinedStore implements StoreInterface, LoggerAwareInterface
             }
         }
 
-        $this->checkNotExpired($key);
+        if ($key->isExpired()) {
+            throw new LockExpiredException(sprintf('Failed to put off the expiration of the "%s" lock within the specified time.', $key));
+        }
 
         if ($this->strategy->isMet($successCount, $storesCount)) {
             return;

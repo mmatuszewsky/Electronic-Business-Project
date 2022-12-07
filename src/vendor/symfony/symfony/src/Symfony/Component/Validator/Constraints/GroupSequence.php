@@ -28,6 +28,7 @@ namespace Symfony\Component\Validator\Constraints;
  *
  * When adding metadata to a class, you can override the "Default" group of
  * that class with a group sequence:
+ *
  *     /**
  *      * @GroupSequence({"Address", "Strict"})
  *      *\/
@@ -56,7 +57,7 @@ class GroupSequence
     /**
      * The groups in the sequence.
      *
-     * @var string[]|string[][]|GroupSequence[]
+     * @var string[]|array[]|GroupSequence[]
      */
     public $groups;
 

@@ -16,9 +16,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-use Symfony\Component\Security\Core\Exception\LockedException;
-use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 use Symfony\Component\Security\Guard\AuthenticatorInterface;
 use Symfony\Component\Security\Guard\Firewall\GuardAuthenticationListener;
@@ -54,7 +51,7 @@ class GuardAuthenticationListenerTest extends TestCase
             ->expects($this->once())
             ->method('getCredentials')
             ->with($this->equalTo($this->request))
-            ->willReturn($credentials);
+            ->will($this->returnValue($credentials));
 
         // a clone of the token that should be created internally
         $uniqueGuardKey = 'my_firewall_0';
@@ -64,7 +61,7 @@ class GuardAuthenticationListenerTest extends TestCase
             ->expects($this->once())
             ->method('authenticate')
             ->with($this->equalTo($nonAuthedToken))
-            ->willReturn($authenticateToken);
+            ->will($this->returnValue($authenticateToken));
 
         $this->guardAuthenticatorHandler
             ->expects($this->once())
@@ -142,18 +139,18 @@ class GuardAuthenticationListenerTest extends TestCase
             ->expects($this->once())
             ->method('getCredentials')
             ->with($this->equalTo($this->request))
-            ->willReturn(['username' => 'anything_not_empty']);
+            ->will($this->returnValue(['username' => 'anything_not_empty']));
 
         $this->authenticationManager
             ->expects($this->once())
             ->method('authenticate')
-            ->willReturn($authenticateToken);
+            ->will($this->returnValue($authenticateToken));
 
         $successResponse = new Response('Success!');
         $this->guardAuthenticatorHandler
             ->expects($this->once())
             ->method('handleAuthenticationSuccess')
-            ->willReturn($successResponse);
+            ->will($this->returnValue($successResponse));
 
         $listener = new GuardAuthenticationListener(
             $this->guardAuthenticatorHandler,
@@ -166,7 +163,7 @@ class GuardAuthenticationListenerTest extends TestCase
         $listener->setRememberMeServices($this->rememberMeServices);
         $authenticator->expects($this->once())
             ->method('supportsRememberMe')
-            ->willReturn(true);
+            ->will($this->returnValue(true));
         // should be called - we do have a success Response
         $this->rememberMeServices
             ->expects($this->once())
@@ -212,54 +209,6 @@ class GuardAuthenticationListenerTest extends TestCase
     }
 
     /**
-     * @dataProvider exceptionsToHide
-     */
-    public function testHandleHidesInvalidUserExceptions(AuthenticationException $exceptionToHide)
-    {
-        $authenticator = $this->createMock(AuthenticatorInterface::class);
-        $providerKey = 'my_firewall2';
-
-        $authenticator
-            ->expects($this->once())
-            ->method('supports')
-            ->willReturn(true);
-        $authenticator
-            ->expects($this->once())
-            ->method('getCredentials')
-            ->willReturn(['username' => 'robin', 'password' => 'hood']);
-
-        $this->authenticationManager
-            ->expects($this->once())
-            ->method('authenticate')
-            ->willThrowException($exceptionToHide);
-
-        $this->guardAuthenticatorHandler
-            ->expects($this->once())
-            ->method('handleAuthenticationFailure')
-            ->with($this->callback(function ($e) use ($exceptionToHide) {
-                return $e instanceof BadCredentialsException && $exceptionToHide === $e->getPrevious();
-            }), $this->request, $authenticator, $providerKey);
-
-        $listener = new GuardAuthenticationListener(
-            $this->guardAuthenticatorHandler,
-            $this->authenticationManager,
-            $providerKey,
-            [$authenticator],
-            $this->logger
-        );
-
-        $listener->handle($this->event);
-    }
-
-    public function exceptionsToHide()
-    {
-        return [
-            [new UsernameNotFoundException()],
-            [new LockedException()],
-        ];
-    }
-
-    /**
      * @group legacy
      */
     public function testLegacyInterfaceNullCredentials()
@@ -270,7 +219,7 @@ class GuardAuthenticationListenerTest extends TestCase
         $authenticatorA
             ->expects($this->once())
             ->method('getCredentials')
-            ->willReturn(null);
+            ->will($this->returnValue(null));
 
         // this is not called
         $this->authenticationManager
@@ -307,7 +256,7 @@ class GuardAuthenticationListenerTest extends TestCase
             ->expects($this->once())
             ->method('getCredentials')
             ->with($this->equalTo($this->request))
-            ->willReturn($credentials);
+            ->will($this->returnValue($credentials));
 
         // a clone of the token that should be created internally
         $uniqueGuardKey = 'my_firewall_0';
@@ -317,7 +266,7 @@ class GuardAuthenticationListenerTest extends TestCase
             ->expects($this->once())
             ->method('authenticate')
             ->with($this->equalTo($nonAuthedToken))
-            ->willReturn($authenticateToken);
+            ->will($this->returnValue($authenticateToken));
 
         $this->guardAuthenticatorHandler
             ->expects($this->once())
@@ -358,11 +307,11 @@ class GuardAuthenticationListenerTest extends TestCase
         $authenticatorA
             ->expects($this->once())
             ->method('getCredentials')
-            ->willReturn(null);
+            ->will($this->returnValue(null));
         $authenticatorB
             ->expects($this->once())
             ->method('getCredentials')
-            ->willReturn(null);
+            ->will($this->returnValue(null));
 
         // this is not called
         $this->authenticationManager
@@ -392,7 +341,7 @@ class GuardAuthenticationListenerTest extends TestCase
         $authenticator
             ->expects($this->once())
             ->method('supports')
-            ->willReturn(false);
+            ->will($this->returnValue(false));
 
         // this is not called
         $authenticator
@@ -410,22 +359,24 @@ class GuardAuthenticationListenerTest extends TestCase
         $listener->handle($this->event);
     }
 
+    /**
+     * @expectedException \UnexpectedValueException
+     */
     public function testReturnNullFromGetCredentials()
     {
-        $this->expectException('UnexpectedValueException');
         $authenticator = $this->getMockBuilder(AuthenticatorInterface::class)->getMock();
         $providerKey = 'my_firewall4';
 
         $authenticator
             ->expects($this->once())
             ->method('supports')
-            ->willReturn(true);
+            ->will($this->returnValue(true));
 
         // this will raise exception
         $authenticator
             ->expects($this->once())
             ->method('getCredentials')
-            ->willReturn(null);
+            ->will($this->returnValue(null));
 
         $listener = new GuardAuthenticationListener(
             $this->guardAuthenticatorHandler,
@@ -450,13 +401,13 @@ class GuardAuthenticationListenerTest extends TestCase
         $authenticator
             ->expects($this->once())
             ->method('supports')
-            ->willReturn(true);
+            ->will($this->returnValue(true));
 
         // this will raise exception
         $authenticator
             ->expects($this->once())
             ->method('getCredentials')
-            ->willReturn(null);
+            ->will($this->returnValue(null));
 
         $listener = new GuardAuthenticationListener(
             $this->guardAuthenticatorHandler,
@@ -488,7 +439,7 @@ class GuardAuthenticationListenerTest extends TestCase
         $this->event
             ->expects($this->any())
             ->method('getRequest')
-            ->willReturn($this->request);
+            ->will($this->returnValue($this->request));
 
         $this->logger = $this->getMockBuilder('Psr\Log\LoggerInterface')->getMock();
         $this->rememberMeServices = $this->getMockBuilder('Symfony\Component\Security\Http\RememberMe\RememberMeServicesInterface')->getMock();

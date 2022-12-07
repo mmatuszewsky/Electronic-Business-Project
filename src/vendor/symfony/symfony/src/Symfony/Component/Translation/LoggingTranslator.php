@@ -28,6 +28,7 @@ class LoggingTranslator implements TranslatorInterface, TranslatorBagInterface
 
     /**
      * @param TranslatorInterface $translator The translator must implement TranslatorBagInterface
+     * @param LoggerInterface     $logger
      */
     public function __construct(TranslatorInterface $translator, LoggerInterface $logger)
     {

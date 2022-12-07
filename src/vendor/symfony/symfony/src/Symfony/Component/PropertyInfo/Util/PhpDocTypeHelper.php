@@ -55,14 +55,7 @@ final class PhpDocTypeHelper
 
         $varTypes = [];
         for ($typeIndex = 0; $varType->has($typeIndex); ++$typeIndex) {
-            $nestedVarType = $varType->get($typeIndex);
-
-            if ($nestedVarType instanceof Nullable) {
-                $varTypes[] = (string) $nestedVarType->getActualType();
-                $nullable = true;
-            } else {
-                $varTypes[] = (string) $nestedVarType;
-            }
+            $varTypes[] = (string) $varType->get($typeIndex);
         }
 
         // If null is present, all types are nullable

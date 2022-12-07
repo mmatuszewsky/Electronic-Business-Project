@@ -9,14 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\Ldap\Tests\Adapter\ExtLdap;
+namespace Symfony\Component\Ldap\Tests;
 
 use Symfony\Component\Ldap\Adapter\ExtLdap\Adapter;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Collection;
 use Symfony\Component\Ldap\Entry;
 use Symfony\Component\Ldap\Exception\LdapException;
 use Symfony\Component\Ldap\Exception\NotBoundException;
-use Symfony\Component\Ldap\Tests\LdapTestCase;
 
 /**
  * @requires extension ldap
@@ -60,7 +59,7 @@ class LdapManagerTest extends LdapTestCase
      */
     public function testLdapAddInvalidEntry()
     {
-        $this->expectException(LdapException::class);
+        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}(LdapException::class);
         $this->executeSearchQuery(1);
 
         // The entry is missing a subject name
@@ -106,7 +105,7 @@ class LdapManagerTest extends LdapTestCase
     public function testLdapUnboundAdd()
     {
         $this->adapter = new Adapter($this->getLdapConfig());
-        $this->expectException(NotBoundException::class);
+        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}(NotBoundException::class);
         $em = $this->adapter->getEntryManager();
         $em->add(new Entry(''));
     }
@@ -117,7 +116,7 @@ class LdapManagerTest extends LdapTestCase
     public function testLdapUnboundRemove()
     {
         $this->adapter = new Adapter($this->getLdapConfig());
-        $this->expectException(NotBoundException::class);
+        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}(NotBoundException::class);
         $em = $this->adapter->getEntryManager();
         $em->remove(new Entry(''));
     }
@@ -128,7 +127,7 @@ class LdapManagerTest extends LdapTestCase
     public function testLdapUnboundUpdate()
     {
         $this->adapter = new Adapter($this->getLdapConfig());
-        $this->expectException(NotBoundException::class);
+        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}(NotBoundException::class);
         $em = $this->adapter->getEntryManager();
         $em->update(new Entry(''));
     }
@@ -163,7 +162,7 @@ class LdapManagerTest extends LdapTestCase
 
         $result = $this->executeSearchQuery(1);
         $renamedEntry = $result[0];
-        $this->assertEquals('Kevin', $renamedEntry->getAttribute('cn')[0]);
+        $this->assertEquals($renamedEntry->getAttribute('cn')[0], 'Kevin');
 
         $oldRdn = $entry->getAttribute('cn')[0];
         $entryManager->rename($renamedEntry, 'cn='.$oldRdn);

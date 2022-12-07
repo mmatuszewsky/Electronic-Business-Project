@@ -19,15 +19,17 @@ use Symfony\Component\Security\Core\User\UserChecker;
 
 class SimpleAuthenticationProviderTest extends TestCase
 {
+    /**
+     * @expectedException \Symfony\Component\Security\Core\Exception\DisabledException
+     */
     public function testAuthenticateWhenPreChecksFails()
     {
-        $this->expectException('Symfony\Component\Security\Core\Exception\DisabledException');
         $user = $this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')->getMock();
 
         $token = $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\TokenInterface')->getMock();
         $token->expects($this->any())
             ->method('getUser')
-            ->willReturn($user);
+            ->will($this->returnValue($user));
 
         $userChecker = $this->getMockBuilder('Symfony\Component\Security\Core\User\UserCheckerInterface')->getMock();
         $userChecker->expects($this->once())
@@ -37,22 +39,24 @@ class SimpleAuthenticationProviderTest extends TestCase
         $authenticator = $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\SimpleAuthenticatorInterface')->getMock();
         $authenticator->expects($this->once())
             ->method('authenticateToken')
-            ->willReturn($token);
+            ->will($this->returnValue($token));
 
         $provider = $this->getProvider($authenticator, null, $userChecker);
 
         $provider->authenticate($token);
     }
 
+    /**
+     * @expectedException \Symfony\Component\Security\Core\Exception\LockedException
+     */
     public function testAuthenticateWhenPostChecksFails()
     {
-        $this->expectException('Symfony\Component\Security\Core\Exception\LockedException');
         $user = $this->getMockBuilder('Symfony\Component\Security\Core\User\UserInterface')->getMock();
 
         $token = $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\TokenInterface')->getMock();
         $token->expects($this->any())
             ->method('getUser')
-            ->willReturn($user);
+            ->will($this->returnValue($user));
 
         $userChecker = $this->getMockBuilder('Symfony\Component\Security\Core\User\UserCheckerInterface')->getMock();
         $userChecker->expects($this->once())
@@ -62,7 +66,7 @@ class SimpleAuthenticationProviderTest extends TestCase
         $authenticator = $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\SimpleAuthenticatorInterface')->getMock();
         $authenticator->expects($this->once())
             ->method('authenticateToken')
-            ->willReturn($token);
+            ->will($this->returnValue($token));
 
         $provider = $this->getProvider($authenticator, null, $userChecker);
 
@@ -74,11 +78,11 @@ class SimpleAuthenticationProviderTest extends TestCase
         $token = $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\Token\TokenInterface')->getMock();
         $token->expects($this->any())
             ->method('getUser')
-            ->willReturn('string-user');
+            ->will($this->returnValue('string-user'));
         $authenticator = $this->getMockBuilder('Symfony\Component\Security\Core\Authentication\SimpleAuthenticatorInterface')->getMock();
         $authenticator->expects($this->once())
             ->method('authenticateToken')
-            ->willReturn($token);
+            ->will($this->returnValue($token));
 
         $this->assertSame($token, $this->getProvider($authenticator, null, new UserChecker())->authenticate($token));
     }

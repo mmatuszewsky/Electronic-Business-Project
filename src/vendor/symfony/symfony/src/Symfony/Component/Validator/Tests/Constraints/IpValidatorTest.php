@@ -36,15 +36,19 @@ class IpValidatorTest extends ConstraintValidatorTestCase
         $this->assertNoViolation();
     }
 
+    /**
+     * @expectedException \Symfony\Component\Validator\Exception\UnexpectedTypeException
+     */
     public function testExpectsStringCompatibleType()
     {
-        $this->expectException('Symfony\Component\Validator\Exception\UnexpectedTypeException');
         $this->validator->validate(new \stdClass(), new Ip());
     }
 
+    /**
+     * @expectedException \Symfony\Component\Validator\Exception\ConstraintDefinitionException
+     */
     public function testInvalidValidatorVersion()
     {
-        $this->expectException('Symfony\Component\Validator\Exception\ConstraintDefinitionException');
         new Ip([
             'version' => 666,
         ]);
@@ -326,7 +330,7 @@ class IpValidatorTest extends ConstraintValidatorTestCase
     {
         // Quoting after official filter documentation:
         // "FILTER_FLAG_NO_RES_RANGE = This flag does not apply to IPv6 addresses."
-        // Full description: https://php.net/filter.filters.flags
+        // Full description: http://php.net/manual/en/filter.filters.flags.php
         return $this->getInvalidIpsV6();
     }
 

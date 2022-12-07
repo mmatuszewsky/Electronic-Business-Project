@@ -49,8 +49,8 @@ ReflectionClass {
 %A]
   methods: array:%d [
 %A
-    "__construct" => ReflectionMethod {
-      +name: "__construct"
+    "export" => ReflectionMethod {
+      +name: "export"
       +class: "ReflectionClass"
 %A    parameters: {
         $%s: ReflectionParameter {
@@ -129,7 +129,7 @@ EOTXT;
 
     public function testReflectionParameter()
     {
-        $var = new \ReflectionParameter(reflectionParameterFixture::class, 0);
+        $var = new \ReflectionParameter(__NAMESPACE__.'\reflectionParameterFixture', 0);
 
         $this->assertDumpMatchesFormat(
             <<<'EOTXT'

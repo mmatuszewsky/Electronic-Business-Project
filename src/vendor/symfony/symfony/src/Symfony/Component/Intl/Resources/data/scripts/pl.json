@@ -1,7 +1,7 @@
 {
+    "Version": "2.1.48.42",
     "Names": {
         "Arab": "arabskie",
-        "Aran": "nastaliq",
         "Armi": "armi",
         "Armn": "ormiańskie",
         "Avst": "awestyjskie",
@@ -36,11 +36,11 @@
         "Glag": "głagolica",
         "Goth": "gotyckie",
         "Grek": "greckie",
-        "Gujr": "gudżarati",
+        "Gujr": "gudźarackie",
         "Guru": "gurmukhi",
-        "Hanb": "chińskie z bopomofo",
-        "Hang": "hangul",
-        "Hani": "chińskie",
+        "Hanb": "hanb",
+        "Hang": "hangyl",
+        "Hani": "han",
         "Hano": "hanunoo",
         "Hans": "uproszczone",
         "Hant": "tradycyjne",
@@ -95,7 +95,6 @@
         "Phnx": "fenicki",
         "Plrd": "fonetyczny Pollard’a",
         "Prti": "partyjski inskrypcyjny",
-        "Qaag": "zawgyi",
         "Rjng": "rejang",
         "Roro": "rongorongo",
         "Runr": "runiczne",
@@ -120,7 +119,7 @@
         "Teng": "tengwar",
         "Tfng": "tifinagh (berberski)",
         "Tglg": "tagalog",
-        "Thaa": "taana",
+        "Thaa": "thaana",
         "Thai": "tajskie",
         "Tibt": "tybetańskie",
         "Ugar": "ugaryckie",
@@ -131,10 +130,10 @@
         "Yiii": "yi",
         "Zinh": "dziedziczone",
         "Zmth": "notacja matematyczna",
-        "Zsye": "emoji",
+        "Zsye": "Emoji",
         "Zsym": "symbole",
         "Zxxx": "język bez systemu pisma",
         "Zyyy": "wspólne",
-        "Zzzz": "nieznane pismo"
+        "Zzzz": "nieznany skrypt"
     }
 }

@@ -127,6 +127,7 @@ class RouteCollectionBuilder
     /**
      * Adds a Route object to the builder.
      *
+     * @param Route       $route
      * @param string|null $name
      *
      * @return $this

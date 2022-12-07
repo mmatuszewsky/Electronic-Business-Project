@@ -19,7 +19,8 @@ use Symfony\Component\Workflow\Workflow;
 interface SupportStrategyInterface
 {
     /**
-     * @param object $subject
+     * @param Workflow $workflow
+     * @param object   $subject
      *
      * @return bool
      */

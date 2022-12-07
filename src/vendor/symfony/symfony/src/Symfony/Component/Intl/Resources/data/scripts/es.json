@@ -1,7 +1,7 @@
 {
+    "Version": "2.1.48.20",
     "Names": {
         "Arab": "árabe",
-        "Aran": "nastaliq",
         "Armn": "armenio",
         "Avst": "avéstico",
         "Bali": "balinés",
@@ -86,7 +86,6 @@
         "Phag": "phags-pa",
         "Phnx": "fenicio",
         "Plrd": "Pollard Miao",
-        "Qaag": "zawgyi",
         "Rjng": "rejang",
         "Roro": "rongo-rongo",
         "Runr": "rúnico",

@@ -13,7 +13,6 @@ namespace Symfony\Component\VarDumper\Tests\Cloner;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
-use Symfony\Component\VarDumper\Tests\Fixtures\Php74;
 
 /**
  * @author Nicolas Grekas <p@tchwork.com>
@@ -22,7 +21,7 @@ class VarClonerTest extends TestCase
 {
     public function testMaxIntBoundary()
     {
-        $data = [\PHP_INT_MAX => 123];
+        $data = [PHP_INT_MAX => 123];
 
         $cloner = new VarCloner();
         $clone = $cloner->cloneVar($data);
@@ -56,7 +55,7 @@ Symfony\Component\VarDumper\Cloner\Data Object
 )
 
 EOTXT;
-        $this->assertSame(sprintf($expected, \PHP_INT_MAX), print_r($clone, true));
+        $this->assertSame(sprintf($expected, PHP_INT_MAX), print_r($clone, true));
     }
 
     public function testClone()
@@ -162,7 +161,7 @@ EOTXT;
                     'Level 3 Item 3',
                 ],
                 [
-                    999 => 'Level 3 Item 4',
+                    'Level 3 Item 4',
                     'Level 3 Item 5',
                     'Level 3 Item 6',
                 ],
@@ -242,7 +241,7 @@ Symfony\Component\VarDumper\Cloner\Data Object
                     [1] => Array
                         (
                             [0] => 2
-                            [1] => 7
+                            [2] => 7
                         )
 
                     [2] => Array
@@ -299,7 +298,7 @@ Symfony\Component\VarDumper\Cloner\Data Object
 
             [7] => Array
                 (
-                    [999] => Level 3 Item 4
+                    [0] => Level 3 Item 4
                 )
 
         )
@@ -421,73 +420,6 @@ Symfony\Component\VarDumper\Cloner\Data Object
             [1] => Array
                 (
                     [foo] => 124
-                )
-
-        )
-
-    [position:Symfony\Component\VarDumper\Cloner\Data:private] => 0
-    [key:Symfony\Component\VarDumper\Cloner\Data:private] => 0
-    [maxDepth:Symfony\Component\VarDumper\Cloner\Data:private] => 20
-    [maxItemsPerDepth:Symfony\Component\VarDumper\Cloner\Data:private] => -1
-    [useRefHandles:Symfony\Component\VarDumper\Cloner\Data:private] => -1
-)
-
-EOTXT;
-        $this->assertStringMatchesFormat($expected, print_r($clone, true));
-    }
-
-    /**
-     * @requires PHP 7.4
-     */
-    public function testPhp74()
-    {
-        $data = new Php74();
-
-        $cloner = new VarCloner();
-        $clone = $cloner->cloneVar($data);
-
-        $expected = <<<'EOTXT'
-Symfony\Component\VarDumper\Cloner\Data Object
-(
-    [data:Symfony\Component\VarDumper\Cloner\Data:private] => Array
-        (
-            [0] => Array
-                (
-                    [0] => Symfony\Component\VarDumper\Cloner\Stub Object
-                        (
-                            [type] => 4
-                            [class] => Symfony\Component\VarDumper\Tests\Fixtures\Php74
-                            [value] => 
-                            [cut] => 0
-                            [handle] => %i
-                            [refCount] => 0
-                            [position] => 1
-                            [attr] => Array
-                                (
-                                )
-
-                        )
-
-                )
-
-            [1] => Array
-                (
-                    [p1] => 123
-                    [p2] => Symfony\Component\VarDumper\Cloner\Stub Object
-                        (
-                            [type] => 4
-                            [class] => stdClass
-                            [value] => 
-                            [cut] => 0
-                            [handle] => %i
-                            [refCount] => 0
-                            [position] => 0
-                            [attr] => Array
-                                (
-                                )
-
-                        )
-
                 )
 
         )

@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.47.84",
     "Names": {
         "AD": "Andoor",
         "AE": "Emira Arab Ini",
@@ -39,7 +40,7 @@
         "CC": "Duni Koko (Kilin)",
         "CF": "Repiblik Sàntar Afrik",
         "CH": "Siwis",
-        "CI": "Kodiwaar",
+        "CI": "Kodiwaar (Côte d’Ivoire)",
         "CK": "Duni Kuuk",
         "CL": "Sili",
         "CM": "Kamerun",
@@ -135,7 +136,7 @@
         "MF": "Saŋ Marteŋ",
         "MG": "Madagaskaar",
         "MH": "Duni Marsaal",
-        "MK": "Maseduwaan bëj Gànnaar",
+        "MK": "Maseduwaan",
         "ML": "Mali",
         "MM": "Miyanmaar",
         "MN": "Mongoli",

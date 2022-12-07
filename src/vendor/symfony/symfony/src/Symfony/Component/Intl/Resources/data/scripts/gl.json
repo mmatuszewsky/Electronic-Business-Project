@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.17",
     "Names": {
         "Arab": "árabe",
         "Armn": "armenio",
@@ -11,9 +12,9 @@
         "Ethi": "etíope",
         "Geor": "xeorxiano",
         "Grek": "grego",
-        "Gujr": "guxarati",
+        "Gujr": "guxaratí",
         "Guru": "gurmukhi",
-        "Hanb": "han con bopomofo",
+        "Hanb": "hanb",
         "Hang": "hangul",
         "Hani": "han",
         "Hans": "simplificado",
@@ -25,14 +26,14 @@
         "Jpan": "xaponés",
         "Kana": "katakana",
         "Khmr": "khmer",
-        "Knda": "kannará",
+        "Knda": "canarés",
         "Kore": "coreano",
         "Laoo": "laosiano",
         "Latn": "latino",
         "Mlym": "malabar",
         "Mong": "mongol",
         "Mymr": "birmano",
-        "Orya": "odiá",
+        "Orya": "oriá",
         "Sinh": "cingalés",
         "Taml": "támil",
         "Telu": "telugu",
@@ -44,6 +45,6 @@
         "Zsym": "símbolos",
         "Zxxx": "non escrito",
         "Zyyy": "común",
-        "Zzzz": "sistema de escritura descoñecido"
+        "Zzzz": "alfabeto descoñecido"
     }
 }

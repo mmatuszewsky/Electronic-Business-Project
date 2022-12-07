@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.17",
     "Names": {
         "Arab": "Kiarabu",
         "Armn": "Kiarmenia",
@@ -12,7 +13,7 @@
         "Grek": "Kigiriki",
         "Gujr": "Kigujarati",
         "Guru": "Kigurmukhi",
-        "Hanb": "Kihan chenye Bopomofo",
+        "Hanb": "Hanb",
         "Hang": "Kihangul",
         "Hani": "Kihan",
         "Hans": "Rahisi",

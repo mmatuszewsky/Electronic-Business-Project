@@ -22,7 +22,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Tests\Fixtures\GroupDummy;
 use Symfony\Component\Serializer\Tests\Fixtures\GroupDummyChild;
 use Symfony\Component\Serializer\Tests\Fixtures\MaxDepthDummy;
-use Symfony\Component\Serializer\Tests\Fixtures\Php74Dummy;
 use Symfony\Component\Serializer\Tests\Fixtures\PropertyCircularReferenceDummy;
 use Symfony\Component\Serializer\Tests\Fixtures\PropertySiblingHolder;
 
@@ -56,23 +55,11 @@ class PropertyNormalizerTest extends TestCase
         );
     }
 
-    /**
-     * @requires PHP 7.4
-     */
-    public function testNormalizeObjectWithUninitializedProperties()
-    {
-        $obj = new Php74Dummy();
-        $this->assertEquals(
-            ['initializedProperty' => 'defaultValue'],
-            $this->normalizer->normalize($obj, 'any')
-        );
-    }
-
     public function testDenormalize()
     {
         $obj = $this->normalizer->denormalize(
             ['foo' => 'foo', 'bar' => 'bar'],
-            PropertyDummy::class,
+            __NAMESPACE__.'\PropertyDummy',
             'any'
         );
         $this->assertEquals('foo', $obj->foo);
@@ -111,7 +98,7 @@ class PropertyNormalizerTest extends TestCase
     {
         $obj = $this->normalizer->denormalize(
             ['foo' => 'foo', 'bar' => 'bar'],
-            PropertyConstructorDummy::class,
+            __NAMESPACE__.'\PropertyConstructorDummy',
             'any'
         );
         $this->assertEquals('foo', $obj->getFoo());
@@ -122,7 +109,7 @@ class PropertyNormalizerTest extends TestCase
     {
         $obj = $this->normalizer->denormalize(
             ['foo' => null, 'bar' => 'bar'],
-            PropertyConstructorDummy::class, '
+            __NAMESPACE__.'\PropertyConstructorDummy', '
             any'
         );
         $this->assertNull($obj->getFoo());
@@ -145,9 +132,11 @@ class PropertyNormalizerTest extends TestCase
         );
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testUncallableCallbacks()
     {
-        $this->expectException('InvalidArgumentException');
         $this->normalizer->setCallbacks(['bar' => null]);
 
         $obj = new PropertyConstructorDummy('baz', 'quux');
@@ -331,9 +320,11 @@ class PropertyNormalizerTest extends TestCase
         ];
     }
 
+    /**
+     * @expectedException \Symfony\Component\Serializer\Exception\CircularReferenceException
+     */
     public function testUnableToNormalizeCircularReference()
     {
-        $this->expectException('Symfony\Component\Serializer\Exception\CircularReferenceException');
         $serializer = new Serializer([$this->normalizer]);
         $this->normalizer->setSerializer($serializer);
         $this->normalizer->setCircularReferenceLimit(2);
@@ -376,22 +367,24 @@ class PropertyNormalizerTest extends TestCase
     {
         $this->assertEquals(
             new PropertyDummy(),
-            $this->normalizer->denormalize(['non_existing' => true], PropertyDummy::class)
+            $this->normalizer->denormalize(['non_existing' => true], __NAMESPACE__.'\PropertyDummy')
         );
     }
 
     public function testDenormalizeShouldIgnoreStaticProperty()
     {
-        $obj = $this->normalizer->denormalize(['outOfScope' => true], PropertyDummy::class);
+        $obj = $this->normalizer->denormalize(['outOfScope' => true], __NAMESPACE__.'\PropertyDummy');
 
         $this->assertEquals(new PropertyDummy(), $obj);
         $this->assertEquals('out_of_scope', PropertyDummy::$outOfScope);
     }
 
+    /**
+     * @expectedException \Symfony\Component\Serializer\Exception\LogicException
+     * @expectedExceptionMessage Cannot normalize attribute "bar" because the injected serializer is not a normalizer
+     */
     public function testUnableToNormalizeObjectAttribute()
     {
-        $this->expectException('Symfony\Component\Serializer\Exception\LogicException');
-        $this->expectExceptionMessage('Cannot normalize attribute "bar" because the injected serializer is not a normalizer');
         $serializer = $this->getMockBuilder('Symfony\Component\Serializer\SerializerInterface')->getMock();
         $this->normalizer->setSerializer($serializer);
 
@@ -501,6 +494,18 @@ class PropertyConstructorDummy
     public function getBar()
     {
         return $this->bar;
+    }
+}
+
+class PropertyCamelizedDummy
+{
+    private $kevinDunglas;
+    public $fooBar;
+    public $bar_foo;
+
+    public function __construct($kevinDunglas = null)
+    {
+        $this->kevinDunglas = $kevinDunglas;
     }
 }
 

@@ -258,11 +258,11 @@ class ExpressionValidatorTest extends ConstraintValidatorTestCase
         $used = false;
 
         $expressionLanguage->method('evaluate')
-            ->willReturnCallback(function () use (&$used) {
+            ->will($this->returnCallback(function () use (&$used) {
                 $used = true;
 
                 return true;
-            });
+            }));
 
         $validator = new ExpressionValidator(null, $expressionLanguage);
         $validator->initialize($this->createContext());

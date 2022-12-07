@@ -73,7 +73,7 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
         /** @var $docBlock DocBlock */
         list($docBlock) = $this->getDocBlock($class, $property);
         if (!$docBlock) {
-            return null;
+            return;
         }
 
         $shortDescription = $docBlock->getSummary();
@@ -89,8 +89,6 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
                 return $varDescription;
             }
         }
-
-        return null;
     }
 
     /**
@@ -101,7 +99,7 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
         /** @var $docBlock DocBlock */
         list($docBlock) = $this->getDocBlock($class, $property);
         if (!$docBlock) {
-            return null;
+            return;
         }
 
         $contents = $docBlock->getDescription()->render();
@@ -117,7 +115,7 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
         /** @var $docBlock DocBlock */
         list($docBlock, $source, $prefix) = $this->getDocBlock($class, $property);
         if (!$docBlock) {
-            return null;
+            return;
         }
 
         switch ($source) {
@@ -143,7 +141,7 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
         }
 
         if (!isset($types[0])) {
-            return null;
+            return;
         }
 
         if (!\in_array($prefix, $this->arrayMutatorPrefixes)) {
@@ -205,14 +203,12 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
         try {
             $reflectionProperty = new \ReflectionProperty($class, $property);
         } catch (\ReflectionException $e) {
-            return null;
+            return;
         }
 
         try {
             return $this->docBlockFactory->create($reflectionProperty, $this->contextFactory->createFromReflector($reflectionProperty->getDeclaringClass()));
         } catch (\InvalidArgumentException $e) {
-            return null;
-        } catch (\RuntimeException $e) {
             return null;
         }
     }
@@ -252,14 +248,12 @@ class PhpDocExtractor implements PropertyDescriptionExtractorInterface, Property
         }
 
         if (!isset($reflectionMethod)) {
-            return null;
+            return;
         }
 
         try {
             return [$this->docBlockFactory->create($reflectionMethod, $this->contextFactory->createFromReflector($reflectionMethod)), $prefix];
         } catch (\InvalidArgumentException $e) {
-            return null;
-        } catch (\RuntimeException $e) {
             return null;
         }
     }

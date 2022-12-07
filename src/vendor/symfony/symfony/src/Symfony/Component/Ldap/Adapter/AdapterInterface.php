@@ -28,6 +28,7 @@ interface AdapterInterface
      *
      * @param string $dn
      * @param string $query
+     * @param array  $options
      *
      * @return QueryInterface
      */

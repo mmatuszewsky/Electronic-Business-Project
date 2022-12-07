@@ -28,7 +28,7 @@ class SessionLogoutHandlerTest extends TestCase
         $request
             ->expects($this->once())
             ->method('getSession')
-            ->willReturn($session)
+            ->will($this->returnValue($session))
         ;
 
         $session

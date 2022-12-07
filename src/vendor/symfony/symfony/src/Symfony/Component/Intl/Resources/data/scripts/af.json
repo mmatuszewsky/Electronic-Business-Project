@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.17",
     "Names": {
         "Arab": "Arabies",
         "Armn": "Armeens",
@@ -12,7 +13,7 @@
         "Grek": "Grieks",
         "Gujr": "Gudjarati",
         "Guru": "Gurmukhi",
-        "Hanb": "Han met Bopomofo",
+        "Hanb": "Hanb",
         "Hang": "Hangul",
         "Hani": "Han",
         "Hans": "Vereenvoudig",
@@ -42,7 +43,7 @@
         "Zsye": "Emoji",
         "Zsym": "Simbole",
         "Zxxx": "Ongeskrewe",
-        "Zyyy": "Gemeenskaplik",
+        "Zyyy": "Algemeen",
         "Zzzz": "Onbekende skryfstelsel"
     }
 }

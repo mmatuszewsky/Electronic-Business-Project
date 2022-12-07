@@ -11,13 +11,14 @@
 
 namespace Symfony\Component\Routing\Tests\Matcher;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Matcher\TraceableUrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
-class TraceableUrlMatcherTest extends UrlMatcherTest
+class TraceableUrlMatcherTest extends TestCase
 {
     public function test()
     {
@@ -117,10 +118,5 @@ class TraceableUrlMatcherTest extends UrlMatcherTest
         $matchingRequest = Request::create('/foo', 'GET', [], [], [], ['HTTP_USER_AGENT' => 'Firefox']);
         $traces = $matcher->getTracesForRequest($matchingRequest);
         $this->assertEquals('Route matches!', $traces[0]['log']);
-    }
-
-    protected function getUrlMatcher(RouteCollection $routes, RequestContext $context = null)
-    {
-        return new TraceableUrlMatcher($routes, $context ?: new RequestContext());
     }
 }

@@ -11,8 +11,7 @@
 
 namespace Symfony\Component\Security\Core\Authentication\Token;
 
-use Symfony\Component\Security\Core\Role\Role;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Role\RoleInterface;
 
 /**
  * UsernamePasswordToken implements a username and password token.
@@ -25,10 +24,10 @@ class UsernamePasswordToken extends AbstractToken
     private $providerKey;
 
     /**
-     * @param string|\Stringable|UserInterface $user        The username (like a nickname, email address, etc.) or a UserInterface instance
-     * @param mixed                            $credentials
-     * @param string                           $providerKey
-     * @param (Role|string)[]                  $roles
+     * @param string|object            $user        The username (like a nickname, email address, etc.), or a UserInterface instance or an object implementing a __toString method
+     * @param mixed                    $credentials This usually is the password of the user
+     * @param string                   $providerKey The provider key
+     * @param (RoleInterface|string)[] $roles       An array of roles
      *
      * @throws \InvalidArgumentException
      */
@@ -94,7 +93,7 @@ class UsernamePasswordToken extends AbstractToken
     {
         $serialized = [$this->credentials, $this->providerKey, parent::serialize(true)];
 
-        return $this->doSerialize($serialized, \func_num_args() ? func_get_arg(0) : null);
+        return $this->doSerialize($serialized, \func_num_args() ? \func_get_arg(0) : null);
     }
 
     /**

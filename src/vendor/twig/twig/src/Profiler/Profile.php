@@ -86,7 +86,7 @@ class Profile implements \IteratorAggregate, \Serializable
     /**
      * Returns the duration in microseconds.
      *
-     * @return float
+     * @return int
      */
     public function getDuration()
     {
@@ -160,28 +160,12 @@ class Profile implements \IteratorAggregate, \Serializable
 
     public function serialize()
     {
-        return serialize($this->__serialize());
+        return serialize([$this->template, $this->name, $this->type, $this->starts, $this->ends, $this->profiles]);
     }
 
     public function unserialize($data)
     {
-        $this->__unserialize(unserialize($data));
-    }
-
-    /**
-     * @internal
-     */
-    public function __serialize()
-    {
-        return [$this->template, $this->name, $this->type, $this->starts, $this->ends, $this->profiles];
-    }
-
-    /**
-     * @internal
-     */
-    public function __unserialize(array $data)
-    {
-        list($this->template, $this->name, $this->type, $this->starts, $this->ends, $this->profiles) = $data;
+        list($this->template, $this->name, $this->type, $this->starts, $this->ends, $this->profiles) = unserialize($data);
     }
 }
 

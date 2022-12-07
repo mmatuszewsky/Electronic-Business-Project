@@ -76,6 +76,7 @@ class Entry
      * Sets a value for the given attribute.
      *
      * @param string $name
+     * @param array  $value
      */
     public function setAttribute($name, array $value)
     {

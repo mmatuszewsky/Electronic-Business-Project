@@ -36,11 +36,11 @@ class SerializerExtractor implements PropertyListExtractorInterface
     public function getProperties($class, array $context = [])
     {
         if (!isset($context['serializer_groups']) || !\is_array($context['serializer_groups'])) {
-            return null;
+            return;
         }
 
         if (!$this->classMetadataFactory->getMetadataFor($class)) {
-            return null;
+            return;
         }
 
         $properties = [];

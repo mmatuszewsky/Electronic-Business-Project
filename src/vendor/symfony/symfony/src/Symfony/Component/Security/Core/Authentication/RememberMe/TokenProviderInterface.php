@@ -41,8 +41,9 @@ interface TokenProviderInterface
     /**
      * Updates the token according to this data.
      *
-     * @param string $series
-     * @param string $tokenValue
+     * @param string    $series
+     * @param string    $tokenValue
+     * @param \DateTime $lastUsed
      *
      * @throws TokenNotFoundException if the token is not found
      */

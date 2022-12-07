@@ -29,9 +29,11 @@ class RememberMeTokenTest extends TestCase
         $this->assertTrue($token->isAuthenticated());
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testConstructorSecretCannotBeNull()
     {
-        $this->expectException('InvalidArgumentException');
         new RememberMeToken(
             $this->getUser(),
             null,
@@ -39,9 +41,11 @@ class RememberMeTokenTest extends TestCase
         );
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testConstructorSecretCannotBeEmptyString()
     {
-        $this->expectException('InvalidArgumentException');
         new RememberMeToken(
             $this->getUser(),
             '',
@@ -55,7 +59,7 @@ class RememberMeTokenTest extends TestCase
         $user
             ->expects($this->once())
             ->method('getRoles')
-            ->willReturn($roles)
+            ->will($this->returnValue($roles))
         ;
 
         return $user;

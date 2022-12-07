@@ -47,7 +47,7 @@ class DigestAuthenticationListenerTest extends TestCase
         $tokenStorage
             ->expects($this->once())
             ->method('getToken')
-            ->willReturn(null)
+            ->will($this->returnValue(null))
         ;
         $tokenStorage
             ->expects($this->once())
@@ -64,7 +64,7 @@ class DigestAuthenticationListenerTest extends TestCase
         $event
             ->expects($this->any())
             ->method('getRequest')
-            ->willReturn($request)
+            ->will($this->returnValue($request))
         ;
 
         $listener->handle($event);

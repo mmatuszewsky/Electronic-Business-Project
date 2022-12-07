@@ -1,4 +1,5 @@
 {
+    "Version": "2.1.48.77",
     "Names": {
         "AC": "Ostrvo Asension",
         "AD": "Andora",
@@ -247,8 +248,8 @@
         "VU": "Vanuatu",
         "WF": "Valis i Futuna",
         "WS": "Samoa",
-        "XA": "Pseudoakcenti",
-        "XB": "Pseudobidi",
+        "XA": "XA",
+        "XB": "XB",
         "XK": "Kosovo",
         "YE": "Jemen",
         "YT": "Majot",

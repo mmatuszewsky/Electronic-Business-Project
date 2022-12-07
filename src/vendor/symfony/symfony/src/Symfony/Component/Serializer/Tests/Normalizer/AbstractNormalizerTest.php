@@ -2,24 +2,17 @@
 
 namespace Symfony\Component\Serializer\Tests\Normalizer;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Mapping\AttributeMetadata;
 use Symfony\Component\Serializer\Mapping\ClassMetadata;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactoryInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Tests\Fixtures\AbstractNormalizerDummy;
-use Symfony\Component\Serializer\Tests\Fixtures\Dummy;
 use Symfony\Component\Serializer\Tests\Fixtures\NullableConstructorArgumentDummy;
 use Symfony\Component\Serializer\Tests\Fixtures\ProxyDummy;
 use Symfony\Component\Serializer\Tests\Fixtures\StaticConstructorDummy;
 use Symfony\Component\Serializer\Tests\Fixtures\StaticConstructorNormalizer;
-use Symfony\Component\Serializer\Tests\Fixtures\VariadicConstructorTypedArgsDummy;
 
 /**
  * Provides a dummy Normalizer which extends the AbstractNormalizer.
@@ -34,7 +27,7 @@ class AbstractNormalizerTest extends TestCase
     private $normalizer;
 
     /**
-     * @var ClassMetadataFactoryInterface|MockObject
+     * @var ClassMetadataFactoryInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $classMetadata;
 
@@ -134,52 +127,5 @@ class AbstractNormalizerTest extends TestCase
         $dummy = $normalizer->denormalize(['foo' => null], NullableConstructorArgumentDummy::class);
 
         $this->assertNull($dummy->getFoo());
-    }
-
-    /**
-     * @dataProvider getNormalizer
-     *
-     * @requires PHP 5.6
-     */
-    public function testObjectWithVariadicConstructorTypedArguments(AbstractNormalizer $normalizer)
-    {
-        $d1 = new Dummy();
-        $d1->foo = 'Foo';
-        $d1->bar = 'Bar';
-        $d1->baz = 'Baz';
-        $d1->qux = 'Quz';
-        $d2 = new Dummy();
-        $d2->foo = 'FOO';
-        $d2->bar = 'BAR';
-        $d2->baz = 'BAZ';
-        $d2->qux = 'QUZ';
-        $obj = new VariadicConstructorTypedArgsDummy($d1, $d2);
-
-        $serializer = new Serializer([$normalizer], [new JsonEncoder()]);
-        $normalizer->setSerializer($serializer);
-        $data = $serializer->serialize($obj, 'json');
-        $dummy = $normalizer->denormalize(json_decode($data, true), VariadicConstructorTypedArgsDummy::class);
-        $this->assertInstanceOf(VariadicConstructorTypedArgsDummy::class, $dummy);
-        $this->assertCount(2, $dummy->getFoo());
-        foreach ($dummy->getFoo() as $foo) {
-            $this->assertInstanceOf(Dummy::class, $foo);
-        }
-
-        $dummy = $serializer->deserialize($data, VariadicConstructorTypedArgsDummy::class, 'json');
-        $this->assertInstanceOf(VariadicConstructorTypedArgsDummy::class, $dummy);
-        $this->assertCount(2, $dummy->getFoo());
-        foreach ($dummy->getFoo() as $foo) {
-            $this->assertInstanceOf(Dummy::class, $foo);
-        }
-    }
-
-    public function getNormalizer()
-    {
-        $extractor = new PhpDocExtractor();
-
-        yield [new PropertyNormalizer()];
-        yield [new PropertyNormalizer(null, null, $extractor)];
-        yield [new ObjectNormalizer()];
-        yield [new ObjectNormalizer(null, null, null, $extractor)];
     }
 }

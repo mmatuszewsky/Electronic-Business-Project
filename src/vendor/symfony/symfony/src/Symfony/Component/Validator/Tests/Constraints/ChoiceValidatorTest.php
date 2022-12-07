@@ -37,9 +37,11 @@ class ChoiceValidatorTest extends ConstraintValidatorTestCase
         return ['foo', 'bar'];
     }
 
+    /**
+     * @expectedException \Symfony\Component\Validator\Exception\UnexpectedTypeException
+     */
     public function testExpectArrayIfMultipleIsTrue()
     {
-        $this->expectException('Symfony\Component\Validator\Exception\UnexpectedTypeException');
         $constraint = new Choice([
             'choices' => ['foo', 'bar'],
             'multiple' => true,
@@ -62,15 +64,19 @@ class ChoiceValidatorTest extends ConstraintValidatorTestCase
         $this->assertNoViolation();
     }
 
+    /**
+     * @expectedException \Symfony\Component\Validator\Exception\ConstraintDefinitionException
+     */
     public function testChoicesOrCallbackExpected()
     {
-        $this->expectException('Symfony\Component\Validator\Exception\ConstraintDefinitionException');
         $this->validator->validate('foobar', new Choice(['strict' => true]));
     }
 
+    /**
+     * @expectedException \Symfony\Component\Validator\Exception\ConstraintDefinitionException
+     */
     public function testValidCallbackExpected()
     {
-        $this->expectException('Symfony\Component\Validator\Exception\ConstraintDefinitionException');
         $this->validator->validate('foobar', new Choice(['callback' => 'abcd', 'strict' => true]));
     }
 

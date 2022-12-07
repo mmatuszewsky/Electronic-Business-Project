@@ -67,8 +67,6 @@ class Section
                 return $child;
             }
         }
-
-        return null;
     }
 
     /**
@@ -112,8 +110,8 @@ class Section
     /**
      * Starts an event.
      *
-     * @param string      $name     The event name
-     * @param string|null $category The event category
+     * @param string $name     The event name
+     * @param string $category The event category
      *
      * @return StopwatchEvent The event
      */

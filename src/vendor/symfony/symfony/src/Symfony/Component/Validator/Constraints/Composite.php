@@ -71,11 +71,11 @@ abstract class Composite extends Constraint
                     $constraint = \get_class($constraint);
                 }
 
-                throw new ConstraintDefinitionException(sprintf('The value "%s" is not an instance of Constraint in constraint "%s".', $constraint, static::class));
+                throw new ConstraintDefinitionException(sprintf('The value %s is not an instance of Constraint in constraint %s', $constraint, \get_class($this)));
             }
 
             if ($constraint instanceof Valid) {
-                throw new ConstraintDefinitionException(sprintf('The constraint Valid cannot be nested inside constraint "%s". You can only declare the Valid constraint directly on a field or method.', static::class));
+                throw new ConstraintDefinitionException(sprintf('The constraint Valid cannot be nested inside constraint %s. You can only declare the Valid constraint directly on a field or method.', \get_class($this)));
             }
         }
 
@@ -88,8 +88,7 @@ abstract class Composite extends Constraint
                 }
             }
 
-            // prevent empty composite constraint to have empty groups
-            $this->groups = array_keys($mergedGroups) ?: [self::DEFAULT_GROUP];
+            $this->groups = array_keys($mergedGroups);
             $this->$compositeOption = $nestedConstraints;
 
             return;
@@ -100,7 +99,7 @@ abstract class Composite extends Constraint
                 $excessGroups = array_diff($constraint->groups, $this->groups);
 
                 if (\count($excessGroups) > 0) {
-                    throw new ConstraintDefinitionException(sprintf('The group(s) "%s" passed to the constraint "%s" should also be passed to its containing constraint "%s".', implode('", "', $excessGroups), \get_class($constraint), static::class));
+                    throw new ConstraintDefinitionException(sprintf('The group(s) "%s" passed to the constraint %s should also be passed to its containing constraint %s', implode('", "', $excessGroups), \get_class($constraint), \get_class($this)));
                 }
             } else {
                 $constraint->groups = $this->groups;
@@ -135,17 +134,6 @@ abstract class Composite extends Constraint
      * @return string The property name
      */
     abstract protected function getCompositeOption();
-
-    /**
-     * @internal Used by metadata
-     *
-     * @return Constraint[]
-     */
-    public function getNestedContraints()
-    {
-        /* @var Constraint[] $nestedConstraints */
-        return $this->{$this->getCompositeOption()};
-    }
 
     /**
      * Initializes the nested constraints.

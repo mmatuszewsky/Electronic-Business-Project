@@ -51,6 +51,8 @@ class GuardAuthenticatorHandler
 
     /**
      * Authenticates the given token in the system.
+     *
+     * @param string $providerKey The name of the provider/firewall being used for authentication
      */
     public function authenticateWithToken(TokenInterface $token, Request $request/*, string $providerKey */)
     {
@@ -68,7 +70,10 @@ class GuardAuthenticatorHandler
     /**
      * Returns the "on success" response for the given GuardAuthenticator.
      *
-     * @param string $providerKey The provider (i.e. firewall) key
+     * @param TokenInterface         $token
+     * @param Request                $request
+     * @param AuthenticatorInterface $guardAuthenticator
+     * @param string                 $providerKey        The provider (i.e. firewall) key
      *
      * @return Response|null
      */
@@ -81,14 +86,17 @@ class GuardAuthenticatorHandler
             return $response;
         }
 
-        throw new \UnexpectedValueException(sprintf('The "%s::onAuthenticationSuccess()" method must return null or a Response object. You returned "%s".', \get_class($guardAuthenticator), \is_object($response) ? \get_class($response) : \gettype($response)));
+        throw new \UnexpectedValueException(sprintf('The %s::onAuthenticationSuccess method must return null or a Response object. You returned %s.', \get_class($guardAuthenticator), \is_object($response) ? \get_class($response) : \gettype($response)));
     }
 
     /**
      * Convenience method for authenticating the user and returning the
      * Response *if any* for success.
      *
-     * @param string $providerKey The provider (i.e. firewall) key
+     * @param UserInterface          $user
+     * @param Request                $request
+     * @param AuthenticatorInterface $authenticator
+     * @param string                 $providerKey   The provider (i.e. firewall) key
      *
      * @return Response|null
      */
@@ -107,7 +115,10 @@ class GuardAuthenticatorHandler
      * Handles an authentication failure and returns the Response for the
      * GuardAuthenticator.
      *
-     * @param string $providerKey The provider (i.e. firewall) key
+     * @param AuthenticationException $authenticationException
+     * @param Request                 $request
+     * @param AuthenticatorInterface  $guardAuthenticator
+     * @param string                  $providerKey             The key of the firewall
      *
      * @return Response|null
      */
@@ -119,7 +130,7 @@ class GuardAuthenticatorHandler
             return $response;
         }
 
-        throw new \UnexpectedValueException(sprintf('The "%s::onAuthenticationFailure()" method must return null or a Response object. You returned "%s".', \get_class($guardAuthenticator), \is_object($response) ? \get_class($response) : \gettype($response)));
+        throw new \UnexpectedValueException(sprintf('The %s::onAuthenticationFailure method must return null or a Response object. You returned %s.', \get_class($guardAuthenticator), \is_object($response) ? \get_class($response) : \gettype($response)));
     }
 
     /**
@@ -134,7 +145,7 @@ class GuardAuthenticatorHandler
 
     private function migrateSession(Request $request, TokenInterface $token, $providerKey)
     {
-        if (\in_array($providerKey, $this->statelessProviderKeys, true) || !$this->sessionStrategy || !$request->hasSession() || !$request->hasPreviousSession()) {
+        if (!$this->sessionStrategy || !$request->hasSession() || !$request->hasPreviousSession() || \in_array($providerKey, $this->statelessProviderKeys, true)) {
             return;
         }
 
