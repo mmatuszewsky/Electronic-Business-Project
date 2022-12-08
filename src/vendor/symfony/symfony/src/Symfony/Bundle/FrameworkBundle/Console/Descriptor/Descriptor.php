@@ -100,24 +100,12 @@ abstract class Descriptor implements DescriptorInterface
         $this->output->write($content, false, $decorated ? OutputInterface::OUTPUT_NORMAL : OutputInterface::OUTPUT_RAW);
     }
 
-    /**
-     * Describes an InputArgument instance.
-     */
     abstract protected function describeRouteCollection(RouteCollection $routes, array $options = []);
 
-    /**
-     * Describes an InputOption instance.
-     */
     abstract protected function describeRoute(Route $route, array $options = []);
 
-    /**
-     * Describes container parameters.
-     */
     abstract protected function describeContainerParameters(ParameterBag $parameters, array $options = []);
 
-    /**
-     * Describes container tags.
-     */
     abstract protected function describeContainerTags(ContainerBuilder $builder, array $options = []);
 
     /**
@@ -127,8 +115,6 @@ abstract class Descriptor implements DescriptorInterface
      * * name: name of described service
      *
      * @param Definition|Alias|object $service
-     * @param array                   $options
-     * @param ContainerBuilder|null   $builder
      */
     abstract protected function describeContainerService($service, array $options = [], ContainerBuilder $builder = null);
 
@@ -140,19 +126,10 @@ abstract class Descriptor implements DescriptorInterface
      */
     abstract protected function describeContainerServices(ContainerBuilder $builder, array $options = []);
 
-    /**
-     * Describes a service definition.
-     */
     abstract protected function describeContainerDefinition(Definition $definition, array $options = []);
 
-    /**
-     * Describes a service alias.
-     */
     abstract protected function describeContainerAlias(Alias $alias, array $options = [], ContainerBuilder $builder = null);
 
-    /**
-     * Describes a container parameter.
-     */
     abstract protected function describeContainerParameter($parameter, array $options = []);
 
     /**
@@ -166,8 +143,7 @@ abstract class Descriptor implements DescriptorInterface
     /**
      * Describes a callable.
      *
-     * @param callable $callable
-     * @param array    $options
+     * @param mixed $callable
      */
     abstract protected function describeCallable($callable, array $options = []);
 
@@ -214,8 +190,7 @@ abstract class Descriptor implements DescriptorInterface
     }
 
     /**
-     * @param ContainerBuilder $builder
-     * @param string           $serviceId
+     * @param string $serviceId
      *
      * @return mixed
      */
@@ -235,8 +210,7 @@ abstract class Descriptor implements DescriptorInterface
     }
 
     /**
-     * @param ContainerBuilder $builder
-     * @param bool             $showPrivate
+     * @param bool $showPrivate
      *
      * @return array
      */

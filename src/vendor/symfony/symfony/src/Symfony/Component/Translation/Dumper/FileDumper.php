@@ -75,7 +75,7 @@ abstract class FileDumper implements DumperInterface
             $fullpath = $options['path'].'/'.$this->getRelativePath($domain, $messages->getLocale());
             if (file_exists($fullpath)) {
                 if ($this->backup) {
-                    @trigger_error('Creating a backup while dumping a message catalogue is deprecated since Symfony 3.1 and will be removed in 4.0. Use TranslationWriter::disableBackup() to disable the backup.', E_USER_DEPRECATED);
+                    @trigger_error('Creating a backup while dumping a message catalogue is deprecated since Symfony 3.1 and will be removed in 4.0. Use TranslationWriter::disableBackup() to disable the backup.', \E_USER_DEPRECATED);
                     copy($fullpath, $fullpath.'~');
                 }
             } else {
@@ -92,9 +92,7 @@ abstract class FileDumper implements DumperInterface
     /**
      * Transforms a domain of a message catalogue to its string representation.
      *
-     * @param MessageCatalogue $messages
-     * @param string           $domain
-     * @param array            $options
+     * @param string $domain
      *
      * @return string representation
      */

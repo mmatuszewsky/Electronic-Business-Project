@@ -11,7 +11,7 @@
 
 namespace Symfony\Component\ClassLoader;
 
-@trigger_error('The '.__NAMESPACE__.'\MapClassLoader class is deprecated since Symfony 3.3 and will be removed in 4.0. Use Composer instead.', E_USER_DEPRECATED);
+@trigger_error('The '.__NAMESPACE__.'\MapClassLoader class is deprecated since Symfony 3.3 and will be removed in 4.0. Use Composer instead.', \E_USER_DEPRECATED);
 
 /**
  * A class loader that uses a mapping file to look up paths.
@@ -63,8 +63,6 @@ class MapClassLoader
      */
     public function findFile($class)
     {
-        if (isset($this->map[$class])) {
-            return $this->map[$class];
-        }
+        return isset($this->map[$class]) ? $this->map[$class] : null;
     }
 }

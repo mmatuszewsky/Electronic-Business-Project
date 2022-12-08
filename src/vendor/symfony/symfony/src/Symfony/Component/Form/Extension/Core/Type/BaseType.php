@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\Form\Extension\Core\Type;
 
+use Symfony\Component\Form\AbstractRendererEngine;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
@@ -71,7 +72,7 @@ abstract class BaseType extends AbstractType
 
             // Strip leading underscores and digits. These are allowed in
             // form names, but not in HTML4 ID attributes.
-            // http://www.w3.org/TR/html401/struct/global.html#adef-id
+            // https://www.w3.org/TR/html401/struct/global#adef-id
             $id = ltrim($id, '_0123456789');
         }
 
@@ -100,7 +101,7 @@ abstract class BaseType extends AbstractType
             // collection form have different types (dynamically), they should
             // be rendered differently.
             // https://github.com/symfony/symfony/issues/5038
-            'cache_key' => $uniqueBlockPrefix.'_'.$form->getConfig()->getType()->getBlockPrefix(),
+            AbstractRendererEngine::CACHE_KEY_VAR => $uniqueBlockPrefix.'_'.$form->getConfig()->getType()->getBlockPrefix(),
         ]);
     }
 

@@ -62,7 +62,7 @@ class Csv extends BaseReader
      */
     public function __construct()
     {
-        $this->readFilter = new DefaultReadFilter();
+        parent::__construct();
     }
 
     /**
@@ -70,7 +70,7 @@ class Csv extends BaseReader
      *
      * @param string $pValue Input encoding, eg: 'UTF-8'
      *
-     * @return Csv
+     * @return $this
      */
     public function setInputEncoding($pValue)
     {
@@ -143,7 +143,7 @@ class Csv extends BaseReader
             return;
         }
 
-        return $this->skipBOM();
+        $this->skipBOM();
     }
 
     /**
@@ -175,17 +175,17 @@ class Csv extends BaseReader
                 }
             }
             foreach ($potentialDelimiters as $delimiter) {
-                $counts[$delimiter][] = isset($countLine[$delimiter])
-                    ? $countLine[$delimiter]
-                    : 0;
+                $counts[$delimiter][] = $countLine[$delimiter]
+                    ?? 0;
             }
         }
 
         // If number of lines is 0, nothing to infer : fall back to the default
         if ($numberLines === 0) {
             $this->delimiter = reset($potentialDelimiters);
+            $this->skipBOM();
 
-            return $this->skipBOM();
+            return;
         }
 
         // Calculate the mean square deviations for each delimiter (ignoring delimiters that haven't been found consistently)
@@ -230,7 +230,7 @@ class Csv extends BaseReader
             $this->delimiter = reset($potentialDelimiters);
         }
 
-        return $this->skipBOM();
+        $this->skipBOM();
     }
 
     /**
@@ -415,7 +415,7 @@ class Csv extends BaseReader
      *
      * @param string $delimiter Delimiter, eg: ','
      *
-     * @return CSV
+     * @return $this
      */
     public function setDelimiter($delimiter)
     {
@@ -439,7 +439,7 @@ class Csv extends BaseReader
      *
      * @param string $enclosure Enclosure, defaults to "
      *
-     * @return CSV
+     * @return $this
      */
     public function setEnclosure($enclosure)
     {
@@ -466,7 +466,7 @@ class Csv extends BaseReader
      *
      * @param int $pValue Sheet index
      *
-     * @return CSV
+     * @return $this
      */
     public function setSheetIndex($pValue)
     {
@@ -480,7 +480,7 @@ class Csv extends BaseReader
      *
      * @param bool $contiguous
      *
-     * @return Csv
+     * @return $this
      */
     public function setContiguous($contiguous)
     {
@@ -545,7 +545,8 @@ class Csv extends BaseReader
         fclose($this->fileHandle);
 
         // Trust file extension if any
-        if (strtolower(pathinfo($pFilename, PATHINFO_EXTENSION)) === 'csv') {
+        $extension = strtolower(pathinfo($pFilename, PATHINFO_EXTENSION));
+        if (in_array($extension, ['csv', 'tsv'])) {
             return true;
         }
 

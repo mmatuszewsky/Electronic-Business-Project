@@ -45,16 +45,16 @@ class JsonEncodeTest extends TestCase
     {
         return [
             [[], '[]', []],
-            [[], '{}', ['json_encode_options' => JSON_FORCE_OBJECT]],
+            [[], '{}', ['json_encode_options' => \JSON_FORCE_OBJECT]],
         ];
     }
 
     /**
      * @requires function json_last_error_msg
-     * @expectedException \Symfony\Component\Serializer\Exception\UnexpectedValueException
      */
     public function testEncodeWithError()
     {
+        $this->expectException('Symfony\Component\Serializer\Exception\UnexpectedValueException');
         $this->encode->encode("\xB1\x31", JsonEncoder::FORMAT);
     }
 }

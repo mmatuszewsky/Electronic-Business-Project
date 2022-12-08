@@ -79,7 +79,7 @@ class UriSigner
         $hash = $params[$this->parameter];
         unset($params[$this->parameter]);
 
-        return $this->computeHash($this->buildUrl($url, $params)) === $hash;
+        return hash_equals($this->computeHash($this->buildUrl($url, $params)), $hash);
     }
 
     private function computeHash($uri)
@@ -89,7 +89,7 @@ class UriSigner
 
     private function buildUrl(array $url, array $params = [])
     {
-        ksort($params, SORT_STRING);
+        ksort($params, \SORT_STRING);
         $url['query'] = http_build_query($params, '', '&');
 
         $scheme = isset($url['scheme']) ? $url['scheme'].'://' : '';

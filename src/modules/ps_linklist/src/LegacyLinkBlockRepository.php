@@ -1,51 +1,60 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
  *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.txt.
+ * This source file is subject to the Academic Free License version 3.0
+ * that is bundled with this package in the file LICENSE.md.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
  *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
- *
- * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
- * International Registered Trademark & Property of PrestaShop SA
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 
 namespace PrestaShop\Module\LinkList;
 
-use PrestaShop\Module\LinkList\Model\LinkBlock;
-use Symfony\Component\Translation\TranslatorInterface as Translator;
-use Shop;
-use Hook;
-use DB;
-use Language;
 use Context;
+use Db;
+use Hook;
+use Language;
+use PrestaShop\Module\LinkList\Model\LinkBlock;
+use Shop;
+use Symfony\Component\Translation\TranslatorInterface as Translator;
 
 /**
  * Class LegacyLinkBlockRepository.
  */
 class LegacyLinkBlockRepository
 {
+    /**
+     * @var Db
+     */
     private $db;
+
+    /**
+     * @var Shop
+     */
     private $shop;
+
+    /**
+     * @var string
+     */
     private $db_prefix;
+
+    /**
+     * @var Translator
+     */
     private $translator;
 
     /**
-     * @param DB $db
+     * @param Db $db
      * @param Shop $shop
      * @param Translator $translator
      */
@@ -69,14 +78,15 @@ class LegacyLinkBlockRepository
     {
         $id_hook = (int) $id_hook;
 
-        $sql = "SELECT cb.`id_link_block`
-                    FROM {$this->db_prefix}link_block cb
-                    WHERE `id_hook` = $id_hook
-                    ORDER by cb.`position`
+        $sql = "SELECT lb.`id_link_block`
+                    FROM {$this->db_prefix}link_block lb
+                    INNER JOIN {$this->db_prefix}link_block_shop lbs ON lbs.`id_link_block` = lb.`id_link_block`
+                    WHERE lb. `id_hook` = $id_hook AND lbs.`id_shop` = {$this->shop->id}
+                    ORDER by lbs.`position`
                 ";
         $ids = $this->db->executeS($sql);
 
-        $cmsBlock = array();
+        $cmsBlock = [];
         foreach ($ids as $id) {
             $cmsBlock[] = new LinkBlock((int) $id['id_link_block']);
         }
@@ -110,6 +120,7 @@ class LegacyLinkBlockRepository
             "CREATE TABLE IF NOT EXISTS `{$this->db_prefix}link_block_shop` (
     			`id_link_block` int(10) unsigned NOT NULL auto_increment,
     			`id_shop` int(10) unsigned NOT NULL,
+                `position` int(10) unsigned NOT NULL default '0',
     			PRIMARY KEY (`id_link_block`, `id_shop`)
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
         ];
@@ -117,7 +128,7 @@ class LegacyLinkBlockRepository
             $success &= $this->db->execute($query);
         }
 
-        return $success;
+        return (bool) $success;
     }
 
     public function dropTables()
@@ -144,10 +155,18 @@ class LegacyLinkBlockRepository
         ];
         foreach (Language::getLanguages(true, Context::getContext()->shop->id) as $lang) {
             $queries[] = 'INSERT INTO `' . $this->db_prefix . 'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
-                (1, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Products', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '"),
-                (2, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '")'
+                (1, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Products', [], 'Modules.Linklist.Shop', $lang['locale'])) . '"),
+                (2, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Our company', [], 'Modules.Linklist.Shop', $lang['locale'])) . '");'
             ;
         }
+
+        foreach ($this->shop::getContextListShopID() as $shopId) {
+            $queries[] = 'INSERT INTO `' . $this->db_prefix . 'link_block_shop` (`id_link_block`, `id_shop`, `position`) VALUES
+                (1, ' . (int) $shopId . ', 0),
+                (2, ' . (int) $shopId . ', 1);'
+            ;
+        }
+
         foreach ($queries as $query) {
             $success &= $this->db->execute($query);
         }

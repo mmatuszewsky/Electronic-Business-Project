@@ -25,6 +25,7 @@ class RememberMeFactory implements SecurityFactoryInterface
         'domain' => null,
         'secure' => false,
         'httponly' => true,
+        'samesite' => null,
         'always_remember_me' => false,
         'remember_me_parameter' => '_remember_me',
     ];
@@ -81,7 +82,11 @@ class RememberMeFactory implements SecurityFactoryInterface
                     throw new \RuntimeException('Each "security.remember_me_aware" tag must have a provider attribute.');
                 }
 
-                $userProviders[] = new Reference($attribute['provider']);
+                // context listeners don't need a provider
+                if ('none' !== $attribute['provider']) {
+                    $userProviders[] = new Reference($attribute['provider']);
+                }
+
                 $container
                     ->getDefinition($serviceId)
                     ->addMethodCall('setRememberMeServices', [new Reference($rememberMeServicesId)])
@@ -135,7 +140,7 @@ class RememberMeFactory implements SecurityFactoryInterface
                 ->end()
                 ->prototype('scalar')->end()
             ->end()
-            ->scalarNode('catch_exceptions')->defaultTrue()->end()
+            ->booleanNode('catch_exceptions')->defaultTrue()->end()
         ;
 
         foreach ($this->options as $name => $value) {

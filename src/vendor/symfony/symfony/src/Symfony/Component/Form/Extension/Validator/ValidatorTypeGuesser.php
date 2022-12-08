@@ -97,6 +97,7 @@ class ValidatorTypeGuesser implements FormTypeGuesserInterface
                     case 'long':
                         return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\IntegerType', [], Guess::MEDIUM_CONFIDENCE);
 
+                    case \DateTime::class:
                     case '\DateTime':
                         return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\DateType', [], Guess::MEDIUM_CONFIDENCE);
 
@@ -153,6 +154,8 @@ class ValidatorTypeGuesser implements FormTypeGuesserInterface
             case 'Symfony\Component\Validator\Constraints\IsFalse':
                 return new TypeGuess('Symfony\Component\Form\Extension\Core\Type\CheckboxType', [], Guess::MEDIUM_CONFIDENCE);
         }
+
+        return null;
     }
 
     /**
@@ -168,6 +171,8 @@ class ValidatorTypeGuesser implements FormTypeGuesserInterface
             case 'Symfony\Component\Validator\Constraints\IsTrue':
                 return new ValueGuess(true, Guess::HIGH_CONFIDENCE);
         }
+
+        return null;
     }
 
     /**
@@ -196,6 +201,8 @@ class ValidatorTypeGuesser implements FormTypeGuesserInterface
                 }
                 break;
         }
+
+        return null;
     }
 
     /**
@@ -232,6 +239,8 @@ class ValidatorTypeGuesser implements FormTypeGuesserInterface
                 }
                 break;
         }
+
+        return null;
     }
 
     /**

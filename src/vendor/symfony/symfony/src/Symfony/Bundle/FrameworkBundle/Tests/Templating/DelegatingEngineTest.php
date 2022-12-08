@@ -13,6 +13,7 @@ namespace Symfony\Bundle\FrameworkBundle\Tests\Templating;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\Templating\DelegatingEngine;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\Response;
 
 class DelegatingEngineTest extends TestCase
@@ -43,12 +44,10 @@ class DelegatingEngineTest extends TestCase
         $this->assertSame($secondEngine, $delegatingEngine->getEngine('template.php'));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage No engine is able to work with the template "template.php"
-     */
     public function testGetInvalidEngine()
     {
+        $this->expectException('RuntimeException');
+        $this->expectExceptionMessage('No engine is able to work with the template "template.php"');
         $firstEngine = $this->getEngineMock('template.php', false);
         $secondEngine = $this->getEngineMock('template.php', false);
         $container = $this->getContainerMock([
@@ -67,7 +66,7 @@ class DelegatingEngineTest extends TestCase
         $engine->expects($this->once())
             ->method('renderResponse')
             ->with('template.php', ['foo' => 'bar'])
-            ->will($this->returnValue($response));
+            ->willReturn($response);
         $container = $this->getContainerMock(['engine' => $engine]);
 
         $delegatingEngine = new DelegatingEngine($container, ['engine']);
@@ -91,7 +90,7 @@ class DelegatingEngineTest extends TestCase
         $engine->expects($this->once())
             ->method('supports')
             ->with($template)
-            ->will($this->returnValue($supports));
+            ->willReturn($supports);
 
         return $engine;
     }
@@ -103,21 +102,17 @@ class DelegatingEngineTest extends TestCase
         $engine->expects($this->once())
             ->method('supports')
             ->with($template)
-            ->will($this->returnValue($supports));
+            ->willReturn($supports);
 
         return $engine;
     }
 
     private function getContainerMock($services)
     {
-        $container = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerInterface')->getMock();
+        $container = new ContainerBuilder();
 
-        $i = 0;
         foreach ($services as $id => $service) {
-            $container->expects($this->at($i++))
-                ->method('get')
-                ->with($id)
-                ->will($this->returnValue($service));
+            $container->set($id, $service);
         }
 
         return $container;

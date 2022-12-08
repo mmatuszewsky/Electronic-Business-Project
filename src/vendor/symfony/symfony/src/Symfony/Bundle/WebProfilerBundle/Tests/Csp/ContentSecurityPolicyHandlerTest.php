@@ -41,7 +41,7 @@ class ContentSecurityPolicyHandlerTest extends TestCase
         $this->assertFalse($response->headers->has('X-SymfonyProfiler-Style-Nonce'));
 
         foreach ($expectedCsp as $header => $value) {
-            $this->assertSame($value, $response->headers->get($header));
+            $this->assertSame($value, $response->headers->get($header), $header);
         }
     }
 
@@ -137,6 +137,13 @@ class ContentSecurityPolicyHandlerTest extends TestCase
                 $nonce,
                 ['csp_script_nonce' => $nonce, 'csp_style_nonce' => $nonce],
                 $this->createRequest(),
+                $this->createResponse(['Content-Security-Policy' => 'default-src \'self\' domain.com; script-src \'self\' \'unsafe-inline\'; script-src-elem \'self\'; style-src \'self\' \'unsafe-inline\'; style-src-elem \'self\'', 'Content-Security-Policy-Report-Only' => 'default-src \'self\' domain-report-only.com; script-src \'self\' \'unsafe-inline\'; script-src-elem \'self\'; style-src \'self\' \'unsafe-inline\'; style-src-elem \'self\'']),
+                ['Content-Security-Policy' => 'default-src \'self\' domain.com; script-src \'self\' \'unsafe-inline\'; script-src-elem \'self\' \'unsafe-inline\' \'nonce-'.$nonce.'\'; style-src \'self\' \'unsafe-inline\'; style-src-elem \'self\' \'unsafe-inline\' \'nonce-'.$nonce.'\'', 'Content-Security-Policy-Report-Only' => 'default-src \'self\' domain-report-only.com; script-src \'self\' \'unsafe-inline\'; script-src-elem \'self\' \'unsafe-inline\' \'nonce-'.$nonce.'\'; style-src \'self\' \'unsafe-inline\'; style-src-elem \'self\' \'unsafe-inline\' \'nonce-'.$nonce.'\'', 'X-Content-Security-Policy' => null],
+            ],
+            [
+                $nonce,
+                ['csp_script_nonce' => $nonce, 'csp_style_nonce' => $nonce],
+                $this->createRequest(),
                 $this->createResponse(['Content-Security-Policy' => 'script-src \'self\' \'unsafe-inline\'']),
                 ['Content-Security-Policy' => 'script-src \'self\' \'unsafe-inline\'', 'X-Content-Security-Policy' => null],
             ],
@@ -200,7 +207,7 @@ class ContentSecurityPolicyHandlerTest extends TestCase
 
         $generator->expects($this->any())
             ->method('generate')
-            ->will($this->returnValue($value));
+            ->willReturn($value);
 
         return $generator;
     }

@@ -68,7 +68,7 @@ class RegisterEventListenersAndSubscribersPass implements CompilerPassInterface
             $connections = isset($tag['connection']) ? [$tag['connection']] : array_keys($this->connections);
             foreach ($connections as $con) {
                 if (!isset($this->connections[$con])) {
-                    throw new RuntimeException(sprintf('The Doctrine connection "%s" referenced in service "%s" does not exist. Available connections names: %s', $con, $id, implode(', ', array_keys($this->connections))));
+                    throw new RuntimeException(sprintf('The Doctrine connection "%s" referenced in service "%s" does not exist. Available connections names: "%s".', $con, $id, implode('", "', array_keys($this->connections))));
                 }
 
                 $this->getEventManagerDef($container, $con)->addMethodCall('addEventSubscriber', [new Reference($id)]);
@@ -91,7 +91,7 @@ class RegisterEventListenersAndSubscribersPass implements CompilerPassInterface
             $connections = isset($tag['connection']) ? [$tag['connection']] : array_keys($this->connections);
             foreach ($connections as $con) {
                 if (!isset($this->connections[$con])) {
-                    throw new RuntimeException(sprintf('The Doctrine connection "%s" referenced in service "%s" does not exist. Available connections names: %s', $con, $id, implode(', ', array_keys($this->connections))));
+                    throw new RuntimeException(sprintf('The Doctrine connection "%s" referenced in service "%s" does not exist. Available connections names: "%s".', $con, $id, implode('", "', array_keys($this->connections))));
                 }
 
                 if ($lazy = !empty($tag['lazy'])) {
@@ -120,11 +120,10 @@ class RegisterEventListenersAndSubscribersPass implements CompilerPassInterface
      * and knowing that the \SplPriorityQueue class does not respect the FIFO method,
      * we should not use this class.
      *
-     * @see https://bugs.php.net/bug.php?id=53710
-     * @see https://bugs.php.net/bug.php?id=60926
+     * @see https://bugs.php.net/53710
+     * @see https://bugs.php.net/60926
      *
-     * @param string           $tagName
-     * @param ContainerBuilder $container
+     * @param string $tagName
      *
      * @return array
      */

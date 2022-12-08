@@ -14,7 +14,7 @@ namespace Symfony\Bundle\FrameworkBundle\EventListener;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\EventListener\AbstractSessionListener;
 
-@trigger_error(sprintf('The %s class is deprecated since Symfony 3.3 and will be removed in 4.0. Use Symfony\Component\HttpKernel\EventListener\SessionListener instead.', SessionListener::class), E_USER_DEPRECATED);
+@trigger_error(sprintf('The %s class is deprecated since Symfony 3.3 and will be removed in 4.0. Use Symfony\Component\HttpKernel\EventListener\SessionListener instead.', SessionListener::class), \E_USER_DEPRECATED);
 
 /**
  * Sets the session in the request.
@@ -34,10 +34,6 @@ class SessionListener extends AbstractSessionListener
 
     protected function getSession()
     {
-        if (!$this->container->has('session')) {
-            return;
-        }
-
-        return $this->container->get('session');
+        return $this->container->get('session', ContainerInterface::NULL_ON_INVALID_REFERENCE);
     }
 }

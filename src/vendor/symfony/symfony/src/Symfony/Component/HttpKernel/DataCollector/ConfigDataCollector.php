@@ -63,13 +63,13 @@ class ConfigDataCollector extends DataCollector implements LateDataCollectorInte
             'name' => isset($this->kernel) ? $this->kernel->getName() : 'n/a',
             'env' => isset($this->kernel) ? $this->kernel->getEnvironment() : 'n/a',
             'debug' => isset($this->kernel) ? $this->kernel->isDebug() : 'n/a',
-            'php_version' => PHP_VERSION,
-            'php_architecture' => PHP_INT_SIZE * 8,
+            'php_version' => \PHP_VERSION,
+            'php_architecture' => \PHP_INT_SIZE * 8,
             'php_intl_locale' => class_exists('Locale', false) && \Locale::getDefault() ? \Locale::getDefault() : 'n/a',
             'php_timezone' => date_default_timezone_get(),
             'xdebug_enabled' => \extension_loaded('xdebug'),
-            'apcu_enabled' => \extension_loaded('apcu') && filter_var(ini_get('apc.enabled'), FILTER_VALIDATE_BOOLEAN),
-            'zend_opcache_enabled' => \extension_loaded('Zend OPcache') && filter_var(ini_get('opcache.enable'), FILTER_VALIDATE_BOOLEAN),
+            'apcu_enabled' => \extension_loaded('apcu') && filter_var(ini_get('apc.enabled'), \FILTER_VALIDATE_BOOLEAN),
+            'zend_opcache_enabled' => \extension_loaded('Zend OPcache') && filter_var(ini_get('opcache.enable'), \FILTER_VALIDATE_BOOLEAN),
             'bundles' => [],
             'sapi_name' => \PHP_SAPI,
         ];
@@ -81,8 +81,8 @@ class ConfigDataCollector extends DataCollector implements LateDataCollectorInte
 
             $this->data['symfony_state'] = $this->determineSymfonyState();
             $this->data['symfony_minor_version'] = sprintf('%s.%s', Kernel::MAJOR_VERSION, Kernel::MINOR_VERSION);
-            $eom = \DateTime::createFromFormat('m/Y', Kernel::END_OF_MAINTENANCE);
-            $eol = \DateTime::createFromFormat('m/Y', Kernel::END_OF_LIFE);
+            $eom = \DateTime::createFromFormat('d/m/Y', '01/'.Kernel::END_OF_MAINTENANCE);
+            $eol = \DateTime::createFromFormat('d/m/Y', '01/'.Kernel::END_OF_LIFE);
             $this->data['symfony_eom'] = $eom->format('F Y');
             $this->data['symfony_eol'] = $eol->format('F Y');
         }
@@ -119,7 +119,7 @@ class ConfigDataCollector extends DataCollector implements LateDataCollectorInte
     /**
      * Gets the token.
      *
-     * @return string The token
+     * @return string|null The token
      */
     public function getToken()
     {
@@ -314,8 +314,8 @@ class ConfigDataCollector extends DataCollector implements LateDataCollectorInte
     private function determineSymfonyState()
     {
         $now = new \DateTime();
-        $eom = \DateTime::createFromFormat('m/Y', Kernel::END_OF_MAINTENANCE)->modify('last day of this month');
-        $eol = \DateTime::createFromFormat('m/Y', Kernel::END_OF_LIFE)->modify('last day of this month');
+        $eom = \DateTime::createFromFormat('d/m/Y', '01/'.Kernel::END_OF_MAINTENANCE)->modify('last day of this month');
+        $eol = \DateTime::createFromFormat('d/m/Y', '01/'.Kernel::END_OF_LIFE)->modify('last day of this month');
 
         if ($now > $eol) {
             $versionState = 'eol';

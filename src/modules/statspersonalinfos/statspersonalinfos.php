@@ -1,28 +1,28 @@
 <?php
-/*
-* 2007-2015 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2015 PrestaShop SA
-*  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/AFL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
+ */
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -37,23 +37,23 @@ class statspersonalinfos extends ModuleGraph
     {
         $this->name = 'statspersonalinfos';
         $this->tab = 'analytics_stats';
-        $this->version = '2.0.2';
+        $this->version = '2.0.4';
         $this->author = 'PrestaShop';
         $this->need_instance = 0;
 
         parent::__construct();
 
         $this->displayName = $this->trans('Registered customer information', array(), 'Modules.Statspersonalinfos.Admin');
-        $this->description = $this->trans('Adds information about your registered customers (such as gender and age) to the Stats dashboard.', array(), 'Modules.Statspersonalinfos.Admin');
+        $this->description = $this->trans('Enrich your stats, add information about your registered customers and learn more about them!', array(), 'Modules.Statspersonalinfos.Admin');
         $this->ps_versions_compliancy = array('min' => '1.7.1.0', 'max' => _PS_VERSION_);
     }
 
     public function install()
     {
-        return (parent::install() && $this->registerHook('AdminStatsModules'));
+        return (parent::install() && $this->registerHook('displayAdminStatsModules'));
     }
 
-    public function hookAdminStatsModules()
+    public function hookDisplayAdminStatsModules()
     {
         $this->html = '
 			<div class="panel-heading">
@@ -248,9 +248,10 @@ class statspersonalinfos extends ModuleGraph
                 // 0 - 18 years
                 $sql = 'SELECT COUNT(`id_customer`) as total
 						FROM `'._DB_PREFIX_.'customer`
-						WHERE (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) < 18
-							'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).'
-							AND `birthday` IS NOT NULL';
+						WHERE `birthday` IS NOT NULL
+							AND `birthday` != "0000-00-00"
+							AND (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) < 18
+							'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER);
                 $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
                 if (isset($result['total']) && $result['total']) {
                     $this->_values[] = $result['total'];
@@ -260,10 +261,11 @@ class statspersonalinfos extends ModuleGraph
                 // 18 - 24 years
                 $sql = 'SELECT COUNT(`id_customer`) as total
 						FROM `'._DB_PREFIX_.'customer`
-						WHERE (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) >= 18
+						WHERE `birthday` IS NOT NULL
+							AND `birthday` != "0000-00-00"
+							AND (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) >= 18
 							AND (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) < 25
-							'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).'
-							AND `birthday` IS NOT NULL';
+							'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER);
                 $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
                 if (isset($result['total']) && $result['total']) {
                     $this->_values[] = $result['total'];
@@ -273,10 +275,11 @@ class statspersonalinfos extends ModuleGraph
                 // 25 - 34 years
                 $sql = 'SELECT COUNT(`id_customer`) as total
 						FROM `'._DB_PREFIX_.'customer`
-						WHERE (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) >= 25
+						WHERE `birthday` IS NOT NULL
+							AND `birthday` != "0000-00-00"
+							AND (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) >= 25
 							AND (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) < 35
-							'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).'
-							AND `birthday` IS NOT NULL';
+							'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER);
                 $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
                 if (isset($result['total']) && $result['total']) {
                     $this->_values[] = $result['total'];
@@ -286,10 +289,11 @@ class statspersonalinfos extends ModuleGraph
                 // 35 - 49 years
                 $sql = 'SELECT COUNT(`id_customer`) as total
 						FROM `'._DB_PREFIX_.'customer`
-						WHERE (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) >= 35
+						WHERE `birthday` IS NOT NULL
+							AND `birthday` != "0000-00-00"
+							AND (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) >= 35
 							AND (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) < 50
-							'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).'
-							AND `birthday` IS NOT NULL';
+							'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER);
                 $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
                 if (isset($result['total']) && $result['total']) {
                     $this->_values[] = $result['total'];
@@ -299,10 +303,11 @@ class statspersonalinfos extends ModuleGraph
                 // 50 - 59 years
                 $sql = 'SELECT COUNT(`id_customer`) as total
 						FROM `'._DB_PREFIX_.'customer`
-						WHERE (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) >= 50
+						WHERE `birthday` IS NOT NULL
+							AND `birthday` != "0000-00-00"
+							AND (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) >= 50
 							AND (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) < 60
-							'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).'
-							AND `birthday` IS NOT NULL';
+							'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER);
                 $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
                 if (isset($result['total']) && $result['total']) {
                     $this->_values[] = $result['total'];
@@ -312,9 +317,10 @@ class statspersonalinfos extends ModuleGraph
                 // More than 60 years
                 $sql = 'SELECT COUNT(`id_customer`) as total
 						FROM `'._DB_PREFIX_.'customer`
-						WHERE (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) >= 60
-							'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).'
-							AND `birthday` IS NOT NULL';
+						WHERE `birthday` IS NOT NULL
+							AND `birthday` != "0000-00-00"
+							AND (YEAR(CURDATE()) - YEAR(`birthday`)) - (RIGHT(CURDATE(), 5) < RIGHT(`birthday`, 5)) >= 60
+							'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER);
                 $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
                 if (isset($result['total']) && $result['total']) {
                     $this->_values[] = $result['total'];
@@ -325,6 +331,7 @@ class statspersonalinfos extends ModuleGraph
                 $sql = 'SELECT COUNT(`id_customer`) as total
 						FROM `'._DB_PREFIX_.'customer`
 						WHERE `birthday` IS NULL
+							OR `birthday` = "0000-00-00"
 							'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER);
                 $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
                 if (isset($result['total']) && $result['total']) {
@@ -339,7 +346,7 @@ class statspersonalinfos extends ModuleGraph
 						FROM `'._DB_PREFIX_.'address` a
 						LEFT JOIN `'._DB_PREFIX_.'customer` cu ON cu.id_customer = a.id_customer
 						LEFT JOIN `'._DB_PREFIX_.'country` c ON a.`id_country` = c.`id_country`
-						LEFT JOIN `'._DB_PREFIX_.'country_lang` cl ON (c.`id_country` = cl.`id_country` AND cl.`id_lang` = '.(int)$this->context->language->id.')
+						LEFT JOIN `'._DB_PREFIX_.'country_lang` cl ON (c.`id_country` = cl.`id_country` AND cl.`id_lang` = ' . (int) $this->context->language->id . ')
 						WHERE a.id_customer != 0
 							'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER, 'cu').'
 						GROUP BY c.`id_country`';
@@ -352,16 +359,17 @@ class statspersonalinfos extends ModuleGraph
 
             case 'currency':
                 $this->_titles['main'] = $this->trans('Currency distribution', array(), 'Modules.Statspersonalinfos.Admin');
-                $sql = 'SELECT c.`name`, COUNT(c.`id_currency`) AS total
+                $sql = 'SELECT cl.name, c.`iso_code`, COUNT(c.`id_currency`) AS total
 						FROM `'._DB_PREFIX_.'orders` o
 						LEFT JOIN `'._DB_PREFIX_.'currency` c ON o.`id_currency` = c.`id_currency`
+						LEFT JOIN `'._DB_PREFIX_.'currency_lang` cl ON (cl.`id_currency` = c.`id_currency` AND cl.`id_lang` = ' . (int) $this->context->language->id . ')
 						WHERE 1
 							'.Shop::addSqlRestriction(Shop::SHARE_ORDER, 'o').'
 						GROUP BY c.`id_currency`';
                 $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
                 foreach ($result as $row) {
                     $this->_values[] = $row['total'];
-                    $this->_legend[] = $row['name'];
+                    $this->_legend[] = $row['name'] . ' (' . $row['iso_code'] . ')';
                 }
                 break;
 

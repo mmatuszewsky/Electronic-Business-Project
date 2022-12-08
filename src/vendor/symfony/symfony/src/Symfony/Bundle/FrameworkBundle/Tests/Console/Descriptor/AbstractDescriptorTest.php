@@ -182,6 +182,7 @@ abstract class AbstractDescriptorTest extends TestCase
 
     private function assertDescription($expectedDescription, $describedObject, array $options = [])
     {
+        $options['is_debug'] = false;
         $options['raw_output'] = true;
         $options['raw_text'] = true;
         $output = new BufferedOutput(BufferedOutput::VERBOSITY_NORMAL, true);
@@ -193,9 +194,9 @@ abstract class AbstractDescriptorTest extends TestCase
         $this->getDescriptor()->describe($output, $describedObject, $options);
 
         if ('json' === $this->getFormat()) {
-            $this->assertEquals(json_encode(json_decode($expectedDescription), JSON_PRETTY_PRINT), json_encode(json_decode($output->fetch()), JSON_PRETTY_PRINT));
+            $this->assertEquals(json_encode(json_decode($expectedDescription), \JSON_PRETTY_PRINT), json_encode(json_decode($output->fetch()), \JSON_PRETTY_PRINT));
         } else {
-            $this->assertEquals(trim($expectedDescription), trim(str_replace(PHP_EOL, "\n", $output->fetch())));
+            $this->assertEquals(trim($expectedDescription), trim(str_replace(\PHP_EOL, "\n", $output->fetch())));
         }
     }
 

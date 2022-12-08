@@ -33,19 +33,19 @@ use Doctrine\ORM\Cache\QueryCacheKey;
 class StatisticsCacheLogger implements CacheLogger
 {
     /**
-     * @var array
+     * @var int[]
      */
-    private $cacheMissCountMap = array();
+    private $cacheMissCountMap = [];
 
     /**
-     * @var array
+     * @var int[]
      */
-    private $cacheHitCountMap = array();
+    private $cacheHitCountMap = [];
 
     /**
-     * @var array
+     * @var int[]
      */
-    private $cachePutCountMap = array();
+    private $cachePutCountMap = [];
 
     /**
      * {@inheritdoc}
@@ -142,7 +142,7 @@ class StatisticsCacheLogger implements CacheLogger
      *
      * @param string $regionName The name of the cache region.
      *
-     * @return integer
+     * @return int
      */
     public function getRegionHitCount($regionName)
     {
@@ -154,7 +154,7 @@ class StatisticsCacheLogger implements CacheLogger
      *
      * @param string $regionName The name of the cache region.
      *
-     * @return integer
+     * @return int
      */
     public function getRegionMissCount($regionName)
     {
@@ -166,7 +166,7 @@ class StatisticsCacheLogger implements CacheLogger
      *
      * @param string $regionName The name of the cache region.
      *
-     * @return integer
+     * @return int
      */
     public function getRegionPutCount($regionName)
     {
@@ -214,15 +214,15 @@ class StatisticsCacheLogger implements CacheLogger
      */
     public function clearStats()
     {
-        $this->cachePutCountMap  = array();
-        $this->cacheHitCountMap  = array();
-        $this->cacheMissCountMap = array();
+        $this->cachePutCountMap  = [];
+        $this->cacheHitCountMap  = [];
+        $this->cacheMissCountMap = [];
     }
 
     /**
      * Get the total number of put in cache.
      *
-     * @return integer
+     * @return int
      */
     public function getPutCount()
     {
@@ -232,7 +232,7 @@ class StatisticsCacheLogger implements CacheLogger
     /**
      * Get the total number of entries successfully retrieved from cache.
      *
-     * @return integer
+     * @return int
      */
     public function getHitCount()
     {
@@ -242,7 +242,7 @@ class StatisticsCacheLogger implements CacheLogger
     /**
      * Get the total number of cached entries *not* found in cache.
      *
-     * @return integer
+     * @return int
      */
     public function getMissCount()
     {

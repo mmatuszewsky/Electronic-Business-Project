@@ -55,6 +55,11 @@ class FieldBuilder
     private $sequenceDef;
 
     /**
+     * @var string|null
+     */
+    private $customIdGenerator;
+
+    /**
      * @param ClassMetadataBuilder $builder
      * @param array                $mapping
      */
@@ -69,11 +74,12 @@ class FieldBuilder
      *
      * @param int $length
      *
-     * @return FieldBuilder
+     * @return static
      */
     public function length($length)
     {
         $this->mapping['length'] = $length;
+
         return $this;
     }
 
@@ -82,11 +88,12 @@ class FieldBuilder
      *
      * @param bool $flag
      *
-     * @return FieldBuilder
+     * @return static
      */
     public function nullable($flag = true)
     {
-        $this->mapping['nullable'] = (bool)$flag;
+        $this->mapping['nullable'] = (bool) $flag;
+
         return $this;
     }
 
@@ -95,11 +102,12 @@ class FieldBuilder
      *
      * @param bool $flag
      *
-     * @return FieldBuilder
+     * @return static
      */
     public function unique($flag = true)
     {
-        $this->mapping['unique'] = (bool)$flag;
+        $this->mapping['unique'] = (bool) $flag;
+
         return $this;
     }
 
@@ -108,11 +116,12 @@ class FieldBuilder
      *
      * @param string $name
      *
-     * @return FieldBuilder
+     * @return static
      */
     public function columnName($name)
     {
         $this->mapping['columnName'] = $name;
+
         return $this;
     }
 
@@ -121,11 +130,12 @@ class FieldBuilder
      *
      * @param int $p
      *
-     * @return FieldBuilder
+     * @return static
      */
     public function precision($p)
     {
         $this->mapping['precision'] = $p;
+
         return $this;
     }
 
@@ -134,11 +144,12 @@ class FieldBuilder
      *
      * @param int $s
      *
-     * @return FieldBuilder
+     * @return static
      */
     public function scale($s)
     {
         $this->mapping['scale'] = $s;
+
         return $this;
     }
 
@@ -156,11 +167,12 @@ class FieldBuilder
     /**
      * Sets field as primary key.
      *
-     * @return FieldBuilder
+     * @return static
      */
     public function makePrimaryKey()
     {
         $this->mapping['id'] = true;
+
         return $this;
     }
 
@@ -170,33 +182,36 @@ class FieldBuilder
      * @param string $name
      * @param mixed  $value
      *
-     * @return FieldBuilder
+     * @return static
      */
     public function option($name, $value)
     {
         $this->mapping['options'][$name] = $value;
+
         return $this;
     }
 
     /**
      * @param string $strategy
      *
-     * @return FieldBuilder
+     * @return static
      */
     public function generatedValue($strategy = 'AUTO')
     {
         $this->generatedValue = $strategy;
+
         return $this;
     }
 
     /**
      * Sets field versioned.
      *
-     * @return FieldBuilder
+     * @return static
      */
     public function isVersionField()
     {
         $this->version = true;
+
         return $this;
     }
 
@@ -207,15 +222,16 @@ class FieldBuilder
      * @param int    $allocationSize
      * @param int    $initialValue
      *
-     * @return FieldBuilder
+     * @return static
      */
     public function setSequenceGenerator($sequenceName, $allocationSize = 1, $initialValue = 1)
     {
-        $this->sequenceDef = array(
+        $this->sequenceDef = [
             'sequenceName' => $sequenceName,
             'allocationSize' => $allocationSize,
             'initialValue' => $initialValue,
-        );
+        ];
+
         return $this;
     }
 
@@ -224,11 +240,27 @@ class FieldBuilder
      *
      * @param string $def
      *
-     * @return FieldBuilder
+     * @return static
      */
     public function columnDefinition($def)
     {
         $this->mapping['columnDefinition'] = $def;
+
+        return $this;
+    }
+
+    /**
+     * Set the FQCN of the custom ID generator.
+     * This class must extend \Doctrine\ORM\Id\AbstractIdGenerator.
+     *
+     * @param string $customIdGenerator
+     *
+     * @return $this
+     */
+    public function setCustomIdGenerator($customIdGenerator)
+    {
+        $this->customIdGenerator = (string) $customIdGenerator;
+
         return $this;
     }
 
@@ -245,13 +277,20 @@ class FieldBuilder
         if ($this->generatedValue) {
             $cm->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_' . $this->generatedValue));
         }
+
         if ($this->version) {
             $cm->setVersionMapping($this->mapping);
         }
+
         $cm->mapField($this->mapping);
         if ($this->sequenceDef) {
             $cm->setSequenceGeneratorDefinition($this->sequenceDef);
         }
+
+        if ($this->customIdGenerator) {
+            $cm->setCustomGeneratorDefinition(['class' => $this->customIdGenerator]);
+        }
+
         return $this->builder;
     }
 }

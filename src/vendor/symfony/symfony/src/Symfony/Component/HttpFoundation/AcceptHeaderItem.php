@@ -25,7 +25,6 @@ class AcceptHeaderItem
 
     /**
      * @param string $value
-     * @param array  $attributes
      */
     public function __construct($value, array $attributes = [])
     {
@@ -44,7 +43,7 @@ class AcceptHeaderItem
      */
     public static function fromString($itemValue)
     {
-        $bits = preg_split('/\s*(?:;*("[^"]+");*|;*(\'[^\']+\');*|;+)\s*/', $itemValue, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+        $bits = preg_split('/\s*(?:;*("[^"]+");*|;*(\'[^\']+\');*|;+)\s*/', $itemValue, 0, \PREG_SPLIT_NO_EMPTY | \PREG_SPLIT_DELIM_CAPTURE);
         $value = array_shift($bits);
         $attributes = [];
 

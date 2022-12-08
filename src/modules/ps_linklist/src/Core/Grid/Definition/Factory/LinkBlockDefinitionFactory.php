@@ -1,27 +1,21 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
  *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.txt.
+ * This source file is subject to the Academic Free License version 3.0
+ * that is bundled with this package in the file LICENSE.md.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
  *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
- *
- * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
- * International Registered Trademark & Property of PrestaShop SA
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 
 namespace PrestaShop\Module\LinkList\Core\Grid\Definition\Factory;
@@ -30,10 +24,11 @@ use PrestaShop\PrestaShop\Core\Grid\Action\Row\RowActionCollection;
 use PrestaShop\PrestaShop\Core\Grid\Action\Row\Type\LinkRowAction;
 use PrestaShop\PrestaShop\Core\Grid\Action\Row\Type\SubmitRowAction;
 use PrestaShop\PrestaShop\Core\Grid\Column\ColumnCollection;
-use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\PositionColumn;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\ActionColumn;
+use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\PositionColumn;
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\DataColumn;
 use PrestaShop\PrestaShop\Core\Grid\Definition\Factory\AbstractGridDefinitionFactory;
+use PrestaShop\PrestaShop\Core\Multistore\MultistoreContextCheckerInterface;
 
 /**
  * Class LinkBlockDefinitionFactory.
@@ -48,13 +43,22 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
     private $hook;
 
     /**
+     * @var MultistoreContextCheckerInterface
+     */
+    private $multistoreContextChecker;
+
+    /**
      * LinkBlockDefinitionFactory constructor.
      *
      * @param array $hook
+     * @param MultistoreContextCheckerInterface $multistoreContextChecker
      */
-    public function __construct(array $hook)
-    {
+    public function __construct(
+        array $hook,
+        MultistoreContextCheckerInterface $multistoreContextChecker
+    ) {
         $this->hook = $hook;
+        $this->multistoreContextChecker = $multistoreContextChecker;
     }
 
     /**
@@ -78,35 +82,27 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
      */
     protected function getColumns()
     {
-        return (new ColumnCollection())
-            ->add((new DataColumn('id_link_block'))
+        $columns = (new ColumnCollection())
+            ->add(
+                (new DataColumn('id_link_block'))
                 ->setName($this->trans('ID', [], 'Modules.Linklist.Admin'))
                 ->setOptions([
                     'field' => 'id_link_block',
                 ])
             )
-            ->add((new DataColumn('block_name'))
+            ->add(
+                (new DataColumn('block_name'))
                 ->setName($this->trans('Name of the block', [], 'Modules.Linklist.Admin'))
                 ->setOptions([
                     'field' => 'block_name',
                 ])
             )
-            ->add((new PositionColumn('position'))
-                ->setName($this->trans('Position', [], 'Admin.Global'))
-                ->setOptions([
-                    'id_field' => 'id_link_block',
-                    'position_field' => 'position',
-                    'update_route' => 'admin_link_block_update_positions',
-                    'update_method' => 'POST',
-                    'record_route_params' => [
-                        'id_hook' => 'hookId',
-                    ],
-                ])
-            )
-            ->add((new ActionColumn('actions'))
+            ->add(
+                (new ActionColumn('actions'))
                 ->setOptions([
                     'actions' => (new RowActionCollection())
-                        ->add((new LinkRowAction('edit'))
+                        ->add(
+                            (new LinkRowAction('edit'))
                             ->setIcon('edit')
                             ->setOptions([
                                 'route' => 'admin_link_block_edit',
@@ -114,7 +110,8 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
                                 'route_param_field' => 'id_link_block',
                             ])
                         )
-                        ->add((new SubmitRowAction('delete'))
+                        ->add(
+                            (new SubmitRowAction('delete'))
                             ->setName($this->trans('Delete', [], 'Admin.Actions'))
                             ->setIcon('delete')
                             ->setOptions([
@@ -132,5 +129,34 @@ final class LinkBlockDefinitionFactory extends AbstractGridDefinitionFactory
                 ])
             )
         ;
+
+        if ($this->multistoreContextChecker->isSingleShopContext()) {
+            $columns->addBefore(
+                'actions',
+                (new PositionColumn('position'))
+                ->setName($this->trans('Position', [], 'Admin.Global'))
+                ->setOptions([
+                    'id_field' => 'id_link_block',
+                    'position_field' => 'position',
+                    'update_route' => 'admin_link_block_update_positions',
+                    'update_method' => 'POST',
+                    'record_route_params' => [
+                        'id_hook' => 'hookId',
+                    ],
+                ])
+            );
+        } else {
+            $columns->addBefore(
+                'actions',
+                (new DataColumn('shop_name'))
+                    ->setName($this->trans('Shop', [], 'Admin.Global'))
+                    ->setOptions([
+                        'field' => 'shop_name',
+                        'sortable' => false,
+                    ])
+            );
+        }
+
+        return $columns;
     }
 }

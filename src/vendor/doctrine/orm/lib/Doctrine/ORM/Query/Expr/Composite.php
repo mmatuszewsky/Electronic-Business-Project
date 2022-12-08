@@ -39,7 +39,7 @@ class Composite extends Base
             return (string) $this->parts[0];
         }
 
-        $components = array();
+        $components = [];
 
         foreach ($this->parts as $part) {
             $components[] = $this->processQueryPart($part);
@@ -49,7 +49,7 @@ class Composite extends Base
     }
 
     /**
-     * @param string $part
+     * @param string|object $part
      *
      * @return string
      */

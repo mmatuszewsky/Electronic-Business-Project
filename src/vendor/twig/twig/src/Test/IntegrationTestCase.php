@@ -194,7 +194,7 @@ abstract class IntegrationTestCase extends TestCase
                     $message = $e->getMessage();
                     $this->assertSame(trim($exception), trim(sprintf('%s: %s', \get_class($e), $message)));
                     $last = substr($message, \strlen($message) - 1);
-                    $this->assertTrue('.' === $last || '?' === $last, $message, 'Exception message must end with a dot or a question mark.');
+                    $this->assertTrue('.' === $last || '?' === $last, 'Exception message must end with a dot or a question mark.');
 
                     return;
                 }
@@ -247,7 +247,7 @@ abstract class IntegrationTestCase extends TestCase
         $templates = [];
         preg_match_all('/--TEMPLATE(?:\((.*?)\))?--(.*?)(?=\-\-TEMPLATE|$)/s', $test, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
-            $templates[($match[1] ? $match[1] : 'index.twig')] = $match[2];
+            $templates[($match[1] ?: 'index.twig')] = $match[2];
         }
 
         return $templates;

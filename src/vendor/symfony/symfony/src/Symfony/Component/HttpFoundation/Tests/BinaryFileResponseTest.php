@@ -46,11 +46,9 @@ class BinaryFileResponseTest extends ResponseTestCase
         $this->assertSame('fööö.html', $response->getFile()->getFilename());
     }
 
-    /**
-     * @expectedException \LogicException
-     */
     public function testSetContent()
     {
+        $this->expectException('LogicException');
         $response = new BinaryFileResponse(__FILE__);
         $response->setContent('foo');
     }
@@ -109,7 +107,7 @@ class BinaryFileResponseTest extends ResponseTestCase
 
         $this->assertEquals(206, $response->getStatusCode());
         $this->assertEquals($responseRange, $response->headers->get('Content-Range'));
-        $this->assertSame($length, $response->headers->get('Content-Length'));
+        $this->assertSame((string) $length, $response->headers->get('Content-Length'));
     }
 
     /**
@@ -151,6 +149,7 @@ class BinaryFileResponseTest extends ResponseTestCase
             ['bytes=30-', 30, 5, 'bytes 30-34/35'],
             ['bytes=30-30', 30, 1, 'bytes 30-30/35'],
             ['bytes=30-34', 30, 5, 'bytes 30-34/35'],
+            ['bytes=30-40', 30, 5, 'bytes 30-34/35'],
         ];
     }
 
@@ -205,7 +204,29 @@ class BinaryFileResponseTest extends ResponseTestCase
             // Syntactical invalid range-request should also return the full resource
             ['bytes=20-10'],
             ['bytes=50-40'],
+            // range units other than bytes must be ignored
+            ['unknown=10-20'],
         ];
+    }
+
+    public function testRangeOnPostMethod()
+    {
+        $request = Request::create('/', 'POST');
+        $request->headers->set('Range', 'bytes=10-20');
+        $response = BinaryFileResponse::create(__DIR__.'/File/Fixtures/test.gif', 200, ['Content-Type' => 'application/octet-stream']);
+
+        $file = fopen(__DIR__.'/File/Fixtures/test.gif', 'r');
+        $data = fread($file, 35);
+        fclose($file);
+
+        $this->expectOutputString($data);
+        $response = clone $response;
+        $response->prepare($request);
+        $response->sendContent();
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('35', $response->headers->get('Content-Length'));
+        $this->assertNull($response->headers->get('Content-Range'));
     }
 
     public function testUnpreparedResponseSendsFullFile()
@@ -244,7 +265,7 @@ class BinaryFileResponseTest extends ResponseTestCase
     {
         return [
             ['bytes=-40'],
-            ['bytes=30-40'],
+            ['bytes=40-50'],
         ];
     }
 
@@ -263,7 +284,7 @@ class BinaryFileResponseTest extends ResponseTestCase
         $this->expectOutputString('');
         $response->sendContent();
 
-        $this->assertContains('README.md', $response->headers->get('X-Sendfile'));
+        $this->assertStringContainsString('README.md', $response->headers->get('X-Sendfile'));
     }
 
     public function provideXSendfileFiles()
@@ -311,7 +332,7 @@ class BinaryFileResponseTest extends ResponseTestCase
         $response->prepare($request);
         $response->sendContent();
 
-        $this->assertFileNotExists($path);
+        $this->assertFileDoesNotExist($path);
     }
 
     public function testAcceptRangeOnUnsafeMethods()
@@ -338,6 +359,7 @@ class BinaryFileResponseTest extends ResponseTestCase
         return [
             ['/var/www/var/www/files/foo.txt', '/var/www/=/files/', '/files/var/www/files/foo.txt'],
             ['/home/foo/bar.txt', '/var/www/=/files/,/home/foo/=/baz/', '/baz/bar.txt'],
+            ['/tmp/bar.txt', '"/var/www/"="/files/", "/home/Foo/"="/baz/"', null],
         ];
     }
 

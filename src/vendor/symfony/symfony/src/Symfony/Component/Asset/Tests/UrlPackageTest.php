@@ -24,7 +24,7 @@ class UrlPackageTest extends TestCase
     public function testGetUrl($baseUrls, $format, $path, $expected)
     {
         $package = new UrlPackage($baseUrls, new StaticVersionStrategy('v1', $format));
-        $this->assertEquals($expected, $package->getUrl($path));
+        $this->assertSame($expected, $package->getUrl($path));
     }
 
     public function getConfigs()
@@ -58,7 +58,7 @@ class UrlPackageTest extends TestCase
     {
         $package = new UrlPackage($baseUrls, new StaticVersionStrategy('v1', $format), $this->getContext($secure));
 
-        $this->assertEquals($expected, $package->getUrl($path));
+        $this->assertSame($expected, $package->getUrl($path));
     }
 
     public function getContextConfigs()
@@ -85,29 +85,25 @@ class UrlPackageTest extends TestCase
             ->willReturn('https://cdn.com/bar/main.css');
         $package = new UrlPackage('https://example.com', $versionStrategy);
 
-        $this->assertEquals('https://cdn.com/bar/main.css', $package->getUrl('main.css'));
+        $this->assertSame('https://cdn.com/bar/main.css', $package->getUrl('main.css'));
     }
 
-    /**
-     * @expectedException \Symfony\Component\Asset\Exception\LogicException
-     */
     public function testNoBaseUrls()
     {
+        $this->expectException('Symfony\Component\Asset\Exception\LogicException');
         new UrlPackage([], new EmptyVersionStrategy());
     }
 
-    /**
-     * @expectedException \Symfony\Component\Asset\Exception\InvalidArgumentException
-     */
     public function testWrongBaseUrl()
     {
+        $this->expectException('Symfony\Component\Asset\Exception\InvalidArgumentException');
         new UrlPackage(['not-a-url'], new EmptyVersionStrategy());
     }
 
     private function getContext($secure)
     {
         $context = $this->getMockBuilder('Symfony\Component\Asset\Context\ContextInterface')->getMock();
-        $context->expects($this->any())->method('isSecure')->will($this->returnValue($secure));
+        $context->expects($this->any())->method('isSecure')->willReturn($secure);
 
         return $context;
     }

@@ -1,5 +1,4 @@
 {
-    "Version": "2.1.48.42",
     "Names": {
         "aa": "afar",
         "ab": "abház",
@@ -139,6 +138,7 @@
         "eu": "baszk",
         "ewo": "evondo",
         "fa": "perzsa",
+        "fa_AF": "dari",
         "fan": "fang",
         "fat": "fanti",
         "ff": "fulani",
@@ -500,7 +500,7 @@
         "uz": "üzbég",
         "vai": "vai",
         "ve": "venda",
-        "vi": "vietnami",
+        "vi": "vietnámi",
         "vo": "volapük",
         "vot": "votják",
         "vun": "vunjo",

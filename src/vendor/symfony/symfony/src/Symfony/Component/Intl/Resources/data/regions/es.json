@@ -1,5 +1,4 @@
 {
-    "Version": "2.1.48.20",
     "Names": {
         "AC": "Isla de la Ascensión",
         "AD": "Andorra",
@@ -146,7 +145,7 @@
         "MF": "San Martín",
         "MG": "Madagascar",
         "MH": "Islas Marshall",
-        "MK": "Macedonia",
+        "MK": "Macedonia del Norte",
         "ML": "Mali",
         "MM": "Myanmar (Birmania)",
         "MN": "Mongolia",
@@ -248,6 +247,8 @@
         "VU": "Vanuatu",
         "WF": "Wallis y Futuna",
         "WS": "Samoa",
+        "XA": "Pseudoacentos",
+        "XB": "Pseudobidi",
         "XK": "Kosovo",
         "YE": "Yemen",
         "YT": "Mayotte",

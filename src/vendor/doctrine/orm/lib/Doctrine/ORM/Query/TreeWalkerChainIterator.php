@@ -19,28 +19,35 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\AbstractQuery;
+
 /**
- * 
+ * @template-implements \Iterator<TreeWalker>
+ * @template-implements \ArrayAccess<int, TreeWalker>
  */
 class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
 {
     /**
-     * @var TreeWalker[]
+     * @var class-string<TreeWalker>[]
      */
-    private $walkers = array();
+    private $walkers = [];
     /**
      * @var TreeWalkerChain
      */
     private $treeWalkerChain;
     /**
-     * @var
+     * @var AbstractQuery
      */
     private $query;
     /**
-     * @var
+     * @var ParserResult
      */
     private $parserResult;
 
+    /**
+     * @param AbstractQuery $query
+     * @param ParserResult  $parserResult
+     */
     public function __construct(TreeWalkerChain $treeWalkerChain, $query, $parserResult)
     {
         $this->treeWalkerChain = $treeWalkerChain;
@@ -49,33 +56,35 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * @return string|false
+     *
+     * @psalm-return class-string<TreeWalker>|false
      */
-    function rewind()
+    public function rewind()
     {
         return reset($this->walkers);
     }
 
     /**
-     * {@inheritdoc}
+     * @return TreeWalker|null
      */
-    function current()
+    public function current()
     {
         return $this->offsetGet(key($this->walkers));
     }
 
     /**
-     * {@inheritdoc}
+     * @return int
      */
-    function key()
+    public function key()
     {
         return key($this->walkers);
     }
 
     /**
-     * {@inheritdoc}
+     * @return TreeWalker|null
      */
-    function next()
+    public function next()
     {
         next($this->walkers);
 
@@ -85,11 +94,10 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     /**
      * {@inheritdoc}
      */
-    function valid()
+    public function valid()
     {
         return key($this->walkers) !== null;
     }
-
 
     /**
      * {@inheritdoc}
@@ -100,7 +108,7 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
     }
 
     /**
-     * {@inheritdoc}
+     * @return TreeWalker|null
      */
     public function offsetGet($offset)
     {
@@ -120,7 +128,7 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        if (is_null($offset)) {
+        if (null === $offset) {
             $this->walkers[] = $value;
         } else {
             $this->walkers[$offset] = $value;

@@ -30,7 +30,7 @@ class RedirectResponse extends Response
      *
      * @throws \InvalidArgumentException
      *
-     * @see http://tools.ietf.org/html/rfc2616#section-10.3
+     * @see https://tools.ietf.org/html/rfc2616#section-10.3
      */
     public function __construct($url, $status = 302, $headers = [])
     {
@@ -42,7 +42,7 @@ class RedirectResponse extends Response
             throw new \InvalidArgumentException(sprintf('The HTTP status code is not a redirect ("%s" given).', $status));
         }
 
-        if (301 == $status && !\array_key_exists('cache-control', $headers)) {
+        if (301 == $status && !\array_key_exists('cache-control', array_change_key_case($headers, \CASE_LOWER))) {
             $this->headers->remove('cache-control');
         }
     }
@@ -93,14 +93,14 @@ class RedirectResponse extends Response
 <html>
     <head>
         <meta charset="UTF-8" />
-        <meta http-equiv="refresh" content="0;url=%1$s" />
+        <meta http-equiv="refresh" content="0;url=\'%1$s\'" />
 
         <title>Redirecting to %1$s</title>
     </head>
     <body>
         Redirecting to <a href="%1$s">%1$s</a>.
     </body>
-</html>', htmlspecialchars($url, ENT_QUOTES, 'UTF-8')));
+</html>', htmlspecialchars($url, \ENT_QUOTES, 'UTF-8')));
 
         $this->headers->set('Location', $url);
 

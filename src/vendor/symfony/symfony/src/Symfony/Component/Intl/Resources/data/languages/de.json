@@ -1,5 +1,4 @@
 {
-    "Version": "2.1.48.42",
     "Names": {
         "aa": "Afar",
         "ab": "Abchasisch",
@@ -88,6 +87,7 @@
         "car": "Karibisch",
         "cay": "Cayuga",
         "cch": "Atsam",
+        "ccp": "Chakma",
         "ce": "Tschetschenisch",
         "ceb": "Cebuano",
         "cgg": "Rukiga",
@@ -153,6 +153,7 @@
         "ewo": "Ewondo",
         "ext": "Extremadurisch",
         "fa": "Persisch",
+        "fa_AF": "Dari",
         "fan": "Pangwe",
         "fat": "Fanti",
         "ff": "Ful",

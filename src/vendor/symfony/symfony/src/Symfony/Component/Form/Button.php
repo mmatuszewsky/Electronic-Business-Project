@@ -38,8 +38,6 @@ class Button implements \IteratorAggregate, FormInterface
 
     /**
      * Creates a new button from a form configuration.
-     *
-     * @param FormConfigInterface $config The button's configuration
      */
     public function __construct(FormConfigInterface $config)
     {
@@ -107,7 +105,7 @@ class Button implements \IteratorAggregate, FormInterface
     public function setParent(FormInterface $parent = null)
     {
         if ($this->submitted) {
-            throw new AlreadySubmittedException('You cannot set the parent of a submitted button');
+            throw new AlreadySubmittedException('You cannot set the parent of a submitted button.');
         }
 
         $this->parent = $parent;
@@ -127,10 +125,6 @@ class Button implements \IteratorAggregate, FormInterface
      * Unsupported method.
      *
      * This method should not be invoked.
-     *
-     * @param int|string|FormInterface $child
-     * @param null                     $type
-     * @param array                    $options
      *
      * @throws BadMethodCallException
      */
@@ -387,7 +381,7 @@ class Button implements \IteratorAggregate, FormInterface
     public function submit($submittedData, $clearMissing = true)
     {
         if ($this->submitted) {
-            throw new AlreadySubmittedException('A form can only be submitted once');
+            throw new AlreadySubmittedException('A form can only be submitted once.');
         }
 
         $this->submitted = true;

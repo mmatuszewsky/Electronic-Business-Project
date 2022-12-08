@@ -48,11 +48,9 @@ class NativeRequestHandlerTest extends AbstractRequestHandlerTest
         $_SERVER = self::$serverBackup;
     }
 
-    /**
-     * @expectedException \Symfony\Component\Form\Exception\UnexpectedTypeException
-     */
     public function testRequestShouldBeNull()
     {
+        $this->expectException('Symfony\Component\Form\Exception\UnexpectedTypeException');
         $this->requestHandler->handleRequest($this->createForm('name', 'GET'), 'request');
     }
 
@@ -80,7 +78,7 @@ class NativeRequestHandlerTest extends AbstractRequestHandlerTest
             'name' => '',
             'type' => '',
             'tmp_name' => '',
-            'error' => UPLOAD_ERR_NO_FILE,
+            'error' => \UPLOAD_ERR_NO_FILE,
             'size' => 0,
         ]]);
 
@@ -107,7 +105,7 @@ class NativeRequestHandlerTest extends AbstractRequestHandlerTest
                 'field' => 'owfdskjasdfsa',
             ],
             'error' => [
-                'field' => UPLOAD_ERR_OK,
+                'field' => \UPLOAD_ERR_OK,
             ],
             'size' => [
                 'field' => 100,
@@ -121,7 +119,7 @@ class NativeRequestHandlerTest extends AbstractRequestHandlerTest
             'name' => 'upload.txt',
             'type' => 'text/plain',
             'tmp_name' => 'owfdskjasdfsa',
-            'error' => UPLOAD_ERR_OK,
+            'error' => \UPLOAD_ERR_OK,
             'size' => 100,
         ], $fieldForm->getData());
     }
@@ -145,7 +143,7 @@ class NativeRequestHandlerTest extends AbstractRequestHandlerTest
                 'field' => ['subfield' => 'owfdskjasdfsa'],
             ],
             'error' => [
-                'field' => ['subfield' => UPLOAD_ERR_OK],
+                'field' => ['subfield' => \UPLOAD_ERR_OK],
             ],
             'size' => [
                 'field' => ['subfield' => 100],
@@ -159,7 +157,7 @@ class NativeRequestHandlerTest extends AbstractRequestHandlerTest
             'name' => 'upload.txt',
             'type' => 'text/plain',
             'tmp_name' => 'owfdskjasdfsa',
-            'error' => UPLOAD_ERR_OK,
+            'error' => \UPLOAD_ERR_OK,
             'size' => 100,
         ], $subfieldForm->getData());
     }
@@ -260,7 +258,7 @@ class NativeRequestHandlerTest extends AbstractRequestHandlerTest
             'name' => 'upload'.$suffix.'.txt',
             'type' => 'text/plain',
             'tmp_name' => 'owfdskjasdfsa'.$suffix,
-            'error' => UPLOAD_ERR_OK,
+            'error' => \UPLOAD_ERR_OK,
             'size' => 100,
         ];
     }

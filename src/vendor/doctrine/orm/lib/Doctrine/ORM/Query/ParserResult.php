@@ -51,7 +51,7 @@ class ParserResult
      *
      * @var array
      */
-    private $_parameterMappings = array();
+    private $_parameterMappings = [];
 
     /**
      * Initializes a new instance of the <tt>ParserResult</tt> class.
@@ -65,8 +65,7 @@ class ParserResult
     /**
      * Gets the ResultSetMapping for the parsed query.
      *
-     * @return ResultSetMapping|null The result set mapping of the parsed query or NULL
-     *                               if the query is not a SELECT query.
+     * @return ResultSetMapping The result set mapping of the parsed query
      */
     public function getResultSetMapping()
     {

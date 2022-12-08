@@ -4,8 +4,6 @@ namespace PrestaShop\TranslationToolsBundle\Translation\Extractor\Visitor\Transl
 
 use PhpParser\Node;
 use PhpParser\Node\Scalar\String_;
-use PhpParser\NodeVisitorAbstract;
-use PrestaShop\TranslationToolsBundle\Translation\Extractor\Util\TranslationCollection;
 
 /**
  * This class looks for arrays like this:
@@ -27,15 +25,12 @@ use PrestaShop\TranslationToolsBundle\Translation\Extractor\Util\TranslationColl
  */
 class ArrayTranslationDefinition extends AbstractTranslationNodeVisitor
 {
-
     public function leaveNode(Node $node)
     {
         $this->translations->add($this->extractFrom($node));
     }
 
     /**
-     * @param Node $node
-     *
      * @return array Array of translations to add
      */
     public function extractFrom(Node $node)
@@ -45,11 +40,10 @@ class ArrayTranslationDefinition extends AbstractTranslationNodeVisitor
         }
 
         /** @var $node Node\Expr\Array_ */
-
         $translation = [
             'source' => null,
             'domain' => null,
-            'line'   => $node->getAttribute('startLine')
+            'line' => $node->getAttribute('startLine'),
         ];
 
         $parametersFound = false;
@@ -58,21 +52,19 @@ class ArrayTranslationDefinition extends AbstractTranslationNodeVisitor
                 return [];
             }
 
-            switch($item->key->value) {
+            switch ($item->key->value) {
                 case 'key':
                     if (!$item->value instanceof String_) {
                         return [];
                     }
                     $translation['source'] = $item->value->value;
                     continue 2;
-
                 case 'domain':
                     if (!$item->value instanceof String_) {
                         return [];
                     }
                     $translation['domain'] = $item->value->value;
                     continue 2;
-
                 case 'parameters':
                     $parametersFound = true;
                     continue 2;
@@ -93,15 +85,13 @@ class ArrayTranslationDefinition extends AbstractTranslationNodeVisitor
     }
 
     /**
-     * @param Node $node
-     *
      * @return bool
      */
     private function appliesFor(Node $node)
     {
-        return (
+        return
             $node instanceof Node\Expr\Array_
             && (in_array(count($node->items), [2, 3]))
-        );
+        ;
     }
 }

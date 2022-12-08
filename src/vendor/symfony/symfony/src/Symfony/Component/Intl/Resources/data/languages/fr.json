@@ -1,5 +1,4 @@
 {
-    "Version": "2.1.48.43",
     "Names": {
         "aa": "afar",
         "ab": "abkhaze",
@@ -161,6 +160,7 @@
         "ewo": "éwondo",
         "ext": "estrémègne",
         "fa": "persan",
+        "fa_AF": "dari",
         "fan": "fang",
         "fat": "fanti",
         "ff": "peul",

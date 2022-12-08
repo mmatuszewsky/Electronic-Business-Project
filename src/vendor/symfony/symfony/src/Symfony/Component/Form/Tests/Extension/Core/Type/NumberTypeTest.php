@@ -17,6 +17,8 @@ class NumberTypeTest extends BaseTypeTest
 {
     const TESTED_TYPE = 'Symfony\Component\Form\Extension\Core\Type\NumberType';
 
+    private $defaultLocale;
+
     protected function setUp()
     {
         parent::setUp();
@@ -24,7 +26,15 @@ class NumberTypeTest extends BaseTypeTest
         // we test against "de_DE", so we need the full implementation
         IntlTestHelper::requireFullIntl($this, false);
 
+        $this->defaultLocale = \Locale::getDefault();
         \Locale::setDefault('de_DE');
+    }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        \Locale::setDefault($this->defaultLocale);
     }
 
     public function testDefaultFormatting()
@@ -74,5 +84,20 @@ class NumberTypeTest extends BaseTypeTest
         $this->assertSame($emptyData, $form->getViewData());
         $this->assertSame($expectedData, $form->getNormData());
         $this->assertSame($expectedData, $form->getData());
+    }
+
+    public function testSubmitNullWithEmptyDataSetToNull()
+    {
+        $form = $this->factory->create(static::TESTED_TYPE, null, [
+            'empty_data' => null,
+        ]);
+        $form->submit(null);
+
+        $this->assertTrue($form->isSubmitted());
+        $this->assertTrue($form->isSynchronized());
+        $this->assertTrue($form->isValid());
+        $this->assertSame('', $form->getViewData());
+        $this->assertNull($form->getNormData());
+        $this->assertNull($form->getData());
     }
 }

@@ -143,30 +143,6 @@
     'type' => 'class',
     'override' => false,
   ),
-  'AdminAddressesController' => 
-  array (
-    'path' => '',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminAddressesControllerCore' => 
-  array (
-    'path' => 'controllers/admin/AdminAddressesController.php',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminAttachmentsController' => 
-  array (
-    'path' => '',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminAttachmentsControllerCore' => 
-  array (
-    'path' => 'controllers/admin/AdminAttachmentsController.php',
-    'type' => 'class',
-    'override' => false,
-  ),
   'AdminAttributeGeneratorController' => 
   array (
     'path' => '',
@@ -236,42 +212,6 @@
   'AdminCartsControllerCore' => 
   array (
     'path' => 'controllers/admin/AdminCartsController.php',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminCmsCategoriesController' => 
-  array (
-    'path' => '',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminCmsCategoriesControllerCore' => 
-  array (
-    'path' => 'controllers/admin/AdminCmsCategoriesController.php',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminCmsContentController' => 
-  array (
-    'path' => '',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminCmsContentControllerCore' => 
-  array (
-    'path' => 'controllers/admin/AdminCmsContentController.php',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminCmsController' => 
-  array (
-    'path' => '',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminCmsControllerCore' => 
-  array (
-    'path' => 'controllers/admin/AdminCmsController.php',
     'type' => 'class',
     'override' => false,
   ),
@@ -407,18 +347,6 @@
     'type' => 'class',
     'override' => false,
   ),
-  'AdminManufacturersController' => 
-  array (
-    'path' => '',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminManufacturersControllerCore' => 
-  array (
-    'path' => 'controllers/admin/AdminManufacturersController.php',
-    'type' => 'class',
-    'override' => false,
-  ),
   'AdminModulesController' => 
   array (
     'path' => '',
@@ -455,42 +383,6 @@
     'type' => 'class',
     'override' => false,
   ),
-  'AdminOrderMessageController' => 
-  array (
-    'path' => '',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminOrderMessageControllerCore' => 
-  array (
-    'path' => 'controllers/admin/AdminOrderMessageController.php',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminOrdersController' => 
-  array (
-    'path' => '',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminOrdersControllerCore' => 
-  array (
-    'path' => 'controllers/admin/AdminOrdersController.php',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminOutstandingController' => 
-  array (
-    'path' => '',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminOutstandingControllerCore' => 
-  array (
-    'path' => 'controllers/admin/AdminOutstandingController.php',
-    'type' => 'class',
-    'override' => false,
-  ),
   'AdminPatternsController' => 
   array (
     'path' => '',
@@ -512,18 +404,6 @@
   'AdminPdfControllerCore' => 
   array (
     'path' => 'controllers/admin/AdminPdfController.php',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminPreferencesController' => 
-  array (
-    'path' => '',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminPreferencesControllerCore' => 
-  array (
-    'path' => 'controllers/admin/AdminPreferencesController.php',
     'type' => 'class',
     'override' => false,
   ),
@@ -659,18 +539,6 @@
     'type' => 'class',
     'override' => false,
   ),
-  'AdminSlipController' => 
-  array (
-    'path' => '',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminSlipControllerCore' => 
-  array (
-    'path' => 'controllers/admin/AdminSlipController.php',
-    'type' => 'class',
-    'override' => false,
-  ),
   'AdminSpecificPriceRuleController' => 
   array (
     'path' => '',
@@ -791,18 +659,6 @@
     'type' => 'class',
     'override' => false,
   ),
-  'AdminTrackingController' => 
-  array (
-    'path' => '',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminTrackingControllerCore' => 
-  array (
-    'path' => 'controllers/admin/AdminTrackingController.php',
-    'type' => 'class',
-    'override' => false,
-  ),
   'AdminTranslationsController' => 
   array (
     'path' => '',
@@ -812,18 +668,6 @@
   'AdminTranslationsControllerCore' => 
   array (
     'path' => 'controllers/admin/AdminTranslationsController.php',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminZonesController' => 
-  array (
-    'path' => '',
-    'type' => 'class',
-    'override' => false,
-  ),
-  'AdminZonesControllerCore' => 
-  array (
-    'path' => 'controllers/admin/AdminZonesController.php',
     'type' => 'class',
     'override' => false,
   ),
@@ -1673,6 +1517,18 @@
     'type' => 'class',
     'override' => false,
   ),
+  'CustomerSession' => 
+  array (
+    'path' => '',
+    'type' => 'class',
+    'override' => false,
+  ),
+  'CustomerSessionCore' => 
+  array (
+    'path' => 'classes/CustomerSession.php',
+    'type' => 'class',
+    'override' => false,
+  ),
   'CustomerThread' => 
   array (
     'path' => '',
@@ -1829,6 +1685,18 @@
     'type' => 'class',
     'override' => false,
   ),
+  'DummyAdminController' => 
+  array (
+    'path' => '',
+    'type' => 'class',
+    'override' => false,
+  ),
+  'DummyAdminControllerCore' => 
+  array (
+    'path' => 'controllers/admin/DummyAdminController.php',
+    'type' => 'class',
+    'override' => false,
+  ),
   'Employee' => 
   array (
     'path' => '',
@@ -1838,6 +1706,18 @@
   'EmployeeCore' => 
   array (
     'path' => 'classes/Employee.php',
+    'type' => 'class',
+    'override' => false,
+  ),
+  'EmployeeSession' => 
+  array (
+    'path' => '',
+    'type' => 'class',
+    'override' => false,
+  ),
+  'EmployeeSessionCore' => 
+  array (
+    'path' => 'classes/EmployeeSession.php',
     'type' => 'class',
     'override' => false,
   ),
@@ -3497,6 +3377,12 @@
     'type' => 'class',
     'override' => false,
   ),
+  'SQLUtils' => 
+  array (
+    'path' => 'classes/webservice/SQLUtils.php',
+    'type' => 'class',
+    'override' => false,
+  ),
   'Search' => 
   array (
     'path' => '',
@@ -3662,6 +3548,18 @@
   'SpecificPriceCore' => 
   array (
     'path' => 'classes/SpecificPrice.php',
+    'type' => 'class',
+    'override' => false,
+  ),
+  'SpecificPriceFormatter' => 
+  array (
+    'path' => '',
+    'type' => 'class',
+    'override' => false,
+  ),
+  'SpecificPriceFormatterCore' => 
+  array (
+    'path' => 'classes/product/SpecificPriceFormatter.php',
     'type' => 'class',
     'override' => false,
   ),
@@ -4388,6 +4286,18 @@
   'WebserviceRequestCore' => 
   array (
     'path' => 'classes/webservice/WebserviceRequest.php',
+    'type' => 'class',
+    'override' => false,
+  ),
+  'WebserviceSpecificManagementAttachments' => 
+  array (
+    'path' => '',
+    'type' => 'class',
+    'override' => false,
+  ),
+  'WebserviceSpecificManagementAttachmentsCore' => 
+  array (
+    'path' => 'classes/webservice/WebserviceSpecificManagementAttachments.php',
     'type' => 'class',
     'override' => false,
   ),

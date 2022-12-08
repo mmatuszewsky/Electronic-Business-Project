@@ -29,9 +29,6 @@ use Symfony\Component\Routing\RouteCollection;
  */
 class JsonDescriptor extends Descriptor
 {
-    /**
-     * {@inheritdoc}
-     */
     protected function describeRouteCollection(RouteCollection $routes, array $options = [])
     {
         $data = [];
@@ -42,25 +39,16 @@ class JsonDescriptor extends Descriptor
         $this->writeData($data, $options);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function describeRoute(Route $route, array $options = [])
     {
         $this->writeData($this->getRouteData($route), $options);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function describeContainerParameters(ParameterBag $parameters, array $options = [])
     {
         $this->writeData($this->sortParameters($parameters), $options);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function describeContainerTags(ContainerBuilder $builder, array $options = [])
     {
         $showPrivate = isset($options['show_private']) && $options['show_private'];
@@ -128,21 +116,17 @@ class JsonDescriptor extends Descriptor
         $this->writeData($data, $options);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function describeContainerDefinition(Definition $definition, array $options = [])
     {
         $this->writeData($this->getContainerDefinitionData($definition, isset($options['omit_tags']) && $options['omit_tags'], isset($options['show_arguments']) && $options['show_arguments']), $options);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function describeContainerAlias(Alias $alias, array $options = [], ContainerBuilder $builder = null)
     {
         if (!$builder) {
-            return $this->writeData($this->getContainerAliasData($alias), $options);
+            $this->writeData($this->getContainerAliasData($alias), $options);
+
+            return;
         }
 
         $this->writeData(
@@ -164,12 +148,9 @@ class JsonDescriptor extends Descriptor
      */
     protected function describeCallable($callable, array $options = [])
     {
-        $this->writeData($this->getCallableData($callable, $options), $options);
+        $this->writeData($this->getCallableData($callable), $options);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function describeContainerParameter($parameter, array $options = [])
     {
         $key = isset($options['parameter']) ? $options['parameter'] : '';
@@ -179,13 +160,12 @@ class JsonDescriptor extends Descriptor
 
     /**
      * Writes data as json.
-     *
-     * @return array|string
      */
     private function writeData(array $data, array $options)
     {
         $flags = isset($options['json_encoding']) ? $options['json_encoding'] : 0;
-        $this->write(json_encode($data, $flags | JSON_PRETTY_PRINT)."\n");
+
+        $this->write(json_encode($data, $flags | \JSON_PRETTY_PRINT)."\n");
     }
 
     /**
@@ -208,8 +188,7 @@ class JsonDescriptor extends Descriptor
     }
 
     /**
-     * @param Definition $definition
-     * @param bool       $omitTags
+     * @param bool $omitTags
      *
      * @return array
      */
@@ -286,8 +265,7 @@ class JsonDescriptor extends Descriptor
     }
 
     /**
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param string|null              $event
+     * @param string|null $event
      *
      * @return array
      */
@@ -319,11 +297,10 @@ class JsonDescriptor extends Descriptor
 
     /**
      * @param callable $callable
-     * @param array    $options
      *
      * @return array
      */
-    private function getCallableData($callable, array $options = [])
+    private function getCallableData($callable)
     {
         $data = [];
 

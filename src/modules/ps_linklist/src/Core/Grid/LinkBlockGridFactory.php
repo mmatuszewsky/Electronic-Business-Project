@@ -1,37 +1,32 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
  *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.txt.
+ * This source file is subject to the Academic Free License version 3.0
+ * that is bundled with this package in the file LICENSE.md.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
  *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
- *
- * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
- * International Registered Trademark & Property of PrestaShop SA
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 
 namespace PrestaShop\Module\LinkList\Core\Grid;
 
 use PrestaShop\Module\LinkList\Core\Grid\Definition\Factory\LinkBlockDefinitionFactory;
 use PrestaShop\Module\LinkList\Core\Search\Filters\LinkBlockFilters;
+use PrestaShop\PrestaShop\Adapter\Shop\Context;
 use PrestaShop\PrestaShop\Core\Grid\Data\Factory\GridDataFactoryInterface;
 use PrestaShop\PrestaShop\Core\Grid\Filter\GridFilterFormFactoryInterface;
-use PrestaShop\PrestaShop\Core\Grid\Grid;
 use PrestaShop\PrestaShop\Core\Grid\GridFactory;
+use PrestaShop\PrestaShop\Core\Grid\GridInterface;
 use PrestaShop\PrestaShop\Core\Hook\HookDispatcherInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -61,30 +56,38 @@ final class LinkBlockGridFactory
     private $filterFormFactory;
 
     /**
+     * @var Context
+     */
+    private $shopContext;
+
+    /**
      * HookGridFactory constructor.
      *
      * @param TranslatorInterface $translator
      * @param HookDispatcherInterface $hookDispatcher
      * @param GridDataFactoryInterface $dataFactory
      * @param GridFilterFormFactoryInterface $filterFormFactory
+     * @param Context $shopContext
      */
     public function __construct(
         TranslatorInterface $translator,
         GridDataFactoryInterface $dataFactory,
         HookDispatcherInterface $hookDispatcher,
-        GridFilterFormFactoryInterface $filterFormFactory
+        GridFilterFormFactoryInterface $filterFormFactory,
+        Context $shopContext
     ) {
         $this->translator = $translator;
         $this->hookDispatcher = $hookDispatcher;
         $this->dataFactory = $dataFactory;
         $this->filterFormFactory = $filterFormFactory;
+        $this->shopContext = $shopContext;
     }
 
     /**
      * @param array $hooks
      * @param array $filtersParams
      *
-     * @return Grid[]
+     * @return GridInterface[]
      */
     public function getGrids(array $hooks, array $filtersParams)
     {
@@ -92,6 +95,7 @@ final class LinkBlockGridFactory
         foreach ($hooks as $hook) {
             $hookParams = $filtersParams;
             $hookParams['filters']['id_hook'] = $hook['id_hook'];
+            $hookParams['filters']['id_shop'] = $this->shopContext->getContextListShopID();
 
             $filters = new LinkBlockFilters($hookParams);
 
@@ -112,7 +116,7 @@ final class LinkBlockGridFactory
      */
     private function buildGridFactoryByHook(array $hook)
     {
-        $definitionFactory = new LinkBlockDefinitionFactory($hook);
+        $definitionFactory = new LinkBlockDefinitionFactory($hook, $this->shopContext);
         $definitionFactory->setTranslator($this->translator);
         $definitionFactory->setHookDispatcher($this->hookDispatcher);
 

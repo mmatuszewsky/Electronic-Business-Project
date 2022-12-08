@@ -1,5 +1,4 @@
 {
-    "Version": "2.1.48.17",
     "Names": {
         "aa": "afar",
         "ab": "abkhasisk",
@@ -71,6 +70,7 @@
         "car": "caribisk",
         "cay": "cayuga",
         "cch": "atsam",
+        "ccp": "chakma",
         "ce": "tjetjensk",
         "ceb": "cebuano",
         "cgg": "chiga",
@@ -138,6 +138,7 @@
         "eu": "baskisk",
         "ewo": "ewondo",
         "fa": "persisk",
+        "fa_AF": "dari",
         "fan": "fang",
         "fat": "fanti",
         "ff": "fulah",

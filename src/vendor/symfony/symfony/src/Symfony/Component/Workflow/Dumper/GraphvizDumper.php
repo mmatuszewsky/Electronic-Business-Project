@@ -17,7 +17,7 @@ use Symfony\Component\Workflow\Marking;
 /**
  * GraphvizDumper dumps a workflow as a graphviz file.
  *
- * You can convert the generated dot file with the dot utility (http://www.graphviz.org/):
+ * You can convert the generated dot file with the dot utility (https://graphviz.org/):
  *
  *   dot -Tpng workflow.dot > workflow.png
  *
@@ -26,10 +26,11 @@ use Symfony\Component\Workflow\Marking;
  */
 class GraphvizDumper implements DumperInterface
 {
+    // All values should be strings
     protected static $defaultOptions = [
         'graph' => ['ratio' => 'compress', 'rankdir' => 'LR'],
-        'node' => ['fontsize' => 9, 'fontname' => 'Arial', 'color' => '#333333', 'fillcolor' => 'lightblue', 'fixedsize' => true, 'width' => 1],
-        'edge' => ['fontsize' => 9, 'fontname' => 'Arial', 'color' => '#333333', 'arrowhead' => 'normal', 'arrowsize' => 0.5],
+        'node' => ['fontsize' => '9', 'fontname' => 'Arial', 'color' => '#333333', 'fillcolor' => 'lightblue', 'fixedsize' => '1', 'width' => '1'],
+        'edge' => ['fontsize' => '9', 'fontname' => 'Arial', 'color' => '#333333', 'arrowhead' => 'normal', 'arrowsize' => '0.5'],
     ];
 
     /**
@@ -120,8 +121,8 @@ class GraphvizDumper implements DumperInterface
     {
         $code = '';
 
-        foreach ($transitions as $place) {
-            $code .= sprintf("  transition_%s [label=\"%s\", shape=box%s];\n", $this->dotize($place['name']), $place['name'], $this->addAttributes($place['attributes']));
+        foreach ($transitions as $i => $place) {
+            $code .= sprintf("  transition_%d [label=\"%s\", shape=box%s];\n", $this->dotize($i), $place['name'], $this->addAttributes($place['attributes']));
         }
 
         return $code;
@@ -134,12 +135,13 @@ class GraphvizDumper implements DumperInterface
     {
         $dotEdges = [];
 
-        foreach ($definition->getTransitions() as $transition) {
+        foreach ($definition->getTransitions() as $i => $transition) {
             foreach ($transition->getFroms() as $from) {
                 $dotEdges[] = [
                     'from' => $from,
                     'to' => $transition->getName(),
                     'direction' => 'from',
+                    'transition_number' => $i,
                 ];
             }
             foreach ($transition->getTos() as $to) {
@@ -147,6 +149,7 @@ class GraphvizDumper implements DumperInterface
                     'from' => $transition->getName(),
                     'to' => $to,
                     'direction' => 'to',
+                    'transition_number' => $i,
                 ];
             }
         }
@@ -162,12 +165,17 @@ class GraphvizDumper implements DumperInterface
         $code = '';
 
         foreach ($edges as $edge) {
-            $code .= sprintf("  %s_%s -> %s_%s [style=\"solid\"];\n",
-                'from' === $edge['direction'] ? 'place' : 'transition',
-                $this->dotize($edge['from']),
-                'from' === $edge['direction'] ? 'transition' : 'place',
-                $this->dotize($edge['to'])
-            );
+            if ('from' === $edge['direction']) {
+                $code .= sprintf("  place_%s -> transition_%d [style=\"solid\"];\n",
+                    $this->dotize($edge['from']),
+                    $this->dotize($edge['transition_number'])
+                );
+            } else {
+                $code .= sprintf("  transition_%d -> place_%s [style=\"solid\"];\n",
+                    $this->dotize($edge['transition_number']),
+                    $this->dotize($edge['to'])
+                );
+            }
         }
 
         return $code;

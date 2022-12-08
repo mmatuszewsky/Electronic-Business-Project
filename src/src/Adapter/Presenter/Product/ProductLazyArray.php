@@ -1,11 +1,12 @@
 <?php
 /**
- * 2007-2019 PrestaShop and Contributors
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
+ * that is bundled with this package in the file LICENSE.md.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/OSL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -16,28 +17,29 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://www.prestashop.com for more information.
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
  *
- * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2019 PrestaShop SA and Contributors
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Adapter\Presenter\Product;
 
-use Configuration;
-use Hook;
+use DateTime;
 use Language;
 use Link;
-use PrestaShop\Decimal\Number;
+use PrestaShop\Decimal\DecimalNumber;
 use PrestaShop\Decimal\Operation\Rounding;
-use PrestaShop\PrestaShop\Adapter\Entity\Product;
+use PrestaShop\PrestaShop\Adapter\Configuration;
+use PrestaShop\PrestaShop\Adapter\HookManager;
 use PrestaShop\PrestaShop\Adapter\Image\ImageRetriever;
 use PrestaShop\PrestaShop\Adapter\Presenter\AbstractLazyArray;
 use PrestaShop\PrestaShop\Adapter\Product\PriceFormatter;
 use PrestaShop\PrestaShop\Adapter\Product\ProductColorsRetriever;
+use PrestaShop\PrestaShop\Core\Domain\Product\Stock\ValueObject\OutOfStockType;
 use PrestaShop\PrestaShop\Core\Product\ProductPresentationSettings;
+use Product;
 use Symfony\Component\Translation\Exception\InvalidArgumentException;
 use Symfony\Component\Translation\TranslatorInterface;
 use Tools;
@@ -84,6 +86,16 @@ class ProductLazyArray extends AbstractLazyArray
      */
     private $language;
 
+    /**
+     * @var HookManager
+     */
+    private $hookManager;
+
+    /**
+     * @var Configuration
+     */
+    private $configuration;
+
     public function __construct(
         ProductPresentationSettings $settings,
         array $product,
@@ -92,7 +104,9 @@ class ProductLazyArray extends AbstractLazyArray
         Link $link,
         PriceFormatter $priceFormatter,
         ProductColorsRetriever $productColorsRetriever,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        HookManager $hookManager = null,
+        Configuration $configuration = null
     ) {
         $this->settings = $settings;
         $this->product = $product;
@@ -102,17 +116,17 @@ class ProductLazyArray extends AbstractLazyArray
         $this->priceFormatter = $priceFormatter;
         $this->productColorsRetriever = $productColorsRetriever;
         $this->translator = $translator;
+        $this->hookManager = $hookManager ?? new HookManager();
+        $this->configuration = $configuration ?? new Configuration();
 
         $this->fillImages(
-            $settings,
             $product,
             $language
         );
 
         $this->addPriceInformation(
             $settings,
-            $product,
-            $language
+            $product
         );
 
         $this->addQuantityInformation(
@@ -146,7 +160,7 @@ class ProductLazyArray extends AbstractLazyArray
             return $this->product['attributes'];
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -166,7 +180,7 @@ class ProductLazyArray extends AbstractLazyArray
      */
     public function getWeightUnit()
     {
-        return Configuration::get('PS_WEIGHT_UNIT');
+        return $this->configuration->get('PS_WEIGHT_UNIT');
     }
 
     /**
@@ -221,27 +235,23 @@ class ProductLazyArray extends AbstractLazyArray
 
         switch ($this->product['condition']) {
             case 'new':
-                return array(
+                return [
                     'type' => 'new',
-                    'label' => $this->translator->trans('New product', array(), 'Shop.Theme.Catalog'),
+                    'label' => $this->translator->trans('New', [], 'Shop.Theme.Catalog'),
                     'schema_url' => 'https://schema.org/NewCondition',
-                );
+                ];
             case 'used':
-                return array(
+                return [
                     'type' => 'used',
-                    'label' => $this->translator->trans('Used', array(), 'Shop.Theme.Catalog'),
+                    'label' => $this->translator->trans('Used', [], 'Shop.Theme.Catalog'),
                     'schema_url' => 'https://schema.org/UsedCondition',
-                );
-
-                break;
+                ];
             case 'refurbished':
-                return array(
+                return [
                     'type' => 'refurbished',
-                    'label' => $this->translator->trans('Refurbished', array(), 'Shop.Theme.Catalog'),
+                    'label' => $this->translator->trans('Refurbished', [], 'Shop.Theme.Catalog'),
                     'schema_url' => 'https://schema.org/RefurbishedCondition',
-                );
-
-                break;
+                ];
             default:
                 return false;
         }
@@ -255,9 +265,13 @@ class ProductLazyArray extends AbstractLazyArray
     public function getDeliveryInformation()
     {
         if ($this->product['quantity'] > 0) {
-            return Configuration::get('PS_LABEL_DELIVERY_TIME_AVAILABLE', $this->language->id);
+            $config = $this->configuration->get('PS_LABEL_DELIVERY_TIME_AVAILABLE');
+
+            return $config[$this->language->id] ?? null;
         } elseif ($this->product['allow_oosp']) {
-            return Configuration::get('PS_LABEL_DELIVERY_TIME_OOSBOA', $this->language->id);
+            $config = $this->configuration->get('PS_LABEL_DELIVERY_TIME_OOSBOA', []);
+
+            return $config[$this->language->id] ?? null;
         }
 
         return null;
@@ -271,7 +285,7 @@ class ProductLazyArray extends AbstractLazyArray
     public function getEmbeddedAttributes()
     {
         $whitelist = $this->getProductAttributeWhitelist();
-        $embeddedProductAttributes = array();
+        $embeddedProductAttributes = [];
         foreach ($this->product as $attribute => $value) {
             if (in_array($attribute, $whitelist)) {
                 $embeddedProductAttributes[$attribute] = $value;
@@ -291,7 +305,7 @@ class ProductLazyArray extends AbstractLazyArray
         if (!isset($this->product['attachments'])) {
             return null;
         }
-        foreach ($this->product['attachments'] as &$attachment) {
+        foreach ($this->product['attachments'] as $attachment) {
             return Tools::formatBytes($attachment['file_size'], 2);
         }
 
@@ -323,7 +337,7 @@ class ProductLazyArray extends AbstractLazyArray
      */
     public function getQuantityDiscounts()
     {
-        return (isset($this->product['quantity_discounts'])) ? $this->product['quantity_discounts'] : array();
+        return (isset($this->product['quantity_discounts'])) ? $this->product['quantity_discounts'] : [];
     }
 
     /**
@@ -390,14 +404,14 @@ class ProductLazyArray extends AbstractLazyArray
      */
     public function getLabels()
     {
-        return array(
+        return [
             'tax_short' => ($this->settings->include_taxes)
-                ? $this->translator->trans('(tax incl.)', array(), 'Shop.Theme.Global')
-                : $this->translator->trans('(tax excl.)', array(), 'Shop.Theme.Global'),
+                ? $this->translator->trans('(tax incl.)', [], 'Shop.Theme.Global')
+                : $this->translator->trans('(tax excl.)', [], 'Shop.Theme.Global'),
             'tax_long' => ($this->settings->include_taxes)
-                ? $this->translator->trans('Tax included', array(), 'Shop.Theme.Global')
-                : $this->translator->trans('Tax excluded', array(), 'Shop.Theme.Global'),
-        );
+                ? $this->translator->trans('Tax included', [], 'Shop.Theme.Global')
+                : $this->translator->trans('Tax excluded', [], 'Shop.Theme.Global'),
+        ];
     }
 
     /**
@@ -408,11 +422,11 @@ class ProductLazyArray extends AbstractLazyArray
     public function getEcotax()
     {
         if (isset($this->product['ecotax'])) {
-            return array(
+            return [
                 'value' => $this->priceFormatter->format($this->product['ecotax']),
                 'amount' => $this->product['ecotax'],
                 'rate' => $this->product['ecotax_rate'],
-            );
+            ];
         }
 
         return null;
@@ -427,61 +441,69 @@ class ProductLazyArray extends AbstractLazyArray
      */
     public function getFlags()
     {
-        $flags = array();
+        $flags = [];
 
         $show_price = $this->shouldShowPrice($this->settings, $this->product);
 
         if ($show_price && $this->product['online_only']) {
-            $flags['online-only'] = array(
+            $flags['online-only'] = [
                 'type' => 'online-only',
-                'label' => $this->translator->trans('Online only', array(), 'Shop.Theme.Catalog'),
-            );
+                'label' => $this->translator->trans('Online only', [], 'Shop.Theme.Catalog'),
+            ];
         }
 
         if ($show_price && $this->product['on_sale'] && !$this->settings->catalog_mode) {
-            $flags['on-sale'] = array(
+            $flags['on-sale'] = [
                 'type' => 'on-sale',
-                'label' => $this->translator->trans('On sale!', array(), 'Shop.Theme.Catalog'),
-            );
+                'label' => $this->translator->trans('On sale!', [], 'Shop.Theme.Catalog'),
+            ];
         }
 
         if ($show_price && $this->product['reduction']) {
             if ($this->product['discount_type'] === 'percentage') {
-                $flags['discount'] = array(
+                $flags['discount'] = [
                     'type' => 'discount',
                     'label' => $this->product['discount_percentage'],
-                );
+                ];
             } elseif ($this->product['discount_type'] === 'amount') {
-                $flags['discount'] = array(
+                $flags['discount'] = [
                     'type' => 'discount',
                     'label' => $this->product['discount_amount_to_display'],
-                );
+                ];
             } else {
-                $flags['discount'] = array(
+                $flags['discount'] = [
                     'type' => 'discount',
-                    'label' => $this->translator->trans('Reduced price', array(), 'Shop.Theme.Catalog'),
-                );
+                    'label' => $this->translator->trans('Reduced price', [], 'Shop.Theme.Catalog'),
+                ];
             }
         }
 
         if ($this->product['new']) {
-            $flags['new'] = array(
+            $flags['new'] = [
                 'type' => 'new',
-                'label' => $this->translator->trans('New', array(), 'Shop.Theme.Catalog'),
-            );
+                'label' => $this->translator->trans('New', [], 'Shop.Theme.Catalog'),
+            ];
         }
 
         if ($this->product['pack']) {
-            $flags['pack'] = array(
+            $flags['pack'] = [
                 'type' => 'pack',
-                'label' => $this->translator->trans('Pack', array(), 'Shop.Theme.Catalog'),
-            );
+                'label' => $this->translator->trans('Pack', [], 'Shop.Theme.Catalog'),
+            ];
         }
 
-        Hook::exec('actionProductFlagsModifier', array(
+        if ($this->shouldShowOutOfStockLabel($this->settings, $this->product)) {
+            $config = $this->configuration->get('PS_LABEL_OOS_PRODUCTS_BOD');
+            $flags['out_of_stock'] = [
+                'type' => 'out_of_stock',
+                'label' => $config[$this->language->getId()] ?? null,
+            ];
+        }
+
+        $this->hookManager->exec('actionProductFlagsModifier', [
             'flags' => &$flags,
             'product' => $this->product,
-        ));
+        ]);
 
         return $flags;
     }
@@ -496,7 +518,7 @@ class ProductLazyArray extends AbstractLazyArray
         $colors = $this->productColorsRetriever->getColoredVariants($this->product['id_product']);
 
         if (!is_array($colors)) {
-            return array();
+            return [];
         }
 
         return array_map(function (array $color) {
@@ -564,56 +586,142 @@ class ProductLazyArray extends AbstractLazyArray
     private function shouldShowPrice(
         ProductPresentationSettings $settings,
         array $product
-    ) {
+    ): bool {
         return $settings->shouldShowPrice() && (bool) $product['show_price'];
     }
 
     /**
      * The "Add to cart" button should be shown for products available for order.
      *
-     * @param $product
+     * @param array $product
      *
-     * @return mixed
+     * @return bool
      */
-    private function shouldShowAddToCartButton($product)
+    private function shouldShowAddToCartButton(array $product): bool
     {
         return (bool) $product['available_for_order'];
     }
 
-    private function fillImages(
-        ProductPresentationSettings $settings,
-        array $product,
-        Language $language
-    ) {
-        $this->product['images'] = $this->imageRetriever->getProductImages(
+    /**
+     * @param array $product
+     *
+     * @return bool
+     */
+    private function shouldShowOutOfStockLabel(ProductPresentationSettings $settings, array $product): bool
+    {
+        if (!$settings->showLabelOOSListingPages) {
+            return false;
+        }
+
+        if (!$this->configuration->getBoolean('PS_STOCK_MANAGEMENT')) {
+            return false;
+        }
+
+        // Displayed only if the order of out of stock product is denied.
+        if ($product['out_of_stock'] == OutOfStockType::OUT_OF_STOCK_AVAILABLE
+            || (
+                $product['out_of_stock'] == OutOfStockType::OUT_OF_STOCK_DEFAULT
+                && $this->configuration->getBoolean('PS_ORDER_OUT_OF_STOCK')
+            )) {
+            return false;
+        }
+
+        if ($product['id_product_attribute']) {
+            // Displayed only if all combinations are out of stock (stock is <= 0)
+            $product = new Product((int) $product['id_product']);
+            if (empty($product->id)) {
+                return false;
+            }
+
+            foreach ($product->getAttributesResume($this->language->getId()) as $combination) {
+                if ($combination['quantity'] > 0) {
+                    return false;
+                }
+            }
+        } elseif ($product['quantity'] > 0) {
+            // Displayed only if the product stock is <= 0
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param array $product
+     * @param Language $language
+     */
+    private function fillImages(array $product, Language $language): void
+    {
+        // Get all product images, including potential cover
+        $productImages = $this->imageRetriever->getAllProductImages(
             $product,
             $language
         );
 
-        if (isset($product['id_product_attribute'])) {
-            foreach ($this->product['images'] as $image) {
-                if (isset($image['cover']) && null !== $image['cover']) {
-                    $this->product['cover'] = $image;
+        // Get filtered product images matching the specified id_product_attribute
+        $this->product['images'] = $this->filterImagesForCombination($productImages, $product['id_product_attribute']);
 
+        // Get default image for selected combination (used for product page, cart details, ...)
+        $this->product['default_image'] = reset($this->product['images']);
+        foreach ($this->product['images'] as $image) {
+            // If one of the image is a cover it is used as such
+            if (isset($image['cover']) && null !== $image['cover']) {
+                $this->product['default_image'] = $image;
+
+                break;
+            }
+        }
+
+        // Get generic product image, used for product listing
+        if (isset($product['cover_image_id'])) {
+            // First try to find cover in product images
+            foreach ($productImages as $productImage) {
+                if ($productImage['id_image'] == $product['cover_image_id']) {
+                    $this->product['cover'] = $productImage;
                     break;
                 }
             }
+
+            // If the cover is not associated to the product images it is fetched manually
+            if (!isset($this->product['cover'])) {
+                $coverImage = $this->imageRetriever->getImage(new Product($product['id_product'], false, $language->getId()), $product['cover_image_id']);
+                $this->product['cover'] = array_merge($coverImage, [
+                    'legend' => $coverImage['legend'],
+                ]);
+            }
         }
 
+        // If no cover fallback on default image
         if (!isset($this->product['cover'])) {
-            if (count($this->product['images']) > 0) {
-                $this->product['cover'] = array_values($this->product['images'])[0];
-            } else {
-                $this->product['cover'] = null;
-            }
+            $this->product['cover'] = $this->product['default_image'];
         }
     }
 
-    private function addPriceInformation(
-        ProductPresentationSettings $settings,
-        array $product,
-        Language $language
-    ) {
+    /**
+     * @param array $images
+     * @param int $productAttributeId
+     *
+     * @return array
+     */
+    private function filterImagesForCombination(array $images, int $productAttributeId)
+    {
+        $filteredImages = [];
+
+        foreach ($images as $image) {
+            if (in_array($productAttributeId, $image['associatedVariants'])) {
+                $filteredImages[] = $image;
+            }
+        }
+
+        return (0 === count($filteredImages)) ? $images : $filteredImages;
+    }
+
+    /**
+     * @param ProductPresentationSettings $settings
+     * @param array $product
+     */
+    private function addPriceInformation(ProductPresentationSettings $settings, array $product): void
+    {
         $this->product['has_discount'] = false;
         $this->product['discount_type'] = null;
         $this->product['discount_percentage'] = null;
@@ -631,8 +739,8 @@ class ProductLazyArray extends AbstractLazyArray
             $this->product['has_discount'] = (0 != $product['reduction']);
             $this->product['discount_type'] = $product['specific_prices']['reduction_type'];
 
-            $absoluteReduction = new Number($product['specific_prices']['reduction']);
-            $absoluteReduction = $absoluteReduction->times(new Number('100'));
+            $absoluteReduction = new DecimalNumber($product['specific_prices']['reduction']);
+            $absoluteReduction = $absoluteReduction->times(new DecimalNumber('100'));
             $negativeReduction = $absoluteReduction->toNegative();
             $presAbsoluteReduction = $absoluteReduction->round(2, Rounding::ROUND_HALF_UP);
             $presNegativeReduction = $negativeReduction->round(2, Rounding::ROUND_HALF_UP);
@@ -702,7 +810,8 @@ class ProductLazyArray extends AbstractLazyArray
         if ($settings->stock_management_enabled
             && !$product['allow_oosp']
             && ($product['quantity'] <= 0
-            || $product['quantity'] - $this->getQuantityWanted() < 0)
+            || $product['quantity'] - $this->getQuantityWanted() < 0
+            || $product['quantity'] - $this->getMinimalQuantity() < 0)
         ) {
             $shouldEnable = false;
         }
@@ -716,6 +825,14 @@ class ProductLazyArray extends AbstractLazyArray
     private function getQuantityWanted()
     {
         return (int) Tools::getValue('quantity_wanted', 1);
+    }
+
+    /**
+     * @return int Minimal quantity of product requested by the customer
+     */
+    private function getMinimalQuantity()
+    {
+        return (int) $this->product['minimal_quantity'];
     }
 
     /**
@@ -765,30 +882,39 @@ class ProductLazyArray extends AbstractLazyArray
         $this->product['show_availability'] = $show_availability;
         $product['quantity_wanted'] = $this->getQuantityWanted();
 
-        if (isset($product['available_date']) && '0000-00-00' == $product['available_date']) {
-            $product['available_date'] = null;
+        if (isset($product['available_date'])) {
+            $date = new DateTime($product['available_date']);
+            if ($date < new DateTime()) {
+                $product['available_date'] = null;
+            }
         }
 
         if ($show_availability) {
-            if ($product['quantity'] - $product['quantity_wanted'] >= 0) {
+            $availableQuantity = $product['quantity'] - $product['quantity_wanted'];
+            if (isset($product['stock_quantity'])) {
+                $availableQuantity = $product['stock_quantity'] - $product['quantity_wanted'];
+            }
+            if ($availableQuantity >= 0) {
                 $this->product['availability_date'] = $product['available_date'];
 
                 if ($product['quantity'] < $settings->lastRemainingItems) {
                     $this->applyLastItemsInStockDisplayRule();
                 } else {
+                    $config = $this->configuration->get('PS_LABEL_IN_STOCK_PRODUCTS');
                     $this->product['availability_message'] = $product['available_now'] ? $product['available_now']
-                        : Configuration::get('PS_LABEL_IN_STOCK_PRODUCTS', $language->id);
+                        : ($config[$language->id] ?? null);
                     $this->product['availability'] = 'available';
                 }
             } elseif ($product['allow_oosp']) {
+                $config = $this->configuration->get('PS_LABEL_OOS_PRODUCTS_BOA');
                 $this->product['availability_message'] = $product['available_later'] ? $product['available_later']
-                    : Configuration::get('PS_LABEL_OOS_PRODUCTS_BOA', $language->id);
+                    : ($config[$language->id] ?? null);
                 $this->product['availability_date'] = $product['available_date'];
                 $this->product['availability'] = 'available';
             } elseif ($product['quantity_wanted'] > 0 && $product['quantity'] > 0) {
                 $this->product['availability_message'] = $this->translator->trans(
                     'There are not enough products in stock',
-                    array(),
+                    [],
                     'Shop.Notifications.Error'
                 );
                 $this->product['availability'] = 'unavailable';
@@ -796,14 +922,14 @@ class ProductLazyArray extends AbstractLazyArray
             } elseif (!empty($product['quantity_all_versions']) && $product['quantity_all_versions'] > 0) {
                 $this->product['availability_message'] = $this->translator->trans(
                     'Product available with different options',
-                    array(),
+                    [],
                     'Shop.Theme.Catalog'
                 );
                 $this->product['availability_date'] = $product['available_date'];
                 $this->product['availability'] = 'unavailable';
             } else {
-                $this->product['availability_message'] =
-                    Configuration::get('PS_LABEL_OOS_PRODUCTS_BOD', $language->id);
+                $config = $this->configuration->get('PS_LABEL_OOS_PRODUCTS_BOD');
+                $this->product['availability_message'] = $config[$language->id] ?? null;
                 $this->product['availability_date'] = $product['available_date'];
                 $this->product['availability'] = 'unavailable';
             }
@@ -821,7 +947,7 @@ class ProductLazyArray extends AbstractLazyArray
     {
         $this->product['availability_message'] = $this->translator->trans(
             'Last items in stock',
-            array(),
+            [],
             'Shop.Theme.Catalog'
         );
         $this->product['availability'] = 'last_remaining_items';
@@ -836,11 +962,13 @@ class ProductLazyArray extends AbstractLazyArray
     {
         switch ($key) {
             case 'ean13':
-                return $this->translator->trans('ean13', array(), 'Shop.Theme.Catalog');
+                return $this->translator->trans('ean13', [], 'Shop.Theme.Catalog');
             case 'isbn':
-                return $this->translator->trans('isbn', array(), 'Shop.Theme.Catalog');
+                return $this->translator->trans('isbn', [], 'Shop.Theme.Catalog');
             case 'upc':
-                return $this->translator->trans('upc', array(), 'Shop.Theme.Catalog');
+                return $this->translator->trans('upc', [], 'Shop.Theme.Catalog');
+            case 'mpn':
+                return $this->translator->trans('MPN', [], 'Shop.Theme.Catalog');
         }
 
         return $key;
@@ -851,7 +979,7 @@ class ProductLazyArray extends AbstractLazyArray
      */
     protected function getProductAttributeWhitelist()
     {
-        return array(
+        return [
             'add_to_cart_url',
             'additional_shipping_cost',
             'advanced_stock_management',
@@ -956,7 +1084,7 @@ class ProductLazyArray extends AbstractLazyArray
             'virtual',
             'visibility',
             'weight_unit',
-        );
+        ];
     }
 
     /**
@@ -968,14 +1096,14 @@ class ProductLazyArray extends AbstractLazyArray
      */
     protected function buildGroupedFeatures(array $productFeatures)
     {
-        $valuesByFeatureName = array();
-        $groupedFeatures = array();
+        $valuesByFeatureName = [];
+        $groupedFeatures = [];
 
         // features can either be "raw" (id_feature, id_product_id_feature_value)
         // or "full" (id_feature, name, value)
         // grouping can only be performed if they are "full"
         if (empty($productFeatures) || !array_key_exists('name', reset($productFeatures))) {
-            return array();
+            return [];
         }
 
         foreach ($productFeatures as $feature) {

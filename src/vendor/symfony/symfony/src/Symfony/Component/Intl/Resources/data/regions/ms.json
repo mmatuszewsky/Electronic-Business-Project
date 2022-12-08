@@ -1,5 +1,4 @@
 {
-    "Version": "2.1.49.2",
     "Names": {
         "AC": "Pulau Ascension",
         "AD": "Andorra",
@@ -248,8 +247,8 @@
         "VU": "Vanuatu",
         "WF": "Wallis dan Futuna",
         "WS": "Samoa",
-        "XA": "XA",
-        "XB": "XB",
+        "XA": "Aksen Pseudo",
+        "XB": "Bidi Pseudo",
         "XK": "Kosovo",
         "YE": "Yaman",
         "YT": "Mayotte",

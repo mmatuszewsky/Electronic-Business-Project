@@ -1,26 +1,20 @@
 /**
- * 2007-2019 PrestaShop.
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.txt.
+ * that is bundled with this package in the file LICENSE.md.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
  *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
- *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2019 PrestaShop SA
+ * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
- * International Registered Trademark & Property of PrestaShop SA
  */
 
 import getQueryParameters from './urlparser';
@@ -32,7 +26,7 @@ const displayLabelBlock = (formatterId, displayBlock, min, max) => {
   if (formatters[formatterId] === undefined) {
     displayBlock.text(
       displayBlock.text().replace(
-        /([^\d]*)(?:[\d .,]+)([^\d]+)(?:[\d .,]+)(.*)/,
+        /([^\d]*)(?:[\d\s.,]+)([^\d]+)(?:[\d\s.,]+)(.*)/,
         `$1${min}$2${max}$3`,
       ),
     );
@@ -51,6 +45,7 @@ const refreshSliders = () => {
     const $el = $(this);
     const values = $el.data('slider-values');
     const specifications = $el.data('slider-specifications');
+
     if (specifications !== null && specifications !== undefined) {
       formatters[$el.data('slider-id')] = NumberFormatter.build(specifications);
     }

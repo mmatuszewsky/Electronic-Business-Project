@@ -23,11 +23,9 @@ use Symfony\Component\HttpFoundation\FileBag;
  */
 class FileBagTest extends TestCase
 {
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testFileMustBeAnArrayOrUploadedFile()
     {
+        $this->expectException('InvalidArgumentException');
         new FileBag(['file' => 'foo']);
     }
 
@@ -53,7 +51,7 @@ class FileBagTest extends TestCase
             'name' => '',
             'type' => '',
             'tmp_name' => '',
-            'error' => UPLOAD_ERR_NO_FILE,
+            'error' => \UPLOAD_ERR_NO_FILE,
             'size' => 0,
         ]]);
 
@@ -66,7 +64,7 @@ class FileBagTest extends TestCase
             'name' => [''],
             'type' => [''],
             'tmp_name' => [''],
-            'error' => [UPLOAD_ERR_NO_FILE],
+            'error' => [\UPLOAD_ERR_NO_FILE],
             'size' => [0],
         ]]);
 
@@ -79,7 +77,7 @@ class FileBagTest extends TestCase
             'name' => ['file1' => ''],
             'type' => ['file1' => ''],
             'tmp_name' => ['file1' => ''],
-            'error' => ['file1' => UPLOAD_ERR_NO_FILE],
+            'error' => ['file1' => \UPLOAD_ERR_NO_FILE],
             'size' => ['file1' => 0],
         ]]);
 
@@ -167,9 +165,9 @@ class FileBagTest extends TestCase
     protected function tearDown()
     {
         foreach (glob(sys_get_temp_dir().'/form_test/*') as $file) {
-            unlink($file);
+            @unlink($file);
         }
 
-        rmdir(sys_get_temp_dir().'/form_test');
+        @rmdir(sys_get_temp_dir().'/form_test');
     }
 }

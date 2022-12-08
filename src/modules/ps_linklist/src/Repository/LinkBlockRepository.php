@@ -1,37 +1,34 @@
 <?php
 /**
- * 2007-2018 PrestaShop.
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
  *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.txt.
+ * This source file is subject to the Academic Free License version 3.0
+ * that is bundled with this package in the file LICENSE.md.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
  *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
- *
- * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2018 PrestaShop SA
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
- * International Registered Trademark & Property of PrestaShop SA
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 
 namespace PrestaShop\Module\LinkList\Repository;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Exception\ConnectionException;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Hook;
+use PrestaShop\Module\LinkList\Adapter\ObjectModelHandler;
+use PrestaShop\PrestaShop\Adapter\Shop\Context;
 use PrestaShop\PrestaShop\Core\Exception\DatabaseException;
 use Symfony\Component\Translation\TranslatorInterface;
-use Hook;
 
 /**
  * Class LinkBlockRepository.
@@ -59,6 +56,21 @@ class LinkBlockRepository
     private $translator;
 
     /**
+     * @var bool
+     */
+    private $isMultiStoreUsed;
+
+    /**
+     * @var Context
+     */
+    private $multiStoreContext;
+
+    /**
+     * @var ObjectModelHandler
+     */
+    private $objectModelHandler;
+
+    /**
      * LinkBlockRepository constructor.
      *
      * @param Connection $connection
@@ -70,12 +82,18 @@ class LinkBlockRepository
         Connection $connection,
         $dbPrefix,
         array $languages,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        bool $isMultiStoreUsed,
+        Context $multiStoreContext,
+        ObjectModelHandler $objectModelHandler
     ) {
         $this->connection = $connection;
         $this->dbPrefix = $dbPrefix;
         $this->languages = $languages;
         $this->translator = $translator;
+        $this->isMultiStoreUsed = $isMultiStoreUsed;
+        $this->objectModelHandler = $objectModelHandler;
+        $this->multiStoreContext = $multiStoreContext;
     }
 
     /**
@@ -107,30 +125,36 @@ class LinkBlockRepository
     public function create(array $data)
     {
         $idHook = $data['id_hook'];
-        $maxPosition = $this->getHookMaxPosition($idHook);
 
         $qb = $this->connection->createQueryBuilder();
         $qb
             ->insert($this->dbPrefix . 'link_block')
             ->values([
                 'id_hook' => ':idHook',
-                'position' => ':position',
                 'content' => ':content',
             ])
             ->setParameters([
                 'idHook' => $idHook,
-                'position' => null !== $maxPosition ? $maxPosition + 1 : 0,
                 'content' => json_encode([
                     'cms' => empty($data['cms']) ? [false] : $data['cms'],
                     'static' => empty($data['static']) ? [false] : $data['static'],
                     'product' => empty($data['product']) ? [false] : $data['product'],
+                    'category' => empty($data['category']) ? [false] : $data['category'],
                 ]),
             ]);
 
         $this->executeQueryBuilder($qb, 'Link block error');
         $linkBlockId = $this->connection->lastInsertId();
 
-        $this->updateLanguages($linkBlockId, $data['block_name'], $data['custom_content']);
+        $this->updateLanguages((int) $linkBlockId, $data['block_name'], $data['custom_content']);
+
+        $this->objectModelHandler->handleMultiShopAssociation(
+            (int) $linkBlockId,
+            $data['shop_association'],
+            !$this->isMultiStoreUsed
+        );
+
+        $this->updateMaxPosition((int) $linkBlockId, $idHook, $data['shop_association']);
 
         return $linkBlockId;
     }
@@ -156,12 +180,21 @@ class LinkBlockRepository
                     'cms' => empty($data['cms']) ? [false] : $data['cms'],
                     'static' => empty($data['static']) ? [false] : $data['static'],
                     'product' => empty($data['product']) ? [false] : $data['product'],
+                    'category' => empty($data['category']) ? [false] : $data['category'],
                 ]),
             ])
         ;
+
         $this->executeQueryBuilder($qb, 'Link block error');
 
         $this->updateLanguages($linkBlockId, $data['block_name'], $data['custom_content']);
+
+        if ($this->isMultiStoreUsed) {
+            $this->objectModelHandler->handleMultiShopAssociation(
+                $linkBlockId,
+                $data['shop_association']
+            );
+        }
     }
 
     /**
@@ -169,22 +202,37 @@ class LinkBlockRepository
      *
      * @throws DatabaseException
      */
-    public function delete($idLinkBlock)
+    public function delete($idLinkBlock): void
     {
-        $tableNames = [
-            'link_block_shop',
-            'link_block_lang',
-            'link_block',
-        ];
+        if (count($this->multiStoreContext->getAllShopIds()) === count($this->multiStoreContext->getContextListShopID())) {
+            $tableNames = [
+                'link_block_lang',
+                'link_block',
+                'link_block_shop',
+            ];
 
-        foreach ($tableNames as $tableName) {
-            $qb = $this->connection->createQueryBuilder();
-            $qb
-                ->delete($this->dbPrefix . $tableName)
-                ->andWhere('id_link_block = :idLinkBlock')
-                ->setParameter('idLinkBlock', $idLinkBlock)
-            ;
-            $this->executeQueryBuilder($qb, 'Delete error');
+            foreach ($tableNames as $tableName) {
+                $qb = $this->connection->createQueryBuilder();
+                $qb
+                    ->delete($this->dbPrefix . $tableName)
+                    ->andWhere('id_link_block = :idLinkBlock')
+                    ->setParameter('idLinkBlock', $idLinkBlock)
+                ;
+                $this->executeQueryBuilder($qb, 'Delete error');
+            }
+        } else {
+            // Delete only from specific stores
+            if (!$this->multiStoreContext->isAllShopContext()) {
+                $qb = $this->connection->createQueryBuilder();
+                $qb
+                    ->delete($this->dbPrefix . 'link_block_shop')
+                    ->andWhere('id_link_block = :idLinkBlock')
+                    ->andWhere('id_shop IN (:shopIds)')
+                    ->setParameter('shopIds', $this->multiStoreContext->getContextListShopID(), Connection::PARAM_STR_ARRAY)
+                    ->setParameter('idLinkBlock', $idLinkBlock);
+
+                $this->executeQueryBuilder($qb, 'Delete from multi-store tables error');
+            }
         }
     }
 
@@ -203,7 +251,7 @@ class LinkBlockRepository
             "CREATE TABLE IF NOT EXISTS `{$this->dbPrefix}link_block`(
     			`id_link_block` int(10) unsigned NOT NULL auto_increment,
     			`id_hook` int(1) unsigned DEFAULT NULL,
-    			`position` int(10) unsigned NOT NULL default '0',
+                `position` int(10) unsigned NOT NULL default '0',
     			`content` text default NULL,
     			PRIMARY KEY (`id_link_block`)
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
@@ -216,14 +264,16 @@ class LinkBlockRepository
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
             "CREATE TABLE IF NOT EXISTS `{$this->dbPrefix}link_block_shop` (
     			`id_link_block` int(10) unsigned NOT NULL auto_increment,
-    			`id_shop` int(10) unsigned NOT NULL,
+                `id_shop` int(10) unsigned NOT NULL,
+                `position` int(10) unsigned NOT NULL default '0',
     			PRIMARY KEY (`id_link_block`, `id_shop`)
             ) ENGINE=$engine DEFAULT CHARSET=utf8",
         ];
 
         foreach ($queries as $query) {
             $statement = $this->connection->executeQuery($query);
-            if (0 != (int) $statement->errorCode()) {
+
+            if ($statement instanceof Statement && 0 != (int) $statement->errorCode()) {
                 $errors[] = [
                     'key' => json_encode($statement->errorInfo()),
                     'parameters' => [],
@@ -247,20 +297,27 @@ class LinkBlockRepository
 
         $queries = [
             'INSERT INTO `' . $this->dbPrefix . 'link_block` (`id_link_block`, `id_hook`, `position`, `content`) VALUES
-                (1, ' . $id_hook . ', 0, \'{"cms":[false],"product":["prices-drop","new-products","best-sales"],"static":[false]}\'),
-                (2, ' . $id_hook . ', 1, \'{"cms":["1","2","3","4","5"],"product":[false],"static":["contact","sitemap","stores"]}\');',
+                (1, ' . $id_hook . ', 0, \'{"cms":[false],"product":["prices-drop","new-products","best-sales"],"static":[false],"category":[false]}\'),
+                (2, ' . $id_hook . ', 1, \'{"cms":["1","2","3","4","5"],"product":[false],"static":["contact","sitemap","stores"],"category":[false]}\');',
         ];
 
         foreach ($this->languages as $lang) {
             $queries[] = 'INSERT INTO `' . $this->dbPrefix . 'link_block_lang` (`id_link_block`, `id_lang`, `name`) VALUES
-                (1, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Products', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '"),
-                (2, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Our company', array(), 'Modules.Linklist.Shop', $lang['locale'])) . '")'
+                (1, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Products', [], 'Modules.Linklist.Shop', $lang['locale'])) . '"),
+                (2, ' . (int) $lang['id_lang'] . ', "' . pSQL($this->translator->trans('Our company', [], 'Modules.Linklist.Shop', $lang['locale'])) . '");'
+            ;
+        }
+
+        foreach ($this->multiStoreContext->getShops(true, true) as $shopId) {
+            $queries[] = 'INSERT INTO `' . $this->dbPrefix . 'link_block_shop` (`id_link_block`, `id_shop`, `position`) VALUES
+                (1, ' . (int) $shopId . ', 0),
+                (2, ' . (int) $shopId . ', 1);'
             ;
         }
 
         foreach ($queries as $query) {
             $statement = $this->connection->executeQuery($query);
-            if (0 != (int) $statement->errorCode()) {
+            if ($statement instanceof Statement && 0 != (int) $statement->errorCode()) {
                 $errors[] = [
                     'key' => json_encode($statement->errorInfo()),
                     'parameters' => [],
@@ -374,18 +431,85 @@ class LinkBlockRepository
 
     /**
      * @param int $idHook
+     * @param int $idShop
      *
-     * @return bool|string
+     * @return int
      */
-    private function getHookMaxPosition($idHook)
+    private function getHookMaxPosition(int $idHook, int $idShop): int
     {
         $qb = $this->connection->createQueryBuilder();
-        $qb->select('MAX(lb.position)')
-            ->from($this->dbPrefix . 'link_block', 'lb')
+        $qb->select('MAX(lbs.position)')
+            ->from($this->dbPrefix . 'link_block_shop', 'lbs')
+            ->leftJoin('lbs', $this->dbPrefix . 'link_block', 'lb', 'lbs.id_link_block = lb.id_link_block')
             ->andWhere('lb.id_hook = :idHook')
+            ->andWhere('lbs.id_shop = :idShop')
             ->setParameter('idHook', $idHook)
+            ->setParameter('idShop', $idShop)
         ;
 
-        return $qb->execute()->fetchColumn(0);
+        $maxPosition = $qb->execute()->fetchColumn(0);
+
+        return null !== $maxPosition ? $maxPosition + 1 : 0;
+    }
+
+    /**
+     * @param int $linkBlockId
+     * @param array $shopIds
+     *
+     * @throws DatabaseException
+     */
+    private function updateMaxPosition(int $linkBlockId, ?int $hookId = null, array $shopIds): void
+    {
+        $qb = $this->connection->createQueryBuilder();
+        foreach ($shopIds as $shopId) {
+            $qb
+                ->update($this->dbPrefix . 'link_block_shop lbs')
+                ->set('position', ':position')
+                ->andWhere('lbs.id_shop = :shopId')
+                ->andWhere('lbs.id_link_block = :linkBlockId')
+                ->setParameter('position', $this->getHookMaxPosition($hookId, $shopId))
+                ->setParameter('shopId', $shopId)
+                ->setParameter('linkBlockId', $linkBlockId);
+
+            $this->executeQueryBuilder($qb, 'Link block max position update error');
+        }
+    }
+
+    /**
+     * @param int $shopId
+     * @param array $positionsData
+     *
+     * @return void
+     */
+    public function updatePositions(int $shopId, array $positionsData = []): void
+    {
+        try {
+            $this->connection->beginTransaction();
+
+            $i = 0;
+            foreach ($positionsData['positions'] as $position) {
+                $qb = $this->connection->createQueryBuilder();
+                $qb
+                    ->update($this->dbPrefix . 'link_block_shop')
+                    ->set('position', ':position')
+                    ->andWhere('id_link_block = :linkBlockId')
+                    ->andWhere('id_shop = :shopId')
+                    ->setParameter('shopId', $shopId)
+                    ->setParameter('linkBlockId', $position['rowId'])
+                    ->setParameter('position', $i);
+
+                ++$i;
+
+                $statement = $qb->execute();
+                if ($statement instanceof Statement && $statement->errorCode()) {
+                    throw new DatabaseException('Could not update #%i');
+                }
+            }
+            $this->connection->commit();
+        } catch (ConnectionException $e) {
+            $this->connection->rollBack();
+
+            throw new DatabaseException('Could not update positions.');
+        }
     }
 }

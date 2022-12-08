@@ -32,22 +32,24 @@ class OneToManyAssociationBuilder extends AssociationBuilder
     /**
      * @param array $fieldNames
      *
-     * @return OneToManyAssociationBuilder
+     * @return static
      */
     public function setOrderBy(array $fieldNames)
     {
         $this->mapping['orderBy'] = $fieldNames;
+
         return $this;
     }
 
     /**
      * @param string $fieldName
      *
-     * @return OneToManyAssociationBuilder
+     * @return static
      */
     public function setIndexBy($fieldName)
     {
         $this->mapping['indexBy'] = $fieldName;
+
         return $this;
     }
 
@@ -62,6 +64,7 @@ class OneToManyAssociationBuilder extends AssociationBuilder
         }
         $cm = $this->builder->getClassMetadata();
         $cm->mapOneToMany($mapping);
+
         return $this->builder;
     }
 }

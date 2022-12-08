@@ -21,11 +21,9 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class AddSecurityVotersPassTest extends TestCase
 {
-    /**
-     * @expectedException \Symfony\Component\DependencyInjection\Exception\LogicException
-     */
     public function testNoVoters()
     {
+        $this->expectException('Symfony\Component\DependencyInjection\Exception\LogicException');
         $container = new ContainerBuilder();
         $container
             ->register('security.access.decision_manager', AccessDecisionManager::class)
@@ -99,14 +97,10 @@ class AddSecurityVotersPassTest extends TestCase
     public function testVoterMissingInterfaceAndMethod()
     {
         $exception = LogicException::class;
-        $message = 'stdClass should implement the Symfony\Component\Security\Core\Authorization\Voter\VoterInterface interface when used as voter.';
+        $message = '"stdClass" should implement the "Symfony\Component\Security\Core\Authorization\Voter\VoterInterface" interface when used as voter.';
 
-        if (method_exists($this, 'expectException')) {
-            $this->expectException($exception);
-            $this->expectExceptionMessage($message);
-        } else {
-            $this->setExpectedException($exception, $message);
-        }
+        $this->expectException($exception);
+        $this->expectExceptionMessage($message);
 
         $container = new ContainerBuilder();
         $container

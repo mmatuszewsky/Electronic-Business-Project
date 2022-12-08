@@ -29,33 +29,21 @@ use Symfony\Component\Routing\RouteCollection;
  */
 class XmlDescriptor extends Descriptor
 {
-    /**
-     * {@inheritdoc}
-     */
     protected function describeRouteCollection(RouteCollection $routes, array $options = [])
     {
         $this->writeDocument($this->getRouteCollectionDocument($routes));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function describeRoute(Route $route, array $options = [])
     {
         $this->writeDocument($this->getRouteDocument($route, isset($options['name']) ? $options['name'] : null));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function describeContainerParameters(ParameterBag $parameters, array $options = [])
     {
         $this->writeDocument($this->getContainerParametersDocument($parameters));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function describeContainerTags(ContainerBuilder $builder, array $options = [])
     {
         $this->writeDocument($this->getContainerTagsDocument($builder, isset($options['show_private']) && $options['show_private']));
@@ -81,24 +69,20 @@ class XmlDescriptor extends Descriptor
         $this->writeDocument($this->getContainerServicesDocument($builder, isset($options['tag']) ? $options['tag'] : null, isset($options['show_private']) && $options['show_private'], isset($options['show_arguments']) && $options['show_arguments'], isset($options['filter']) ? $options['filter'] : null));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function describeContainerDefinition(Definition $definition, array $options = [])
     {
         $this->writeDocument($this->getContainerDefinitionDocument($definition, isset($options['id']) ? $options['id'] : null, isset($options['omit_tags']) && $options['omit_tags'], isset($options['show_arguments']) && $options['show_arguments']));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function describeContainerAlias(Alias $alias, array $options = [], ContainerBuilder $builder = null)
     {
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->appendChild($dom->importNode($this->getContainerAliasDocument($alias, isset($options['id']) ? $options['id'] : null)->childNodes->item(0), true));
 
         if (!$builder) {
-            return $this->writeDocument($dom);
+            $this->writeDocument($dom);
+
+            return;
         }
 
         $dom->appendChild($dom->importNode($this->getContainerDefinitionDocument($builder->getDefinition((string) $alias), (string) $alias)->childNodes->item(0), true));
@@ -122,9 +106,6 @@ class XmlDescriptor extends Descriptor
         $this->writeDocument($this->getCallableDocument($callable));
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function describeContainerParameter($parameter, array $options = [])
     {
         $this->writeDocument($this->getContainerParameterDocument($parameter, $options));
@@ -132,8 +113,6 @@ class XmlDescriptor extends Descriptor
 
     /**
      * Writes DOM document.
-     *
-     * @return \DOMDocument|string
      */
     private function writeDocument(\DOMDocument $dom)
     {
@@ -158,7 +137,6 @@ class XmlDescriptor extends Descriptor
     }
 
     /**
-     * @param Route       $route
      * @param string|null $name
      *
      * @return \DOMDocument
@@ -244,8 +222,7 @@ class XmlDescriptor extends Descriptor
     }
 
     /**
-     * @param ContainerBuilder $builder
-     * @param bool             $showPrivate
+     * @param bool $showPrivate
      *
      * @return \DOMDocument
      */
@@ -268,10 +245,9 @@ class XmlDescriptor extends Descriptor
     }
 
     /**
-     * @param mixed                 $service
-     * @param string                $id
-     * @param ContainerBuilder|null $builder
-     * @param bool                  $showArguments
+     * @param mixed  $service
+     * @param string $id
+     * @param bool   $showArguments
      *
      * @return \DOMDocument
      */
@@ -296,11 +272,10 @@ class XmlDescriptor extends Descriptor
     }
 
     /**
-     * @param ContainerBuilder $builder
-     * @param string|null      $tag
-     * @param bool             $showPrivate
-     * @param bool             $showArguments
-     * @param callable         $filter
+     * @param string|null $tag
+     * @param bool        $showPrivate
+     * @param bool        $showArguments
+     * @param callable    $filter
      *
      * @return \DOMDocument
      */
@@ -330,7 +305,6 @@ class XmlDescriptor extends Descriptor
     }
 
     /**
-     * @param Definition  $definition
      * @param string|null $id
      * @param bool        $omitTags
      *
@@ -440,8 +414,8 @@ class XmlDescriptor extends Descriptor
             } elseif (\is_array($argument)) {
                 $argumentXML->setAttribute('type', 'collection');
 
-                foreach ($this->getArgumentNodes($argument, $dom) as $childArgumenXML) {
-                    $argumentXML->appendChild($childArgumenXML);
+                foreach ($this->getArgumentNodes($argument, $dom) as $childArgumentXML) {
+                    $argumentXML->appendChild($childArgumentXML);
                 }
             } else {
                 $argumentXML->appendChild(new \DOMText($argument));
@@ -454,7 +428,6 @@ class XmlDescriptor extends Descriptor
     }
 
     /**
-     * @param Alias       $alias
      * @param string|null $id
      *
      * @return \DOMDocument
@@ -492,8 +465,7 @@ class XmlDescriptor extends Descriptor
     }
 
     /**
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param string|null              $event
+     * @param string|null $event
      *
      * @return \DOMDocument
      */

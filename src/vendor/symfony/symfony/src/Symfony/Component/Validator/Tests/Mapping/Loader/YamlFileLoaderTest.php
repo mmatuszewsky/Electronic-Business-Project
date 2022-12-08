@@ -40,10 +40,10 @@ class YamlFileLoaderTest extends TestCase
 
     /**
      * @dataProvider provideInvalidYamlFiles
-     * @expectedException \InvalidArgumentException
      */
     public function testInvalidYamlFiles($path)
     {
+        $this->expectException('InvalidArgumentException');
         $loader = new YamlFileLoader(__DIR__.'/'.$path);
         $metadata = new ClassMetadata('Symfony\Component\Validator\Tests\Fixtures\Entity');
 
@@ -69,7 +69,7 @@ class YamlFileLoaderTest extends TestCase
             $loader->loadClassMetadata($metadata);
         } catch (\InvalidArgumentException $e) {
             // Call again. Again an exception should be thrown
-            $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}('\InvalidArgumentException');
+            $this->expectException('\InvalidArgumentException');
             $loader->loadClassMetadata($metadata);
         }
     }
@@ -132,7 +132,7 @@ class YamlFileLoaderTest extends TestCase
         $loader->loadClassMetadata($metadata);
 
         $expected = new ClassMetadata('Symfony\Component\Validator\Tests\Fixtures\Entity');
-        $expected->addPropertyConstraint('firstName', new Range(['max' => PHP_INT_MAX]));
+        $expected->addPropertyConstraint('firstName', new Range(['max' => \PHP_INT_MAX]));
 
         $this->assertEquals($expected, $metadata);
     }

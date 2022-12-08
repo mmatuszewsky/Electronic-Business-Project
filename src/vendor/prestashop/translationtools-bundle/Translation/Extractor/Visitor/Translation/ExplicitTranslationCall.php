@@ -9,7 +9,6 @@ use PhpParser\Node;
  */
 class ExplicitTranslationCall extends AbstractTranslationNodeVisitor
 {
-
     const SUPPORTED_METHODS = ['l', 'trans', 't'];
 
     public function leaveNode(Node $node)
@@ -18,7 +17,7 @@ class ExplicitTranslationCall extends AbstractTranslationNodeVisitor
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function extractFrom(Node $node)
     {
@@ -36,7 +35,7 @@ class ExplicitTranslationCall extends AbstractTranslationNodeVisitor
 
         $translation = [
             'source' => $key,
-            'line'   => $node->args[0]->getLine(),
+            'line' => $node->args[0]->getLine(),
         ];
 
         if ($nodeName == 'trans') {
@@ -54,25 +53,21 @@ class ExplicitTranslationCall extends AbstractTranslationNodeVisitor
     }
 
     /**
-     * @param Node $node
-     *
      * @return bool
      */
     private function appliesFor(Node $node)
     {
-        return (
+        if (empty($node->args)) {
+            return false;
+        }
+
+        return
             ($node instanceof Node\Expr\MethodCall || $node instanceof Node\Expr\FuncCall)
-            && (
-                (is_string($node->name) && $node->name instanceof Node\Name)
-                || !empty($node->args)
-            )
-        );
+            && ($node->name instanceof Node\Identifier || $node->name instanceof Node\Name)
+        ;
     }
 
-
     /**
-     * @param Node\Arg $arg
-     *
      * @return string|null
      */
     private function getValue(Node\Arg $arg)
@@ -92,8 +87,10 @@ class ExplicitTranslationCall extends AbstractTranslationNodeVisitor
     private function getNodeName(Node $node)
     {
         if ($node->name instanceof Node\Name) {
+            // $node->name is an instance of Identifier
             return $node->name->parts[0];
         }
-        return $node->name;
+
+        return $node->name->name;
     }
 }

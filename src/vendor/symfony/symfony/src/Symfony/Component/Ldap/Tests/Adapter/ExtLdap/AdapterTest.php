@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\Ldap\Tests;
+namespace Symfony\Component\Ldap\Tests\Adapter\ExtLdap;
 
 use Symfony\Component\Ldap\Adapter\ExtLdap\Adapter;
 use Symfony\Component\Ldap\Adapter\ExtLdap\Collection;
@@ -17,6 +17,7 @@ use Symfony\Component\Ldap\Adapter\ExtLdap\Query;
 use Symfony\Component\Ldap\Entry;
 use Symfony\Component\Ldap\Exception\NotBoundException;
 use Symfony\Component\Ldap\LdapInterface;
+use Symfony\Component\Ldap\Tests\LdapTestCase;
 
 /**
  * @requires extension ldap
@@ -74,7 +75,7 @@ class AdapterTest extends LdapTestCase
     public function testLdapQueryWithoutBind()
     {
         $ldap = new Adapter($this->getLdapConfig());
-        $this->{method_exists($this, $_ = 'expectException') ? $_ : 'setExpectedException'}(NotBoundException::class);
+        $this->expectException(NotBoundException::class);
         $query = $ldap->createQuery('dc=symfony,dc=com', '(&(objectclass=person)(ou=Maintainers))', []);
         $query->execute();
     }
@@ -86,12 +87,12 @@ class AdapterTest extends LdapTestCase
         $ldap->getConnection()->bind('cn=admin,dc=symfony,dc=com', 'symfony');
 
         $query = $ldap->createQuery('cn=Fabien Potencier,dc=symfony,dc=com', '(objectclass=*)', [
-           'scope' => Query::SCOPE_BASE,
+            'scope' => Query::SCOPE_BASE,
         ]);
         $result = $query->execute();
 
         $entry = $result[0];
-        $this->assertEquals($result->count(), 1);
+        $this->assertEquals(1, $result->count());
         $this->assertEquals(['Fabien Potencier'], $entry->getAttribute('cn'));
     }
 
@@ -108,7 +109,7 @@ class AdapterTest extends LdapTestCase
         $subtree_count = $ldap->createQuery('ou=Components,dc=symfony,dc=com', '(objectclass=*)')->execute()->count();
 
         $this->assertNotEquals($one_level_result->count(), $subtree_count);
-        $this->assertEquals($one_level_result->count(), 1);
-        $this->assertEquals($one_level_result[0]->getAttribute('ou'), ['Ldap']);
+        $this->assertEquals(1, $one_level_result->count());
+        $this->assertEquals(['Ldap'], $one_level_result[0]->getAttribute('ou'));
     }
 }

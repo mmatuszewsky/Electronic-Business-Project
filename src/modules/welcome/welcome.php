@@ -1,35 +1,32 @@
 <?php
 /**
- * 2007-2016 PrestaShop
+ * 2007-2020 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the Academic Free License (AFL 3.0)
+ * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
  * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/afl-3.0.php
+ * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
  *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
- *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2016 PrestaShop SA
- * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ * @copyright 2007-2020 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
-
-if (!defined('_PS_VERSION_'))
+if (!defined('_PS_VERSION_')) {
     exit;
+}
 
-require_once __DIR__.'/vendor/autoload.php';
+$autoloadPath = __DIR__ . '/vendor/autoload.php';
+if (file_exists($autoloadPath)) {
+    require_once $autoloadPath;
+}
 
-use \OnBoarding\OnBoarding;
+use OnBoarding\OnBoarding;
 use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
 
 /**
@@ -38,10 +35,21 @@ use PrestaShop\PrestaShop\Adapter\SymfonyContainer;
 class Welcome extends Module
 {
     const CLASS_NAME = 'AdminWelcome';
+
+    /**
+     * @var string Name of the module running on PS 1.6.x. Used for data migration.
+     */
+    const PS_16_EQUIVALENT_MODULE = 'onboarding';
+
     /**
      * @var OnBoarding
      */
     private $onBoarding;
+
+    /**
+     * @var bool
+     */
+    private $displayHeader = true;
 
     /**
      * Module's constructor.
@@ -49,25 +57,31 @@ class Welcome extends Module
     public function __construct()
     {
         $this->name = 'welcome';
-        $this->version = '6.0.0';
+        $this->version = '6.0.7';
         $this->author = 'PrestaShop';
 
         parent::__construct();
 
-        $this->displayName = $this->trans('Welcome', array(), 'Modules.Welcome.Admin');
-        $this->description = $this->trans('Help the user to create his first product.', array(), 'Modules.Welcome.Admin');
+        $this->displayName = $this->trans('Welcome', [], 'Modules.Welcome.Admin');
+        $this->description = $this->trans('Sell your first product quicker than you would have expected with our nice onboarding process.', [], 'Modules.Welcome.Admin');
         $this->ps_versions_compliancy = [
             'min' => '1.7.6.0',
             'max' => _PS_VERSION_,
         ];
 
-        // If the symfony container is not available this constructor will fail
+        // If the symfony container is not available or if we are not in the admin directory
+        // this constructor will fail.
         // This can happen during the upgrade process
-        if (null == SymfonyContainer::getInstance()) {
+        if (null == SymfonyContainer::getInstance() || !defined('_PS_ADMIN_DIR_')) {
             return;
         }
 
         if (Module::isInstalled($this->name)) {
+            $smartyDisplayHeader = $this->smarty->getTemplateVars('display_header');
+            $this->displayHeader = (null !== $smartyDisplayHeader && is_bool($smartyDisplayHeader)) ?
+                $smartyDisplayHeader :
+                true;
+
             $this->onBoarding = new OnBoarding(
                 $this->getTranslator(),
                 $this->smarty,
@@ -89,6 +103,8 @@ class Welcome extends Module
      */
     public function install()
     {
+        $this->uninstallPrestaShop16Module();
+
         return parent::install()
             && $this->installTab()
             && $this->registerHook('displayAdminNavBarBeforeEnd')
@@ -96,25 +112,26 @@ class Welcome extends Module
             && $this->registerHook('displayBackOfficeHeader');
     }
 
-
     public function installTab()
     {
         $tab = new Tab();
-        $tab->active = 1;
+        $tab->active = true;
         $tab->class_name = static::CLASS_NAME;
-        $tab->name = array();
+        $tab->name = [];
         foreach (Language::getLanguages(true) as $lang) {
-            $tab->name[$lang['id_lang']] = "Welcome";
+            $tab->name[$lang['id_lang']] = 'Welcome';
         }
         $tab->module = $this->name;
+
         return $tab->add();
     }
 
     public function uninstallTab()
     {
-        $id_tab = (int)Tab::getIdFromClassName(static::CLASS_NAME);
+        $id_tab = (int) Tab::getIdFromClassName(static::CLASS_NAME);
         if ($id_tab) {
             $tab = new Tab($id_tab);
+
             return $tab->delete();
         } else {
             return false;
@@ -129,9 +146,32 @@ class Welcome extends Module
     public function uninstall()
     {
         $this->onBoarding->setCurrentStep(0);
+        $this->onBoarding->setShutDown(false);
         $this->uninstallTab();
 
         return parent::uninstall();
+    }
+
+    /**
+     * Migrate data from 1.6 equivalent module (if applicable), then uninstall
+     */
+    public function uninstallPrestaShop16Module()
+    {
+        if (!Module::isInstalled(self::PS_16_EQUIVALENT_MODULE)) {
+            return false;
+        }
+        $oldModule = Module::getInstanceByName(self::PS_16_EQUIVALENT_MODULE);
+        if ($oldModule) {
+            // This closure calls the parent class to prevent data to be erased
+            // It allows the new module to be configured without migration
+            $parentUninstallClosure = function () {
+                return parent::uninstall();
+            };
+            $parentUninstallClosure = $parentUninstallClosure->bindTo($oldModule, get_class($oldModule));
+            $parentUninstallClosure();
+        }
+
+        return true;
     }
 
     /**
@@ -140,8 +180,8 @@ class Welcome extends Module
     public function hookDisplayBackOfficeHeader()
     {
         if (!$this->onBoarding->isFinished()) {
-            $this->context->controller->addCSS($this->_path.'public/module.css', 'all');
-            $this->context->controller->addJS($this->_path.'public/module.js', 'all');
+            $this->context->controller->addCSS($this->_path . 'public/module.css', 'all');
+            $this->context->controller->addJS($this->_path . 'public/module.js');
         }
     }
 
@@ -161,7 +201,7 @@ class Welcome extends Module
     public function hookDisplayAdminNavBarBeforeEnd()
     {
         if (!$this->onBoarding->isFinished()) {
-            $this->onBoarding->showModuleContentForNavBar($this->context->link);
+            $this->onBoarding->showModuleContentForNavBar();
         }
     }
 
@@ -169,7 +209,7 @@ class Welcome extends Module
      * Execute an API like action for the OnBoarding.
      *
      * @param string $action Action to perform
-     * @param mixed  $value  Value to assign to the action
+     * @param mixed $value Value to assign to the action
      *
      * @throws Exception
      */

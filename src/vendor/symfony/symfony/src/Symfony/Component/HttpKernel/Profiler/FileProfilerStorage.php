@@ -58,7 +58,7 @@ class FileProfilerStorage implements ProfilerStorageInterface
         }
 
         $file = fopen($file, 'r');
-        fseek($file, 0, SEEK_END);
+        fseek($file, 0, \SEEK_END);
 
         $result = [];
         while (\count($result) < $limit && $line = $this->readLineFromFile($file)) {
@@ -118,7 +118,7 @@ class FileProfilerStorage implements ProfilerStorageInterface
     public function read($token)
     {
         if (!$token || !file_exists($file = $this->getFilename($token))) {
-            return;
+            return null;
         }
 
         return $this->createProfileFromData($token, unserialize(file_get_contents($file)));
@@ -229,7 +229,7 @@ class FileProfilerStorage implements ProfilerStorageInterface
         $position = ftell($file);
 
         if (0 === $position) {
-            return;
+            return null;
         }
 
         while (true) {
@@ -251,7 +251,7 @@ class FileProfilerStorage implements ProfilerStorageInterface
 
             $position += $upTo;
             $line = substr($buffer, $upTo + 1).$line;
-            fseek($file, max(0, $position), SEEK_SET);
+            fseek($file, max(0, $position), \SEEK_SET);
 
             if ('' !== $line) {
                 break;

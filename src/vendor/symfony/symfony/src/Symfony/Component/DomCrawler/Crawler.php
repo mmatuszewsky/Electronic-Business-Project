@@ -43,7 +43,7 @@ class Crawler implements \Countable, \IteratorAggregate
     private $document;
 
     /**
-     * @var \DOMElement[]
+     * @var \DOMNode[]
      */
     private $nodes = [];
 
@@ -55,9 +55,7 @@ class Crawler implements \Countable, \IteratorAggregate
     private $isHtml = true;
 
     /**
-     * @param mixed  $node     A Node to use as the base for the crawling
-     * @param string $uri      The current URI
-     * @param string $baseHref The base href value
+     * @param \DOMNodeList|\DOMNode|\DOMNode[]|string|null $node A Node to use as the base for the crawling
      */
     public function __construct($node = null, $uri = null, $baseHref = null)
     {
@@ -102,7 +100,7 @@ class Crawler implements \Countable, \IteratorAggregate
      * This method uses the appropriate specialized add*() method based
      * on the type of the argument.
      *
-     * @param \DOMNodeList|\DOMNode|array|string|null $node A node
+     * @param \DOMNodeList|\DOMNode|\DOMNode[]|string|null $node A node
      *
      * @throws \InvalidArgumentException when node is not the expected type
      */
@@ -184,7 +182,9 @@ class Crawler implements \Countable, \IteratorAggregate
     public function addHtmlContent($content, $charset = 'UTF-8')
     {
         $internalErrors = libxml_use_internal_errors(true);
-        $disableEntities = libxml_disable_entity_loader(true);
+        if (\LIBXML_VERSION < 20900) {
+            $disableEntities = libxml_disable_entity_loader(true);
+        }
 
         $dom = new \DOMDocument('1.0', $charset);
         $dom->validateOnParse = true;
@@ -195,16 +195,19 @@ class Crawler implements \Countable, \IteratorAggregate
             // Convert charset to HTML-entities to work around bugs in DOMDocument::loadHTML()
             $content = mb_convert_encoding($content, 'HTML-ENTITIES', $charset);
         } catch (\Exception $e) {
+        } catch (\ValueError $e) {
+        } finally {
+            restore_error_handler();
         }
-
-        restore_error_handler();
 
         if ('' !== trim($content)) {
             @$dom->loadHTML($content);
         }
 
         libxml_use_internal_errors($internalErrors);
-        libxml_disable_entity_loader($disableEntities);
+        if (\LIBXML_VERSION < 20900) {
+            libxml_disable_entity_loader($disableEntities);
+        }
 
         $this->addDocument($dom);
 
@@ -239,7 +242,7 @@ class Crawler implements \Countable, \IteratorAggregate
      *                        LIBXML_PARSEHUGE is dangerous, see
      *                        http://symfony.com/blog/security-release-symfony-2-0-17-released
      */
-    public function addXmlContent($content, $charset = 'UTF-8', $options = LIBXML_NONET)
+    public function addXmlContent($content, $charset = 'UTF-8', $options = \LIBXML_NONET)
     {
         // remove the default namespace if it's the only namespace to make XPath expressions simpler
         if (!preg_match('/xmlns:/', $content)) {
@@ -247,7 +250,9 @@ class Crawler implements \Countable, \IteratorAggregate
         }
 
         $internalErrors = libxml_use_internal_errors(true);
-        $disableEntities = libxml_disable_entity_loader(true);
+        if (\LIBXML_VERSION < 20900) {
+            $disableEntities = libxml_disable_entity_loader(true);
+        }
 
         $dom = new \DOMDocument('1.0', $charset);
         $dom->validateOnParse = true;
@@ -257,7 +262,9 @@ class Crawler implements \Countable, \IteratorAggregate
         }
 
         libxml_use_internal_errors($internalErrors);
-        libxml_disable_entity_loader($disableEntities);
+        if (\LIBXML_VERSION < 20900) {
+            libxml_disable_entity_loader($disableEntities);
+        }
 
         $this->addDocument($dom);
 
@@ -334,7 +341,7 @@ class Crawler implements \Countable, \IteratorAggregate
      *
      * @param int $position The position
      *
-     * @return self
+     * @return static
      */
     public function eq($position)
     {
@@ -377,7 +384,7 @@ class Crawler implements \Countable, \IteratorAggregate
      * @param int $offset
      * @param int $length
      *
-     * @return self
+     * @return static
      */
     public function slice($offset = 0, $length = null)
     {
@@ -391,7 +398,7 @@ class Crawler implements \Countable, \IteratorAggregate
      *
      * @param \Closure $closure An anonymous function
      *
-     * @return self
+     * @return static
      */
     public function reduce(\Closure $closure)
     {
@@ -408,7 +415,7 @@ class Crawler implements \Countable, \IteratorAggregate
     /**
      * Returns the first node of the current selection.
      *
-     * @return self
+     * @return static
      */
     public function first()
     {
@@ -418,7 +425,7 @@ class Crawler implements \Countable, \IteratorAggregate
     /**
      * Returns the last node of the current selection.
      *
-     * @return self
+     * @return static
      */
     public function last()
     {
@@ -428,7 +435,7 @@ class Crawler implements \Countable, \IteratorAggregate
     /**
      * Returns the siblings nodes of the current selection.
      *
-     * @return self
+     * @return static
      *
      * @throws \InvalidArgumentException When current node is empty
      */
@@ -444,7 +451,7 @@ class Crawler implements \Countable, \IteratorAggregate
     /**
      * Returns the next siblings nodes of the current selection.
      *
-     * @return self
+     * @return static
      *
      * @throws \InvalidArgumentException When current node is empty
      */
@@ -460,7 +467,7 @@ class Crawler implements \Countable, \IteratorAggregate
     /**
      * Returns the previous sibling nodes of the current selection.
      *
-     * @return self
+     * @return static
      *
      * @throws \InvalidArgumentException
      */
@@ -476,7 +483,7 @@ class Crawler implements \Countable, \IteratorAggregate
     /**
      * Returns the parents nodes of the current selection.
      *
-     * @return self
+     * @return static
      *
      * @throws \InvalidArgumentException When current node is empty
      */
@@ -490,7 +497,7 @@ class Crawler implements \Countable, \IteratorAggregate
         $nodes = [];
 
         while ($node = $node->parentNode) {
-            if (XML_ELEMENT_NODE === $node->nodeType) {
+            if (\XML_ELEMENT_NODE === $node->nodeType) {
                 $nodes[] = $node;
             }
         }
@@ -501,7 +508,7 @@ class Crawler implements \Countable, \IteratorAggregate
     /**
      * Returns the children nodes of the current selection.
      *
-     * @return self
+     * @return static
      *
      * @throws \InvalidArgumentException When current node is empty
      */
@@ -664,7 +671,7 @@ class Crawler implements \Countable, \IteratorAggregate
      *
      * @param string $xpath An XPath expression
      *
-     * @return self
+     * @return static
      */
     public function filterXPath($xpath)
     {
@@ -685,7 +692,7 @@ class Crawler implements \Countable, \IteratorAggregate
      *
      * @param string $selector A CSS selector
      *
-     * @return self
+     * @return static
      *
      * @throws \RuntimeException if the CssSelector Component is not available
      */
@@ -706,7 +713,7 @@ class Crawler implements \Countable, \IteratorAggregate
      *
      * @param string $value The link text
      *
-     * @return self
+     * @return static
      */
     public function selectLink($value)
     {
@@ -721,7 +728,7 @@ class Crawler implements \Countable, \IteratorAggregate
      *
      * @param string $value The image alt
      *
-     * @return self A new instance of Crawler with the filtered list of nodes
+     * @return static A new instance of Crawler with the filtered list of nodes
      */
     public function selectImage($value)
     {
@@ -735,7 +742,7 @@ class Crawler implements \Countable, \IteratorAggregate
      *
      * @param string $value The button text
      *
-     * @return self
+     * @return static
      */
     public function selectButton($value)
     {
@@ -899,7 +906,6 @@ class Crawler implements \Countable, \IteratorAggregate
      *     echo Crawler::xpathLiteral('a\'b"c');
      *     //prints concat('a', "'", 'b"c')
      *
-     *
      * @param string $s String to be escaped
      *
      * @return string Converted string
@@ -937,7 +943,7 @@ class Crawler implements \Countable, \IteratorAggregate
      *
      * @param string $xpath
      *
-     * @return self
+     * @return static
      */
     private function filterRelativeXPath($xpath)
     {
@@ -1050,13 +1056,11 @@ class Crawler implements \Countable, \IteratorAggregate
     /**
      * @param int $position
      *
-     * @return \DOMElement|null
+     * @return \DOMNode|null
      */
     public function getNode($position)
     {
-        if (isset($this->nodes[$position])) {
-            return $this->nodes[$position];
-        }
+        return isset($this->nodes[$position]) ? $this->nodes[$position] : null;
     }
 
     /**
@@ -1068,7 +1072,7 @@ class Crawler implements \Countable, \IteratorAggregate
     }
 
     /**
-     * @return \ArrayIterator|\DOMElement[]
+     * @return \ArrayIterator|\DOMNode[]
      */
     public function getIterator()
     {
@@ -1095,9 +1099,6 @@ class Crawler implements \Countable, \IteratorAggregate
     }
 
     /**
-     * @param \DOMDocument $document
-     * @param array        $prefixes
-     *
      * @return \DOMXPath
      *
      * @throws \InvalidArgumentException
@@ -1117,10 +1118,9 @@ class Crawler implements \Countable, \IteratorAggregate
     }
 
     /**
-     * @param \DOMXPath $domxpath
-     * @param string    $prefix
+     * @param string $prefix
      *
-     * @return string
+     * @return string|null
      *
      * @throws \InvalidArgumentException
      */
@@ -1133,9 +1133,7 @@ class Crawler implements \Countable, \IteratorAggregate
         // ask for one namespace, otherwise we'd get a collection with an item for each node
         $namespaces = $domxpath->query(sprintf('(//namespace::*[name()="%s"])[last()]', $this->defaultNamespacePrefix === $prefix ? '' : $prefix));
 
-        if ($node = $namespaces->item(0)) {
-            return $node->nodeValue;
-        }
+        return ($node = $namespaces->item(0)) ? $node->nodeValue : null;
     }
 
     /**
@@ -1155,7 +1153,7 @@ class Crawler implements \Countable, \IteratorAggregate
     /**
      * Creates a crawler for some subnodes.
      *
-     * @param \DOMElement|\DOMElement[]|\DOMNodeList|null $nodes
+     * @param \DOMNodeList|\DOMNode|\DOMNode[]|string|null $nodes
      *
      * @return static
      */

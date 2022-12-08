@@ -1,5 +1,4 @@
 {
-    "Version": "2.1.48.17",
     "Names": {
         "AC": "Ascension-eyja",
         "AD": "Andorra",
@@ -143,10 +142,10 @@
         "MC": "Mónakó",
         "MD": "Moldóva",
         "ME": "Svartfjallaland",
-        "MF": "St. Martin",
+        "MF": "Saint-Martin",
         "MG": "Madagaskar",
         "MH": "Marshalleyjar",
-        "MK": "Makedónía",
+        "MK": "Norður-Makedónía",
         "ML": "Malí",
         "MM": "Mjanmar (Búrma)",
         "MN": "Mongólía",
@@ -248,6 +247,8 @@
         "VU": "Vanúatú",
         "WF": "Wallis- og Fútúnaeyjar",
         "WS": "Samóa",
+        "XA": "gervihreimur",
+        "XB": "gervistaður",
         "XK": "Kósóvó",
         "YE": "Jemen",
         "YT": "Mayotte",

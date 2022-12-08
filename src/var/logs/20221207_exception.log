@@ -1,4 +1,0 @@
-*ERROR* 	v1.7.6.5	2022/12/07 - 20:05:17: [ThemeRepository] Theme configuration file not found for theme at `/var/www/html/themes/etrendlite/config/theme.yml`. at line 145 in file src/Core/Addon/Theme/ThemeRepository.php
-*ERROR* 	v1.7.6.5	2022/12/07 - 20:05:18: [ThemeRepository] Theme configuration file not found for theme at `/var/www/html/themes/etrendlite/config/theme.yml`. at line 145 in file src/Core/Addon/Theme/ThemeRepository.php
-*ERROR* 	v1.7.6.5	2022/12/07 - 20:08:36: [ThemeRepository] Theme configuration file not found for theme at `/var/www/html/themes/etrendlite/config/theme.yml`. at line 145 in file src/Core/Addon/Theme/ThemeRepository.php
-*ERROR* 	v1.7.6.5	2022/12/07 - 20:08:36: [ThemeRepository] Theme configuration file not found for theme at `/var/www/html/themes/etrendlite/config/theme.yml`. at line 145 in file src/Core/Addon/Theme/ThemeRepository.php

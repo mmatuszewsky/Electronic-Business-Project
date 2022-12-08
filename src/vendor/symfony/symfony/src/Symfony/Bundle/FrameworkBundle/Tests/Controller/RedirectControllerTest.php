@@ -72,7 +72,7 @@ class RedirectControllerTest extends TestCase
             ->expects($this->once())
             ->method('generate')
             ->with($this->equalTo($route), $this->equalTo($expectedAttributes))
-            ->will($this->returnValue($url));
+            ->willReturn($url);
 
         $controller = new RedirectController($router);
 
@@ -220,9 +220,9 @@ class RedirectControllerTest extends TestCase
         return [
             ['http://www.example.com/base/redirect-path', '/redirect-path',  ''],
             ['http://www.example.com/base/redirect-path?foo=bar', '/redirect-path?foo=bar',  ''],
-            ['http://www.example.com/base/redirect-path?foo=bar', '/redirect-path', 'foo=bar'],
-            ['http://www.example.com/base/redirect-path?foo=bar&abc=example', '/redirect-path?foo=bar', 'abc=example'],
-            ['http://www.example.com/base/redirect-path?foo=bar&abc=example&baz=def', '/redirect-path?foo=bar', 'abc=example&baz=def'],
+            ['http://www.example.com/base/redirect-path?f.o=bar', '/redirect-path', 'f.o=bar'],
+            ['http://www.example.com/base/redirect-path?f.o=bar&a.c=example', '/redirect-path?f.o=bar', 'a.c=example'],
+            ['http://www.example.com/base/redirect-path?f.o=bar&a.c=example&b.z=def', '/redirect-path?f.o=bar', 'a.c=example&b.z=def'],
         ];
     }
 
@@ -246,29 +246,20 @@ class RedirectControllerTest extends TestCase
 
     private function createRequestObject($scheme, $host, $port, $baseUrl, $queryString = '')
     {
-        $request = $this->getMockBuilder('Symfony\Component\HttpFoundation\Request')->getMock();
-        $request
-            ->expects($this->any())
-            ->method('getScheme')
-            ->will($this->returnValue($scheme));
-        $request
-            ->expects($this->any())
-            ->method('getHost')
-            ->will($this->returnValue($host));
-        $request
-            ->expects($this->any())
-            ->method('getPort')
-            ->will($this->returnValue($port));
-        $request
-            ->expects($this->any())
-            ->method('getBaseUrl')
-            ->will($this->returnValue($baseUrl));
-        $request
-            ->expects($this->any())
-            ->method('getQueryString')
-            ->will($this->returnValue($queryString));
+        if ('' !== $queryString) {
+            parse_str($queryString, $query);
+        } else {
+            $query = [];
+        }
 
-        return $request;
+        return new Request($query, [], [], [], [], [
+            'HTTPS' => 'https' === $scheme,
+            'HTTP_HOST' => $host.($port ? ':'.$port : ''),
+            'SERVER_PORT' => $port,
+            'SCRIPT_FILENAME' => $baseUrl,
+            'REQUEST_URI' => $baseUrl,
+            'QUERY_STRING' => $queryString,
+        ]);
     }
 
     private function createRedirectController($httpPort = null, $httpsPort = null)
@@ -288,24 +279,24 @@ class RedirectControllerTest extends TestCase
                 ->expects($this->once())
                 ->method('hasParameter')
                 ->with($this->equalTo('request_listener.http_port'))
-                ->will($this->returnValue(true));
+                ->willReturn(true);
             $container
                 ->expects($this->once())
                 ->method('getParameter')
                 ->with($this->equalTo('request_listener.http_port'))
-                ->will($this->returnValue($httpPort));
+                ->willReturn($httpPort);
         }
         if (null !== $httpsPort) {
             $container
                 ->expects($this->once())
                 ->method('hasParameter')
                 ->with($this->equalTo('request_listener.https_port'))
-                ->will($this->returnValue(true));
+                ->willReturn(true);
             $container
                 ->expects($this->once())
                 ->method('getParameter')
                 ->with($this->equalTo('request_listener.https_port'))
-                ->will($this->returnValue($httpsPort));
+                ->willReturn($httpsPort);
         }
 
         $controller = new RedirectController();

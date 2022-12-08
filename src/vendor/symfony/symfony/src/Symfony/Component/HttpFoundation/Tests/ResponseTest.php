@@ -253,7 +253,7 @@ class ResponseTest extends ResponseTestCase
 
     public function testIsValidateable()
     {
-        $response = new Response('', 200, ['Last-Modified' => $this->createDateTimeOneHourAgo()->format(DATE_RFC2822)]);
+        $response = new Response('', 200, ['Last-Modified' => $this->createDateTimeOneHourAgo()->format(\DATE_RFC2822)]);
         $this->assertTrue($response->isValidateable(), '->isValidateable() returns true if Last-Modified is present');
 
         $response = new Response('', 200, ['ETag' => '"12345"']);
@@ -266,7 +266,7 @@ class ResponseTest extends ResponseTestCase
     public function testGetDate()
     {
         $oneHourAgo = $this->createDateTimeOneHourAgo();
-        $response = new Response('', 200, ['Date' => $oneHourAgo->format(DATE_RFC2822)]);
+        $response = new Response('', 200, ['Date' => $oneHourAgo->format(\DATE_RFC2822)]);
         $date = $response->getDate();
         $this->assertEquals($oneHourAgo->getTimestamp(), $date->getTimestamp(), '->getDate() returns the Date header if present');
 
@@ -274,9 +274,9 @@ class ResponseTest extends ResponseTestCase
         $date = $response->getDate();
         $this->assertEquals(time(), $date->getTimestamp(), '->getDate() returns the current Date if no Date header present');
 
-        $response = new Response('', 200, ['Date' => $this->createDateTimeOneHourAgo()->format(DATE_RFC2822)]);
+        $response = new Response('', 200, ['Date' => $this->createDateTimeOneHourAgo()->format(\DATE_RFC2822)]);
         $now = $this->createDateTimeNow();
-        $response->headers->set('Date', $now->format(DATE_RFC2822));
+        $response->headers->set('Date', $now->format(\DATE_RFC2822));
         $date = $response->getDate();
         $this->assertEquals($now->getTimestamp(), $date->getTimestamp(), '->getDate() returns the date when the header has been modified');
 
@@ -299,13 +299,13 @@ class ResponseTest extends ResponseTestCase
 
         $response = new Response();
         $response->headers->set('Cache-Control', 'must-revalidate');
-        $response->headers->set('Expires', $this->createDateTimeOneHourLater()->format(DATE_RFC2822));
+        $response->headers->set('Expires', $this->createDateTimeOneHourLater()->format(\DATE_RFC2822));
         $this->assertEquals(3600, $response->getMaxAge(), '->getMaxAge() falls back to Expires when no max-age or s-maxage directive present');
 
         $response = new Response();
         $response->headers->set('Cache-Control', 'must-revalidate');
         $response->headers->set('Expires', -1);
-        $this->assertEquals('Sat, 01 Jan 00 00:00:00 +0000', $response->getExpires()->format(DATE_RFC822));
+        $this->assertEquals('Sat, 01 Jan 00 00:00:00 +0000', $response->getExpires()->format(\DATE_RFC822));
 
         $response = new Response();
         $this->assertNull($response->getMaxAge(), '->getMaxAge() returns null if no freshness information available');
@@ -364,9 +364,15 @@ class ResponseTest extends ResponseTestCase
         $this->assertNull($response->headers->get('Age'), '->expire() does not set the Age when the response is expired');
 
         $response = new Response();
-        $response->headers->set('Expires', date(DATE_RFC2822, time() + 600));
+        $response->headers->set('Expires', date(\DATE_RFC2822, time() + 600));
         $response->expire();
         $this->assertNull($response->headers->get('Expires'), '->expire() removes the Expires header when the response is fresh');
+    }
+
+    public function testNullExpireHeader()
+    {
+        $response = new Response(null, 200, ['Expires' => null]);
+        $this->assertNull($response->getExpires());
     }
 
     public function testGetTtl()
@@ -375,15 +381,15 @@ class ResponseTest extends ResponseTestCase
         $this->assertNull($response->getTtl(), '->getTtl() returns null when no Expires or Cache-Control headers are present');
 
         $response = new Response();
-        $response->headers->set('Expires', $this->createDateTimeOneHourLater()->format(DATE_RFC2822));
+        $response->headers->set('Expires', $this->createDateTimeOneHourLater()->format(\DATE_RFC2822));
         $this->assertEquals(3600, $response->getTtl(), '->getTtl() uses the Expires header when no max-age is present');
 
         $response = new Response();
-        $response->headers->set('Expires', $this->createDateTimeOneHourAgo()->format(DATE_RFC2822));
+        $response->headers->set('Expires', $this->createDateTimeOneHourAgo()->format(\DATE_RFC2822));
         $this->assertLessThan(0, $response->getTtl(), '->getTtl() returns negative values when Expires is in past');
 
         $response = new Response();
-        $response->headers->set('Expires', $response->getDate()->format(DATE_RFC2822));
+        $response->headers->set('Expires', $response->getDate()->format(\DATE_RFC2822));
         $response->headers->set('Age', 0);
         $this->assertSame(0, $response->getTtl(), '->getTtl() correctly handles zero');
 
@@ -455,12 +461,12 @@ class ResponseTest extends ResponseTestCase
     public function testDefaultContentType()
     {
         $headerMock = $this->getMockBuilder('Symfony\Component\HttpFoundation\ResponseHeaderBag')->setMethods(['set'])->getMock();
-        $headerMock->expects($this->at(0))
+        $headerMock->expects($this->exactly(2))
             ->method('set')
-            ->with('Content-Type', 'text/html');
-        $headerMock->expects($this->at(1))
-            ->method('set')
-            ->with('Content-Type', 'text/html; charset=UTF-8');
+            ->withConsecutive(
+                ['Content-Type', 'text/html'],
+                ['Content-Type', 'text/html; charset=UTF-8']
+            );
 
         $response = new Response('foo');
         $response->headers = $headerMock;
@@ -532,7 +538,6 @@ class ResponseTest extends ResponseTestCase
         $response->prepare($request);
         $this->assertEquals('', $response->getContent());
         $this->assertFalse($response->headers->has('Content-Type'));
-        $this->assertFalse($response->headers->has('Content-Type'));
 
         $response->setContent('content');
         $response->setStatusCode(304);
@@ -582,25 +587,25 @@ class ResponseTest extends ResponseTestCase
             $this->fail('->setCache() throws an InvalidArgumentException if an option is not supported');
         } catch (\Exception $e) {
             $this->assertInstanceOf('InvalidArgumentException', $e, '->setCache() throws an InvalidArgumentException if an option is not supported');
-            $this->assertContains('"wrong option"', $e->getMessage());
+            $this->assertStringContainsString('"wrong option"', $e->getMessage());
         }
 
         $options = ['etag' => '"whatever"'];
         $response->setCache($options);
-        $this->assertEquals($response->getEtag(), '"whatever"');
+        $this->assertEquals('"whatever"', $response->getEtag());
 
         $now = $this->createDateTimeNow();
         $options = ['last_modified' => $now];
         $response->setCache($options);
-        $this->assertEquals($response->getLastModified()->getTimestamp(), $now->getTimestamp());
+        $this->assertEquals($now->getTimestamp(), $response->getLastModified()->getTimestamp());
 
         $options = ['max_age' => 100];
         $response->setCache($options);
-        $this->assertEquals($response->getMaxAge(), 100);
+        $this->assertEquals(100, $response->getMaxAge());
 
         $options = ['s_maxage' => 200];
         $response->setCache($options);
-        $this->assertEquals($response->getMaxAge(), 200);
+        $this->assertEquals(200, $response->getMaxAge());
 
         $this->assertTrue($response->headers->hasCacheControlDirective('public'));
         $this->assertFalse($response->headers->hasCacheControlDirective('private'));
@@ -635,7 +640,7 @@ class ResponseTest extends ResponseTestCase
         ob_start();
         $response->sendContent();
         $string = ob_get_clean();
-        $this->assertContains('test response rendering', $string);
+        $this->assertStringContainsString('test response rendering', $string);
     }
 
     public function testSetPublic()
@@ -846,11 +851,11 @@ class ResponseTest extends ResponseTestCase
     }
 
     /**
-     * @expectedException \UnexpectedValueException
      * @dataProvider invalidContentProvider
      */
     public function testSetContentInvalid($content)
     {
+        $this->expectException('UnexpectedValueException');
         $response = new Response();
         $response->setContent($content);
     }
@@ -928,11 +933,11 @@ class ResponseTest extends ResponseTestCase
     }
 
     /**
-     * @see       http://github.com/zendframework/zend-diactoros for the canonical source repository
+     * @see http://github.com/zendframework/zend-diactoros for the canonical source repository
      *
-     * @author    Fábio Pacheco
+     * @author Fábio Pacheco
      * @copyright Copyright (c) 2015-2016 Zend Technologies USA Inc. (http://www.zend.com)
-     * @license   https://github.com/zendframework/zend-diactoros/blob/master/LICENSE.md New BSD License
+     * @license https://github.com/zendframework/zend-diactoros/blob/master/LICENSE.md New BSD License
      */
     public function ianaCodesReasonPhrasesProvider()
     {
@@ -942,14 +947,19 @@ class ResponseTest extends ResponseTestCase
 
         $ianaHttpStatusCodes = new \DOMDocument();
 
-        libxml_set_streams_context(stream_context_create([
+        $context = stream_context_create([
             'http' => [
                 'method' => 'GET',
                 'timeout' => 30,
+                'user_agent' => __METHOD__,
             ],
-        ]));
+        ]);
 
-        $ianaHttpStatusCodes->load('https://www.iana.org/assignments/http-status-codes/http-status-codes.xml');
+        if (!$rawStatusCodes = file_get_contents('https://www.iana.org/assignments/http-status-codes/http-status-codes.xml', false, $context)) {
+            $this->markTestSkipped('The IANA server is throttling the list of status codes');
+        }
+
+        $ianaHttpStatusCodes->loadXML($rawStatusCodes);
         if (!$ianaHttpStatusCodes->relaxNGValidate(__DIR__.'/schema/http-status-codes.rng')) {
             self::fail('Invalid IANA\'s HTTP status code list.');
         }
@@ -999,15 +1009,4 @@ class StringableObject
 
 class DefaultResponse extends Response
 {
-}
-
-class ExtendedResponse extends Response
-{
-    public function setLastModified(\DateTime $date = null)
-    {
-    }
-
-    public function getDate()
-    {
-    }
 }

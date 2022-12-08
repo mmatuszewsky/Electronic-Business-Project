@@ -1,3 +1,5 @@
+ 
+
 {shop_url}
 
 {firstname_friend} {lastname_friend}, Dołącz do nas!
@@ -14,4 +16,4 @@ Z poważaniem,
 
 [{shop_name}]({shop_url})
 
-Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail=utm_campaign=footer_1-7)
+Powered by [PrestaShop](https://www.prestashop.com/?utm_source=marchandprestashop&utm_medium=e-mail&utm_campaign=footer_1-7)

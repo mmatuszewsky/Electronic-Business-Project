@@ -37,9 +37,9 @@ final class NativeQuery extends AbstractQuery
      *
      * @param string $sql
      *
-     * @return NativeQuery This query instance.
+     * @return self This query instance.
      */
-    public function setSQL($sql)
+    public function setSQL($sql) : self
     {
         $this->_sql = $sql;
 
@@ -63,8 +63,8 @@ final class NativeQuery extends AbstractQuery
      */
     protected function _doExecute()
     {
-        $parameters = array();
-        $types      = array();
+        $parameters = [];
+        $types      = [];
 
         foreach ($this->getParameters() as $parameter) {
             $name  = $parameter->getName();

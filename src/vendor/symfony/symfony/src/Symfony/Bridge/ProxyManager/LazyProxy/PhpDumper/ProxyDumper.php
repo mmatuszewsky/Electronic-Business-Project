@@ -47,7 +47,7 @@ class ProxyDumper implements DumperInterface
      */
     public function isProxyCandidate(Definition $definition)
     {
-        return $definition->isLazy() && ($class = $definition->getClass()) && class_exists($class);
+        return $definition->isLazy() && ($class = $definition->getClass()) && (class_exists($class) || interface_exists($class));
     }
 
     /**
@@ -58,14 +58,14 @@ class ProxyDumper implements DumperInterface
         $instantiation = 'return';
 
         if ($definition->isShared()) {
-            $instantiation .= sprintf(' $this->%s[%s] =', \method_exists(ContainerBuilder::class, 'addClassResource') || ($definition->isPublic() && !$definition->isPrivate()) ? 'services' : 'privates', var_export($id, true));
+            $instantiation .= sprintf(' $this->%s[%s] =', method_exists(ContainerBuilder::class, 'addClassResource') || ($definition->isPublic() && !$definition->isPrivate()) ? 'services' : 'privates', var_export($id, true));
         }
 
         if (null === $factoryCode) {
-            @trigger_error(sprintf('The "%s()" method expects a third argument defining the code to execute to construct your service since Symfony 3.4, providing it will be required in 4.0.', __METHOD__), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The "%s()" method expects a third argument defining the code to execute to construct your service since Symfony 3.4, providing it will be required in 4.0.', __METHOD__), \E_USER_DEPRECATED);
             $factoryCode = '$this->get'.Container::camelize($id).'Service(false)';
         } elseif (false === strpos($factoryCode, '(')) {
-            @trigger_error(sprintf('The "%s()" method expects its third argument to define the code to execute to construct your service since Symfony 3.4, providing it will be required in 4.0.', __METHOD__), E_USER_DEPRECATED);
+            @trigger_error(sprintf('The "%s()" method expects its third argument to define the code to execute to construct your service since Symfony 3.4, providing it will be required in 4.0.', __METHOD__), \E_USER_DEPRECATED);
             $factoryCode = "\$this->$factoryCode(false)";
         }
         $proxyClass = $this->getProxyClassName($definition);
@@ -97,6 +97,7 @@ EOF;
     public function getProxyCode(Definition $definition)
     {
         $code = $this->classGenerator->generate($this->generateProxyClass($definition));
+        $code = preg_replace('/^(class [^ ]++ extends )([^\\\\])/', '$1\\\\$2', $code);
 
         $code = preg_replace(
             '/(\$this->initializer[0-9a-f]++) && \1->__invoke\(\$this->(valueHolder[0-9a-f]++), (.*?), \1\);/',
@@ -112,6 +113,10 @@ EOF;
             );
         }
 
+        if (version_compare(self::getProxyManagerVersion(), '2.5', '<')) {
+            $code = preg_replace('/ \\\\Closure::bind\(function ((?:& )?\(\$instance(?:, \$value)?\))/', ' \Closure::bind(static function \1', $code);
+        }
+
         return $code;
     }
 
@@ -120,7 +125,7 @@ EOF;
      */
     private static function getProxyManagerVersion()
     {
-        if (!\class_exists(Version::class)) {
+        if (!class_exists(Version::class)) {
             return '0.0.1';
         }
 

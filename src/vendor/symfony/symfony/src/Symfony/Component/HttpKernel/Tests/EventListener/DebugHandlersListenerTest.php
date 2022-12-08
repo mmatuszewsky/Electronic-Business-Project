@@ -60,8 +60,8 @@ class DebugHandlersListenerTest extends TestCase
 
         $loggers = $eHandler->setLoggers([]);
 
-        $this->assertArrayHasKey(E_DEPRECATED, $loggers);
-        $this->assertSame([$logger, LogLevel::INFO], $loggers[E_DEPRECATED]);
+        $this->assertArrayHasKey(\E_DEPRECATED, $loggers);
+        $this->assertSame([$logger, LogLevel::INFO], $loggers[\E_DEPRECATED]);
     }
 
     public function testConfigureForHttpKernelWithNoTerminateWithException()
@@ -94,7 +94,7 @@ class DebugHandlersListenerTest extends TestCase
         $dispatcher = new EventDispatcher();
         $listener = new DebugHandlersListener(null);
         $app = $this->getMockBuilder('Symfony\Component\Console\Application')->getMock();
-        $app->expects($this->once())->method('getHelperSet')->will($this->returnValue(new HelperSet()));
+        $app->expects($this->once())->method('getHelperSet')->willReturn(new HelperSet());
         $command = new Command(__FUNCTION__);
         $command->setApplication($app);
         $event = new ConsoleEvent($command, new ArgvInput(), new ConsoleOutput());

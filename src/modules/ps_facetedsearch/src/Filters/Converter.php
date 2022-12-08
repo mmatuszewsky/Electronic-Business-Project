@@ -1,43 +1,35 @@
 <?php
 /**
- * 2007-2019 PrestaShop.
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.txt.
+ * that is bundled with this package in the file LICENSE.md.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
  * to license@prestashop.com so we can send you a copy immediately.
  *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
- *
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2019 PrestaShop SA
+ * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
- * International Registered Trademark & Property of PrestaShop SA
  */
 
 namespace PrestaShop\Module\FacetedSearch\Filters;
 
-use AttributeGroup;
 use Category;
 use Configuration;
 use Context;
 use Db;
-use Feature;
-use FeatureValue;
 use Manufacturer;
+use PrestaShop\Module\FacetedSearch\Filters;
+use PrestaShop\Module\FacetedSearch\URLSerializer;
 use PrestaShop\PrestaShop\Core\Product\Search\Facet;
 use PrestaShop\PrestaShop\Core\Product\Search\Filter;
 use PrestaShop\PrestaShop\Core\Product\Search\ProductSearchQuery;
-use PrestaShop\PrestaShop\Core\Product\Search\URLFragmentSerializer;
 use Tools;
 
 class Converter
@@ -57,6 +49,10 @@ class Converter
     const TYPE_PRICE = 'price';
     const TYPE_WEIGHT = 'weight';
 
+    const PROPERTY_URL_NAME = 'url_name';
+    const PROPERTY_COLOR = 'color';
+    const PROPERTY_TEXTURE = 'texture';
+
     /**
      * @var array
      */
@@ -72,10 +68,26 @@ class Converter
      */
     protected $database;
 
-    public function __construct(Context $context, Db $database)
-    {
+    /**
+     * @var URLSerializer
+     */
+    protected $urlSerializer;
+
+    /**
+     * @var Filters\DataAccessor
+     */
+    private $dataAccessor;
+
+    public function __construct(
+        Context $context,
+        Db $database,
+        URLSerializer $urlSerializer,
+        Filters\DataAccessor $dataAccessor
+    ) {
         $this->context = $context;
         $this->database = $database;
+        $this->urlSerializer = $urlSerializer;
+        $this->dataAccessor = $dataAccessor;
     }
 
     public function getFacetsFromFilterBlocks(array $filterBlocks)
@@ -107,9 +119,15 @@ class Converter
                     } elseif ($filterBlock['type'] == self::TYPE_ATTRIBUTE_GROUP) {
                         $type = 'attribute_group';
                         $facet->setProperty(self::TYPE_ATTRIBUTE_GROUP, $filterBlock['id_key']);
+                        if (isset($filterBlock['url_name'])) {
+                            $facet->setProperty(self::PROPERTY_URL_NAME, $filterBlock['url_name']);
+                        }
                     } elseif ($filterBlock['type'] == self::TYPE_FEATURE) {
                         $type = 'feature';
                         $facet->setProperty(self::TYPE_FEATURE, $filterBlock['id_key']);
+                        if (isset($filterBlock['url_name'])) {
+                            $facet->setProperty(self::PROPERTY_URL_NAME, $filterBlock['url_name']);
+                        }
                     }
 
                     $facet->setType($type);
@@ -121,15 +139,20 @@ class Converter
                             ->setLabel($filterArray['name'])
                             ->setMagnitude($filterArray['nbr'])
                             ->setValue($id);
+
+                        if (isset($filterArray['url_name'])) {
+                            $filter->setProperty(self::PROPERTY_URL_NAME, $filterArray['url_name']);
+                        }
+
                         if (array_key_exists('checked', $filterArray)) {
                             $filter->setActive($filterArray['checked']);
                         }
 
                         if (isset($filterArray['color'])) {
                             if ($filterArray['color'] != '') {
-                                $filter->setProperty('color', $filterArray['color']);
+                                $filter->setProperty(self::PROPERTY_COLOR, $filterArray['color']);
                             } elseif (file_exists(_PS_COL_IMG_DIR_ . $id . '.jpg')) {
-                                $filter->setProperty('texture', _THEME_COL_DIR_ . $id . '.jpg');
+                                $filter->setProperty(self::PROPERTY_TEXTURE, _THEME_COL_DIR_ . $id . '.jpg');
                             }
                         }
 
@@ -137,13 +160,13 @@ class Converter
                     }
 
                     if ((int) $filterBlock['filter_show_limit'] !== 0) {
-                        usort($filters, array($this, 'sortFiltersByMagnitude'));
+                        usort($filters, [$this, 'sortFiltersByMagnitude']);
                     }
 
                     $this->hideZeroValuesAndShowLimit($filters, (int) $filterBlock['filter_show_limit']);
 
                     if ((int) $filterBlock['filter_show_limit'] !== 0 || $filterBlock['type'] !== self::TYPE_ATTRIBUTE_GROUP) {
-                        usort($filters, array($this, 'sortFiltersByLabel'));
+                        usort($filters, [$this, 'sortFiltersByLabel']);
                     }
 
                     // No method available to add all filters
@@ -225,8 +248,7 @@ class Converter
             GROUP BY `type`, id_value ORDER BY position ASC'
         );
 
-        $urlSerializer = new URLFragmentSerializer();
-        $facetAndFiltersLabels = $urlSerializer->unserialize($query->getEncodedFacets());
+        $facetAndFiltersLabels = $this->urlSerializer->unserialize($query->getEncodedFacets());
         foreach ($filters as $filter) {
             $filterLabel = $this->convertFilterTypeToLabel($filter['type']);
 
@@ -258,10 +280,15 @@ class Converter
                             'Modules.Facetedsearch.Shop'
                         ) => 0,
                         $this->context->getTranslator()->trans(
-                            'In stock',
+                            'Available',
                             [],
                             'Modules.Facetedsearch.Shop'
                         ) => 1,
+                        $this->context->getTranslator()->trans(
+                            'In stock',
+                            [],
+                            'Modules.Facetedsearch.Shop'
+                        ) => 2,
                     ];
 
                     $searchFilters[$filter['type']] = [];
@@ -303,34 +330,51 @@ class Converter
                     }
                     break;
                 case self::TYPE_FEATURE:
-                    $features = Feature::getFeatures($idLang);
+                    $features = $this->dataAccessor->getFeatures($idLang);
                     foreach ($features as $feature) {
-                        if ($filter['id_value'] == $feature['id_feature']
-                            && isset($facetAndFiltersLabels[$feature['name']])
-                        ) {
+                        if ($filter['id_value'] != $feature['id_feature']) {
+                            continue;
+                        }
+
+                        if (isset($facetAndFiltersLabels[$feature['url_name']])) {
+                            $featureValueLabels = $facetAndFiltersLabels[$feature['url_name']];
+                        } elseif (isset($facetAndFiltersLabels[$feature['name']])) {
                             $featureValueLabels = $facetAndFiltersLabels[$feature['name']];
-                            $featureValues = FeatureValue::getFeatureValuesWithLang($idLang, $feature['id_feature']);
-                            foreach ($featureValues as $featureValue) {
-                                if (in_array($featureValue['value'], $featureValueLabels)) {
-                                    $searchFilters['id_feature'][$feature['id_feature']][] =
-                                        $featureValue['id_feature_value'];
-                                }
+                        } else {
+                            continue;
+                        }
+
+                        $featureValues = $this->dataAccessor->getFeatureValues($feature['id_feature'], $idLang);
+                        foreach ($featureValues as $featureValue) {
+                            if (in_array($featureValue['url_name'], $featureValueLabels)
+                                || in_array($featureValue['value'], $featureValueLabels)
+                            ) {
+                                $searchFilters['id_feature'][$feature['id_feature']][] = $featureValue['id_feature_value'];
                             }
                         }
                     }
                     break;
                 case self::TYPE_ATTRIBUTE_GROUP:
-                    $attributesGroup = AttributeGroup::getAttributesGroups($idLang);
+                    $attributesGroup = $this->dataAccessor->getAttributesGroups($idLang);
                     foreach ($attributesGroup as $attributeGroup) {
-                        if ($filter['id_value'] == $attributeGroup['id_attribute_group']
-                            && isset($facetAndFiltersLabels[$attributeGroup['public_name']])
-                        ) {
-                            $attributeLabels = $facetAndFiltersLabels[$attributeGroup['public_name']];
-                            $attributes = AttributeGroup::getAttributes($idLang, $attributeGroup['id_attribute_group']);
-                            foreach ($attributes as $attribute) {
-                                if (in_array($attribute['name'], $attributeLabels)) {
-                                    $searchFilters['id_attribute_group'][$attributeGroup['id_attribute_group']][] = $attribute['id_attribute'];
-                                }
+                        if ($filter['id_value'] != $attributeGroup['id_attribute_group']) {
+                            continue;
+                        }
+
+                        if (isset($facetAndFiltersLabels[$attributeGroup['url_name']])) {
+                            $attributeLabels = $facetAndFiltersLabels[$attributeGroup['url_name']];
+                        } elseif (isset($facetAndFiltersLabels[$attributeGroup['attribute_group_name']])) {
+                            $attributeLabels = $facetAndFiltersLabels[$attributeGroup['attribute_group_name']];
+                        } else {
+                            continue;
+                        }
+
+                        $attributes = $this->dataAccessor->getAttributes($idLang, $attributeGroup['id_attribute_group']);
+                        foreach ($attributes as $attribute) {
+                            if (in_array($attribute['url_name'], $attributeLabels)
+                                || in_array($attribute['name'], $attributeLabels)
+                            ) {
+                                $searchFilters['id_attribute_group'][$attributeGroup['id_attribute_group']][] = $attribute['id_attribute'];
                             }
                         }
                     }
@@ -350,7 +394,7 @@ class Converter
                 case self::TYPE_CATEGORY:
                     if (isset($facetAndFiltersLabels[$filterLabel])) {
                         foreach ($facetAndFiltersLabels[$filterLabel] as $queryFilter) {
-                            $categories = Category::searchByNameAndParentCategoryId($idLang, $queryFilter, $idParent);
+                            $categories = Category::searchByNameAndParentCategoryId($idLang, $queryFilter, (int) $query->getIdCategory());
                             if ($categories) {
                                 $searchFilters[$filter['type']][] = $categories['id_category'];
                             }
@@ -468,6 +512,6 @@ class Converter
      */
     private function sortFiltersByLabel(Filter $a, Filter $b)
     {
-        return strnatcmp($a->getLabel(), $b->getLabel());
+        return strnatcasecmp($a->getLabel(), $b->getLabel());
     }
 }

@@ -58,103 +58,114 @@ class AssociationBuilder
     /**
      * @param string $fieldName
      *
-     * @return AssociationBuilder
+     * @return static
      */
     public function mappedBy($fieldName)
     {
         $this->mapping['mappedBy'] = $fieldName;
+
         return $this;
     }
 
     /**
      * @param string $fieldName
      *
-     * @return AssociationBuilder
+     * @return static
      */
     public function inversedBy($fieldName)
     {
         $this->mapping['inversedBy'] = $fieldName;
+
         return $this;
     }
 
     /**
-     * @return AssociationBuilder
+     * @return static
      */
     public function cascadeAll()
     {
-        $this->mapping['cascade'] = array("ALL");
+        $this->mapping['cascade'] = ["ALL"];
+
         return $this;
     }
 
     /**
-     * @return AssociationBuilder
+     * @return static
      */
     public function cascadePersist()
     {
         $this->mapping['cascade'][] = "persist";
+
         return $this;
     }
 
     /**
-     * @return AssociationBuilder
+     * @return static
      */
     public function cascadeRemove()
     {
         $this->mapping['cascade'][] = "remove";
+
         return $this;
     }
 
     /**
-     * @return AssociationBuilder
+     * @return static
      */
     public function cascadeMerge()
     {
         $this->mapping['cascade'][] = "merge";
+
         return $this;
     }
 
     /**
-     * @return AssociationBuilder
+     * @return static
      */
     public function cascadeDetach()
     {
         $this->mapping['cascade'][] = "detach";
+
         return $this;
     }
 
     /**
-     * @return AssociationBuilder
+     * @return static
      */
     public function cascadeRefresh()
     {
         $this->mapping['cascade'][] = "refresh";
+
         return $this;
     }
 
     /**
-     * @return AssociationBuilder
+     * @return static
      */
     public function fetchExtraLazy()
     {
         $this->mapping['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
+
         return $this;
     }
 
     /**
-     * @return AssociationBuilder
+     * @return static
      */
     public function fetchEager()
     {
         $this->mapping['fetch'] = ClassMetadata::FETCH_EAGER;
+
         return $this;
     }
 
     /**
-     * @return AssociationBuilder
+     * @return static
      */
     public function fetchLazy()
     {
         $this->mapping['fetch'] = ClassMetadata::FETCH_LAZY;
+
         return $this;
     }
 
@@ -168,25 +179,26 @@ class AssociationBuilder
      * @param string|null $onDelete
      * @param string|null $columnDef
      *
-     * @return AssociationBuilder
+     * @return static
      */
     public function addJoinColumn($columnName, $referencedColumnName, $nullable = true, $unique = false, $onDelete = null, $columnDef = null)
     {
-        $this->joinColumns[] = array(
+        $this->joinColumns[] = [
             'name' => $columnName,
             'referencedColumnName' => $referencedColumnName,
             'nullable' => $nullable,
             'unique' => $unique,
             'onDelete' => $onDelete,
             'columnDefinition' => $columnDef,
-        );
+        ];
+
         return $this;
     }
 
     /**
      * Sets field as primary key.
      *
-     * @return self
+     * @return static
      */
     public function makePrimaryKey()
     {
@@ -198,7 +210,7 @@ class AssociationBuilder
     /**
      * Removes orphan entities when detached from their parent.
      *
-     * @return self
+     * @return static
      */
     public function orphanRemoval()
     {
@@ -226,6 +238,7 @@ class AssociationBuilder
         } else {
             throw new \InvalidArgumentException("Type should be a ToOne Association here");
         }
+
         return $this->builder;
     }
 }
