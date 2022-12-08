@@ -10,6 +10,4 @@ Helpful links:
  - Delete or change names of other containers (see compose file)
  - Run the compose file: `docker compose up -d`
  - Configure prestashop (not tested)
- - If you are on WSL you have to give permission to edit files: `sudo chown -R <username>:<group> <directory_name>`
- (check username: whoami, check group: groups)
- - sudo chmod -R 777 src/
+ - If you encounter errors like `access denied` just run in WSL terminal `sudo chmod -R 777 .`
