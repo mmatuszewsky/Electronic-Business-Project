@@ -1,0 +1,4 @@
+36daf1,172.19.0.1,GET,http://localhost/admin-panel/index.php/improve/payment/payment_methods?_token=RF-cCU8Cq9as4_mPi00pW5bGCsf9oJGy0983eHVmssk,1670520846,,200
+7b43db,172.19.0.1,POST,http://localhost/admin-panel/index.php/common/notifications?_token=RF-cCU8Cq9as4_mPi00pW5bGCsf9oJGy0983eHVmssk&rand=1670520848379,1670520848,,200
+4e37f7,172.19.0.1,POST,http://localhost/admin-panel/index.php/common/notifications?_token=RF-cCU8Cq9as4_mPi00pW5bGCsf9oJGy0983eHVmssk&rand=1670520848456,1670520848,,200
+a67853,172.19.0.1,GET,http://localhost/admin-panel/index.php/modules/metrics/api/getShopData?_token=RF-cCU8Cq9as4_mPi00pW5bGCsf9oJGy0983eHVmssk,1670520849,,200
