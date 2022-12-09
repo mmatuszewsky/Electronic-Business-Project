@@ -176,3 +176,4 @@ be7329,192.168.48.1,POST,https://localhost/admin-panel/index.php/configure/shop/
 5d5c71,192.168.48.1,GET,https://localhost/admin-panel/index.php/configure/shop/preferences/preferences?_token=AlkxYgQ6SVo-9YTsfQhKJ_Nq2T2XBBk6ic0wKnK5wmY,1670598954,,200
 46c8da,192.168.48.1,POST,https://localhost/admin-panel/index.php/common/notifications?_token=AlkxYgQ6SVo-9YTsfQhKJ_Nq2T2XBBk6ic0wKnK5wmY,1670598954,,200
 7bc538,192.168.48.1,POST,https://localhost/admin-panel/index.php/common/notifications?_token=AlkxYgQ6SVo-9YTsfQhKJ_Nq2T2XBBk6ic0wKnK5wmY&rand=1670598954394,1670598954,,200
+9fe943,192.168.48.1,GET,https://localhost/admin-panel/index.php/configure/shop/preferences/preferences?_token=TssXnRZWcAx2rIqTaYkJU5PWpfXY1nU0PBM06GeXZHs,1670601310,,302
