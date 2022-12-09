@@ -8,11 +8,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.common.exceptions import TimeoutException
 import json
 from course import Course
-
 
 COURSE_SUBPAGES = 20  # max number of subpages scraped from each category
 
@@ -40,42 +39,41 @@ for URL in URLs:
     emptyPage = False  # means that the page number is out of range and there is no more content on this page
     subpageCounter = 1
     while not emptyPage:
-        print(URL+'&p='+str(subpageCounter))
-        driver.get(URL+'&p='+str(subpageCounter))
+        print(URL + '&p=' + str(subpageCounter))
+        driver.get(URL + '&p=' + str(subpageCounter))
         subpageCounter += 1
         if subpageCounter > COURSE_SUBPAGES:
             break
         try:  # element with this class name is a big container for all smaller divs. If it is not present then there is no content on the page
-            WebDriverWait(driver, 50).until(EC.presence_of_element_located((By.CLASS_NAME, 'course-list--container--3zXPS')))
+            WebDriverWait(driver, 20).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'course-list--container--3zXPS')))
             container = driver.find_element(By.CLASS_NAME, 'course-list--container--3zXPS')
             coursesBiggerDivs = container.find_elements(By.CLASS_NAME, 'course-card--course-title--vVEjC')
             courses = container.find_elements(By.CLASS_NAME, 'course-card--container--1QM2W')
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             counter = 0
-            
-            for course in courses: # each course we convert into an object of 'Course' class (data extraction)
+            # extracting the course data to course python class
+            for course in courses:
                 title = course.find_element(By.CLASS_NAME, 'ud-heading-md').text
                 desc = course.find_element(By.CLASS_NAME, 'ud-text-sm').text
-                
                 author = course.find_element(By.CLASS_NAME, 'ud-text-xs').text
-
+                # scraping the rating
                 try:
-                    # spanElement = course.find_element('span.star-rating--rating-number--3lVe8')
                     spanElement = course.find_element(By.CLASS_NAME, 'span.star-rating--rating-number--3l80q')
                 except NoSuchElementException:
                     ratings = 'Brak ocen'
                 else:
                     ratings = spanElement.text
-                
+                # scraping the description
                 try:
                     details = course.find_elements(By.CSS_SELECTOR, 'span.course-card--row--29Y0w')
                     courseLength = details[0].text
-                    courseLevel = details[len(details)-1].text
+                    courseLevel = details[len(details) - 1].text
                 except NoSuchElementException:
                     print("Brak dodatkowych informacji")
                     courseLength = 'Brak informacji'
                     courseLevel = 'Brak informacji'
-
+                # scraping the course cover image
                 try:
                     image = course.find_element(By.CLASS_NAME, 'course-card--course-image--3QvbQ')
                     ActionChains(driver).move_to_element(image).perform()
@@ -83,15 +81,16 @@ for URL in URLs:
                 except NoSuchElementException:
                     print("Brak zdjęcia")
                     imageSourceURL = 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.smarthome.com.au%2Faeotec-z-wave-plug-in-smart-switch-6.html&psig=AOvVaw33Vx1wP6a3B3QAn_6WPe4A&ust=1602514347326000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCNitsanlrOwCFQAAAAAdAAAAABAE'
-                    
+                # scraping the price of the course
                 try:
                     priceDiv = course.find_element(By.CSS_SELECTOR, 'div.price-text--price-part--Tu6MH')
+                    # we have to scroll to each element to make sure its price loads correctly
                     ActionChains(driver).move_to_element(priceDiv).perform()
                     spans = priceDiv.find_elements(By.TAG_NAME, 'span')
                     price = spans[len(spans) - 1].text
                 except NoSuchElementException:
                     price = 'Brak ceny'
-
+                # scraping the url of the course
                 try:
                     a = coursesBiggerDivs[counter].find_element(By.TAG_NAME, "a")
                     courseLink = a.get_attribute('href')
@@ -107,10 +106,11 @@ for URL in URLs:
 
 os.remove('objectsInJSON.txt')
 
-for course in coursesList: # search through each course page and get some more specific information
-    sleep(random())  # this sleep is needed to avoid error 403
+for course in coursesList:  # search through each course page and get some more specific information
+    sleep(random())  # this sleep is needed to avoid error 403; random()/2 works ~80% of time
     driver.get(course.URL)
     try:
+        # wait for the page to load
         WebDriverWait(driver, 7).until(EC.presence_of_element_located((By.CLASS_NAME, 'topic-menu')))
         topicDiv = driver.find_element(By.CLASS_NAME, 'topic-menu')
         elements = topicDiv.find_elements(By.CLASS_NAME, 'ud-heading-sm')
@@ -118,11 +118,16 @@ for course in coursesList: # search through each course page and get some more s
         course.setSubcategory(elements[1].text)
         courseDescription = driver.find_element(By.CLASS_NAME, 'styles--description--33-vq')
         course.setExtendedDescription(courseDescription.get_attribute('innerHTML'))
-        # write converted course object in to output file
+        # write converted course object into output file
         string = course.makeJSON()
         with open('objectsInJSON.txt', 'a', encoding='utf-8') as file:
             json.dump(string, file, ensure_ascii=False)
             file.write("\n")
     except TimeoutException:
+        print("TimeoutException in course", course.URL)
         continue
+    except StaleElementReferenceException:
+        print("StaleElementReferenceException in course", course.URL)
+        continue
+
 driver.quit()
