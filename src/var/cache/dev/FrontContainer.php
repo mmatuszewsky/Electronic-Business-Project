@@ -3128,7 +3128,6 @@ class FrontContainer extends \PrestaShop\PrestaShop\Adapter\Container\LegacyCont
                 60 => 'blockreassurance',
                 61 => 'ps_facetedsearch',
                 62 => 'ps_googleanalytics',
-                63 => 'ps_cashondelivery',
             ],
             'ps_cache_dir' => '/var/www/html/var/cache/dev/',
             'mail_themes_uri' => '/mails/themes',
