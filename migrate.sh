@@ -19,8 +19,8 @@ EOF
 openssl x509 -req -in ./tmp/$DOMAIN.csr -CA ./docker/ssl/$CA.pem -CAkey ./tmp/$CA.key -CAcreateserial \
 -out ./docker/ssl/$DOMAIN.crt -days 825 -sha256 -extfile ./tmp/$DOMAIN.ext
 
-docker cp docker/ssl/selfsigned.key electronic-business-project-prestashop-1:/etc/ssl/private/selfsigned.key
-docker cp docker/ssl/selfsigned.crt electronic-business-project-prestashop-1:/etc/ssl/certs/selfsigned.crt
+docker cp docker/ssl/selfsigned.key $1:/etc/ssl/private/selfsigned.key
+docker cp docker/ssl/selfsigned.crt $1:/etc/ssl/certs/selfsigned.crt
 
 docker exec -it $1 rm -rf /etc/apache2/sites-available/000-default.conf
 docker cp docker/ssl/000-default.conf $1:/etc/apache2/sites-available/000-default.conf
