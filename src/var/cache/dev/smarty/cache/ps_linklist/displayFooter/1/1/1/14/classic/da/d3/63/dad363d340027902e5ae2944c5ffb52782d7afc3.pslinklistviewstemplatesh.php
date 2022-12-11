@@ -1,30 +1,30 @@
 <?php
-/* Smarty version 3.1.43, created on 2022-12-10 21:04:52
+/* Smarty version 3.1.43, created on 2022-12-11 15:33:41
   from 'module:pslinklistviewstemplatesh' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.43',
-  'unifunc' => 'content_6394e664ef25b2_61372952',
+  'unifunc' => 'content_6395ea454e2e22_25764149',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '906548e89c8c6025457ddaeffb1980a0c743b872' => 
     array (
       0 => 'module:pslinklistviewstemplatesh',
-      1 => 1670696398,
+      1 => 1670765386,
       2 => 'module',
     ),
   ),
   'cache_lifetime' => 31536000,
 ),true)) {
-function content_6394e664ef25b2_61372952 (Smarty_Internal_Template $_smarty_tpl) {
+function content_6395ea454e2e22_25764149 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->smarty->ext->_tplFunction->registerTplFunctions($_smarty_tpl, array (
   'renderLogo' => 
   array (
     'compiled_filepath' => '/var/www/html/var/cache/dev/smarty/compile/classiclayouts_layout_full_width_tpl/d2/2d/85/d22d851f6d7c12eb35c1c34c8e84baa801a8cea2_2.file.helpers.tpl.php',
     'uid' => 'd22d851f6d7c12eb35c1c34c8e84baa801a8cea2',
-    'call_name' => 'smarty_template_function_renderLogo_8597064896394d139aaad81_11384468',
+    'call_name' => 'smarty_template_function_renderLogo_4240787236395ea45433a10_04336289',
   ),
 ));
 ?><!-- begin /var/www/html/themes/classic/modules/ps_linklist/views/templates/hook/linkblock.tpl --><div class="col-md-6 links">
@@ -89,50 +89,50 @@ $_smarty_tpl->smarty->ext->_tplFunction->registerTplFunctions($_smarty_tpl, arra
             <a
                 id="link-cms-page-1-2"
                 class="cms-page-link"
-                href="https://localhost/content/1-dostawa"
-                title="Nasze warunki i zasady związane z dostawą"
+                href="https://localhost/content/1-delivery"
+                title="Our terms and conditions of delivery"
                             >
-              Dostawa
+              Delivery
             </a>
           </li>
                   <li>
             <a
                 id="link-cms-page-2-2"
                 class="cms-page-link"
-                href="https://localhost/content/2-nota-prawna"
-                title="Nota prawna"
+                href="https://localhost/content/2-legal-notice"
+                title="Legal notice"
                             >
-              Nota prawna
+              Legal Notice
             </a>
           </li>
                   <li>
             <a
                 id="link-cms-page-3-2"
                 class="cms-page-link"
-                href="https://localhost/content/3-warunki-i-zasady-uzytkowania"
-                title="Nasze warunki i zasady użytkowania"
+                href="https://localhost/content/3-terms-and-conditions-of-use"
+                title="Our terms and conditions of use"
                             >
-              Warunki i zasady użytkowania
+              Terms and conditions of use
             </a>
           </li>
                   <li>
             <a
                 id="link-cms-page-4-2"
                 class="cms-page-link"
-                href="https://localhost/content/4-o-nas"
-                title="Dowiedz się więcej o nas"
+                href="https://localhost/content/4-about-us"
+                title="Learn more about us"
                             >
-              O nas
+              About us
             </a>
           </li>
                   <li>
             <a
                 id="link-cms-page-5-2"
                 class="cms-page-link"
-                href="https://localhost/content/5-bezpieczna-platnosc"
-                title="Nasz bezpieczny sposób płatności"
+                href="https://localhost/content/5-secure-payment"
+                title="Our secure payment mean"
                             >
-              Bezpieczna płatność
+              Secure payment
             </a>
           </li>
                   <li>
