@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>ps_featuredproducts</name>
+    <displayName><![CDATA[Produkty polecane]]></displayName>
+    <version><![CDATA[2.1.2]]></version>
+    <description><![CDATA[Pick a category and highlight its items, enhance customer experience with a lively homepage.]]></description>
+    <author><![CDATA[PrestaShop]]></author>
+    <tab><![CDATA[]]></tab>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+	<limited_countries></limited_countries>
+</module>

@@ -1,0 +1,14 @@
+services:
+    mailchimp.mailchimppro.customer_sync:
+        class: PrestaChamps\MailchimpPro\Console\Commands\CustomersSyncCommand
+        tags:
+            - { name: 'console.command' }
+
+    mailchimp.mailchimppro.product_sync:
+        class: PrestaChamps\MailchimpPro\Console\Commands\ProductsSyncCommand
+        tags:
+            - { name: 'console.command' }
+    mailchimp.mailchimppro.order_sync:
+        class: PrestaChamps\MailchimpPro\Console\Commands\OrdersSyncCommand
+        tags:
+            - { name: 'console.command' }

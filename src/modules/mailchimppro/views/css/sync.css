@@ -1,0 +1,15 @@
+#product-sync .spinner {
+    display: none;
+}
+
+/*#product-sync pre {*/
+    /*display: block;*/
+/*}*/
+
+#product-sync pre {
+    display: none;
+}
+
+#product-sync.sync-is-running .spinner {
+    display: block;
+}

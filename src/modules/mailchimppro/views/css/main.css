@@ -1,0 +1,79 @@
+img.mail-chimp {
+    float: none;
+    vertical-align: middle;
+    width: 100px;
+}
+
+.alert.alert-info.alert-mc {
+    border-left: 3px solid #2a71bb;
+    background-color: #c5dbf2;
+    color: #2a71bb;
+}
+
+.alert.alert-info.alert-mc:before {
+    position: absolute;
+    top: 6px;
+    display: block;
+    height: 25px;
+    width: 25px;
+    color: #2a71bb;
+    left: 7px;
+}
+
+.alert.alert-success.alert-mc, .alert.alert-success {
+    border-left: 3px solid #00C14e !important;
+    background-color: #e5fff0;
+    color: #00C14e;
+}
+
+.alert.alert-success.alert-mc:before, .alert.alert-success:before {
+    position: absolute;
+    top: 6px;
+    display: block;
+    height: 25px;
+    width: 25px;
+    color: #00C14e !important;
+    left: 7px;
+}
+
+/*.btn.btn-primary.btn-mc:hover, .btn.btn-primary.btn-mc:hover i {*/
+    /*background: #e6c600;*/
+    /*border-color: #f2ca59;*/
+/*}*/
+
+/*.btn.btn-primary.btn-mc, .btn.btn-primary.btn-mc i {*/
+    /*color: #241c15;*/
+    /*background: #FFE01B;*/
+    /*border-color: #e6c600;*/
+/*}*/
+
+body.adminmailchimpproconfig .btn-group {
+    display: flex !important;
+    align-items: center !important;
+    column-gap: 10px !important;
+}
+
+body.adminmailchimpproconfig .btn-group .btn-default {
+    display: flex !important;
+    padding: 5px !important;
+    align-items: center !important;
+    border-bottom-right-radius: 4px !important;
+    border-top-right-radius: 4px !important;
+    order: 2 !important; 
+}
+
+body.adminmailchimpproconfig .btn-group .btn-default.hidden {
+    order: 1 !important;
+}
+
+body.adminmailchimpproconfig .btn-group .btn-group {
+    order: 3 !important;
+}
+
+body.adminmailchimpproconfig .btn-group .btn-group button {
+    column-gap: 5px !important;
+    padding: 5px !important;
+    border-bottom-left-radius: 4px !important;
+    border-top-left-radius: 4px !important;
+
+}
