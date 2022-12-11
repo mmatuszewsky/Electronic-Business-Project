@@ -133,7 +133,7 @@ class __TwigTemplate_4a814a3f6700650df375498d38c4f9e2633c44ccd12a7d7a4e804612819
       <div class=\"col\">
         ";
         // line 57
-        $this->loadTemplate("@PrestaShop/Admin/Improve/Design/Cms/index.html.twig", "@PrestaShop/Admin/Improve/Design/Cms/index.html.twig", 57, "1178193055")->display(twig_array_merge($context, ["grid" => ($context["cmsCategoryGrid"] ?? $this->getContext($context, "cmsCategoryGrid"))]));
+        $this->loadTemplate("@PrestaShop/Admin/Improve/Design/Cms/index.html.twig", "@PrestaShop/Admin/Improve/Design/Cms/index.html.twig", 57, "19012255")->display(twig_array_merge($context, ["grid" => ($context["cmsCategoryGrid"] ?? $this->getContext($context, "cmsCategoryGrid"))]));
         // line 65
         echo "      </div>
     </div>
@@ -316,7 +316,7 @@ class __TwigTemplate_4a814a3f6700650df375498d38c4f9e2633c44ccd12a7d7a4e804612819
 
 
 /* @PrestaShop/Admin/Improve/Design/Cms/index.html.twig */
-class __TwigTemplate_4a814a3f6700650df375498d38c4f9e2633c44ccd12a7d7a4e804612819f16c6___1178193055 extends \Twig\Template
+class __TwigTemplate_4a814a3f6700650df375498d38c4f9e2633c44ccd12a7d7a4e804612819f16c6___19012255 extends \Twig\Template
 {
     public function __construct(Environment $env)
     {
