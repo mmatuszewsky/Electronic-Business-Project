@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.43, created on 2022-12-11 15:32:29
+/* Smarty version 3.1.43, created on 2022-12-12 00:22:00
   from '/var/www/html/modules/ps_googleanalytics/views/templates/hook/ps_googleanalytics.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.43',
-  'unifunc' => 'content_6395e9fd219983_06172106',
+  'unifunc' => 'content_63966618e38bf5_88005780',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'eda4115e2412874b21713113ed27b3cf409d0cc8' => 
     array (
       0 => '/var/www/html/modules/ps_googleanalytics/views/templates/hook/ps_googleanalytics.tpl',
-      1 => 1670765385,
+      1 => 1670800097,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_6395e9fd219983_06172106 (Smarty_Internal_Template $_smarty_tpl) {
+function content_63966618e38bf5_88005780 (Smarty_Internal_Template $_smarty_tpl) {
 ?>
 
 <?php echo '<script'; ?>

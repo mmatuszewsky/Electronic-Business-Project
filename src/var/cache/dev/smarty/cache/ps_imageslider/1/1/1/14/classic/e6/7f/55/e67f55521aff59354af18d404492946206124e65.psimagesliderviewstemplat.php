@@ -1,40 +1,39 @@
 <?php
-/* Smarty version 3.1.43, created on 2022-12-11 15:33:41
+/* Smarty version 3.1.43, created on 2022-12-12 00:30:44
   from 'module:psimagesliderviewstemplat' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.43',
-  'unifunc' => 'content_6395ea452791b5_77537079',
+  'unifunc' => 'content_63966824be6ab9_18847874',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '6c2108a17c7103b6e203f4f0621d4645b56b0114' => 
     array (
       0 => 'module:psimagesliderviewstemplat',
-      1 => 1670765386,
+      1 => 1670800097,
       2 => 'module',
     ),
   ),
   'cache_lifetime' => 31536000,
 ),true)) {
-function content_6395ea452791b5_77537079 (Smarty_Internal_Template $_smarty_tpl) {
+function content_63966824be6ab9_18847874 (Smarty_Internal_Template $_smarty_tpl) {
 ?><!-- begin /var/www/html/themes/classic/modules/ps_imageslider/views/templates/hook/slider.tpl -->
   <div id="carousel" data-ride="carousel" class="carousel slide" data-interval="5000" data-wrap="true" data-pause="hover" data-touch="true">
     <ol class="carousel-indicators">
             <li data-target="#carousel" data-slide-to="0" class="active"></li>
             <li data-target="#carousel" data-slide-to="1"></li>
-            <li data-target="#carousel" data-slide-to="2"></li>
           </ol>
     <ul class="carousel-inner" role="listbox" aria-label="Pokaz slajdów">
               <li class="carousel-item active" role="option" aria-hidden="false">
-          <a href="http://www.prestashop.com/?utm_source=back-office&amp;utm_medium=v17_homeslider&amp;utm_campaign=back-office-PL&amp;utm_content=download">
+          <a href="https://sjp.pl/najlepsze">
             <figure>
-              <img src="https://localhost/modules/ps_imageslider/images/sample-1.jpg" alt="sample-1" loading="lazy" width="1110" height="340">
+              <img src="https://localhost/modules/ps_imageslider/images/0d22d4f3461b52b34fcffbd1e6ff4a8ef24b40d9_e6cc1a30-2dec-4dc5-b0f2-c5b656909d5b.jpg" alt="Super kursy" loading="lazy" width="1110" height="340">
                               <figcaption class="caption">
-                  <h2 class="display-1 text-uppercase">Sample 1</h2>
-                  <div class="caption-description"><h3>EXCEPTEUR OCCAECAT</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tristique in tortor et dignissim. Quisque non tempor leo. Maecenas egestas sem elit</p></div>
+                  <h2 class="display-1 text-uppercase"></h2>
+                  <div class="caption-description"><h1><span style="color:#00d3b3;">Super kursy</span></h1>
+<p><span style="color:#00d3b3;">Nasze kursy są najlepsze.</span></p></div>
                 </figcaption>
                           </figure>
           </a>
@@ -42,23 +41,11 @@ function content_6395ea452791b5_77537079 (Smarty_Internal_Template $_smarty_tpl)
               <li class="carousel-item " role="option" aria-hidden="true">
           <a href="http://www.prestashop.com/?utm_source=back-office&amp;utm_medium=v17_homeslider&amp;utm_campaign=back-office-PL&amp;utm_content=download">
             <figure>
-              <img src="https://localhost/modules/ps_imageslider/images/sample-2.jpg" alt="sample-2" loading="lazy" width="1110" height="340">
+              <img src="https://localhost/modules/ps_imageslider/images/b851f898dc9ad18beb4a7f0dba6a9bd4075cfcd4_7869fd17-9599-4a5e-9b03-4748a3dae016.png" alt="Wspaniałe kursy" loading="lazy" width="1110" height="340">
                               <figcaption class="caption">
-                  <h2 class="display-1 text-uppercase">Sample 2</h2>
-                  <div class="caption-description"><h3>EXCEPTEUR OCCAECAT</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tristique in tortor et dignissim. Quisque non tempor leo. Maecenas egestas sem elit</p></div>
-                </figcaption>
-                          </figure>
-          </a>
-        </li>
-              <li class="carousel-item " role="option" aria-hidden="true">
-          <a href="http://www.prestashop.com/?utm_source=back-office&amp;utm_medium=v17_homeslider&amp;utm_campaign=back-office-PL&amp;utm_content=download">
-            <figure>
-              <img src="https://localhost/modules/ps_imageslider/images/sample-3.jpg" alt="sample-3" loading="lazy" width="1110" height="340">
-                              <figcaption class="caption">
-                  <h2 class="display-1 text-uppercase">Sample 3</h2>
-                  <div class="caption-description"><h3>EXCEPTEUR OCCAECAT</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin tristique in tortor et dignissim. Quisque non tempor leo. Maecenas egestas sem elit</p></div>
+                  <h2 class="display-1 text-uppercase"></h2>
+                  <div class="caption-description"><h3><span style="color:#ae542f;">Wspaniałe kursy</span></h3>
+<p><span style="color:#ae542f;">Tak dobre, że lepszych nie znajdziesz.</span></p></div>
                 </figcaption>
                           </figure>
           </a>

@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.43, created on 2022-12-11 15:02:37
+/* Smarty version 3.1.43, created on 2022-12-12 00:22:00
   from '/var/www/html/admin-panel/themes/new-theme/template/components/layout/shop_list.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.43',
-  'unifunc' => 'content_6395e2fd4d4c64_65178224',
+  'unifunc' => 'content_63966618314074_92759648',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '13fc19b6da0cca32e8a71dd9a8a2eabb984d1f67' => 
     array (
       0 => '/var/www/html/admin-panel/themes/new-theme/template/components/layout/shop_list.tpl',
-      1 => 1670765385,
+      1 => 1670800097,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_6395e2fd4d4c64_65178224 (Smarty_Internal_Template $_smarty_tpl) {
+function content_63966618314074_92759648 (Smarty_Internal_Template $_smarty_tpl) {
 if ((isset($_smarty_tpl->tpl_vars['is_multishop']->value)) && $_smarty_tpl->tpl_vars['is_multishop']->value && $_smarty_tpl->tpl_vars['shop_list']->value && ((isset($_smarty_tpl->tpl_vars['multishop_context']->value)) && $_smarty_tpl->tpl_vars['multishop_context']->value&Shop::CONTEXT_GROUP || $_smarty_tpl->tpl_vars['multishop_context']->value&Shop::CONTEXT_SHOP || $_smarty_tpl->tpl_vars['multishop_context']->value&Shop::CONTEXT_ALL)) {?>
   <div id="shop-list" class="shop-list dropdown ps-dropdown stores">
     <button class="btn btn-link" type="button" data-toggle="dropdown">
