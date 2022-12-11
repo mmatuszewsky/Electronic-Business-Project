@@ -537,7 +537,7 @@ class ProductCore extends ObjectModel
                 'lang' => true,
                 'validate' => 'isLinkRewrite',
                 'required' => false,
-                'size' => 255,
+                'size' => 128,
                 'ws_modifier' => [
                     'http_method' => WebserviceRequest::HTTP_POST,
                     'modifier' => 'modifierWsLinkRewrite',

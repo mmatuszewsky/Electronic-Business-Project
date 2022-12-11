@@ -1,8 +1,0 @@
-{
-  "runtimeOptions": {
-    "additionalProbingPaths": [
-      "C:\\Users\\macia\\.dotnet\\store\\|arch|\\|tfm|",
-      "C:\\Users\\macia\\.nuget\\packages"
-    ]
-  }
-}
