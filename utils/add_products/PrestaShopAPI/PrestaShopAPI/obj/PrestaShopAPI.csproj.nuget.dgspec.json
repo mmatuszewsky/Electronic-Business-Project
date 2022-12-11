@@ -1,0 +1,84 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/micha/Electronic-Business-Project/utils/add_products/PrestaShopAPI/PrestaShopAPI/PrestaShopAPI.csproj": {}
+  },
+  "projects": {
+    "/home/micha/Electronic-Business-Project/utils/add_products/PrestaShopAPI/PrestaShopAPI/PrestaShopAPI.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/micha/Electronic-Business-Project/utils/add_products/PrestaShopAPI/PrestaShopAPI/PrestaShopAPI.csproj",
+        "projectName": "PrestaShopAPI",
+        "projectPath": "/home/micha/Electronic-Business-Project/utils/add_products/PrestaShopAPI/PrestaShopAPI/PrestaShopAPI.csproj",
+        "packagesPath": "/home/micha/.nuget/packages/",
+        "outputPath": "/home/micha/Electronic-Business-Project/utils/add_products/PrestaShopAPI/PrestaShopAPI/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/micha/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "dependencies": {
+            "Microsoft.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[3.1.6, )"
+            },
+            "Microsoft.Extensions.Http": {
+              "target": "Package",
+              "version": "[3.1.9, )"
+            },
+            "PrestaSharp": {
+              "target": "Package",
+              "version": "[1.2.8, )"
+            },
+            "Serilog.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
+            "Serilog.Settings.Configuration": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
+            "Serilog.Sinks.Console": {
+              "target": "Package",
+              "version": "[3.1.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.1.425/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
