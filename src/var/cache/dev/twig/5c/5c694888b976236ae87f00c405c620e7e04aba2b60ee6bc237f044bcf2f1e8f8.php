@@ -215,7 +215,7 @@ class __TwigTemplate_0e7b7c15a0bae14b9b2e537d19f2fc3fad779ef790101785af6a28c3eea
 
   ";
         // line 273
-        $this->loadTemplate("@PrestaShop/Admin/Product/ProductPage/product.html.twig", "@PrestaShop/Admin/Product/ProductPage/product.html.twig", 273, "603511084")->display(twig_array_merge($context, ["id" => "confirmation_modal", "title" => $this->env->getExtension('Symfony\Bridge\Twig\Extension\TranslationExtension')->trans("Warning", [], "Admin.Notifications.Warning"), "closable" => false, "actions" => [0 => ["type" => "button", "label" => $this->env->getExtension('Symfony\Bridge\Twig\Extension\TranslationExtension')->trans("No", [], "Admin.Global"), "class" => "btn btn-outline-secondary btn-lg cancel"], 1 => ["type" => "button", "label" => $this->env->getExtension('Symfony\Bridge\Twig\Extension\TranslationExtension')->trans("Yes", [], "Admin.Global"), "class" => "btn btn-primary btn-lg continue"]]]));
+        $this->loadTemplate("@PrestaShop/Admin/Product/ProductPage/product.html.twig", "@PrestaShop/Admin/Product/ProductPage/product.html.twig", 273, "2139890549")->display(twig_array_merge($context, ["id" => "confirmation_modal", "title" => $this->env->getExtension('Symfony\Bridge\Twig\Extension\TranslationExtension')->trans("Warning", [], "Admin.Notifications.Warning"), "closable" => false, "actions" => [0 => ["type" => "button", "label" => $this->env->getExtension('Symfony\Bridge\Twig\Extension\TranslationExtension')->trans("No", [], "Admin.Global"), "class" => "btn btn-outline-secondary btn-lg cancel"], 1 => ["type" => "button", "label" => $this->env->getExtension('Symfony\Bridge\Twig\Extension\TranslationExtension')->trans("Yes", [], "Admin.Global"), "class" => "btn btn-primary btn-lg continue"]]]));
         // line 294
         echo "
 ";
@@ -1196,7 +1196,7 @@ class __TwigTemplate_0e7b7c15a0bae14b9b2e537d19f2fc3fad779ef790101785af6a28c3eea
 
 
 /* @PrestaShop/Admin/Product/ProductPage/product.html.twig */
-class __TwigTemplate_0e7b7c15a0bae14b9b2e537d19f2fc3fad779ef790101785af6a28c3eea1cd17___603511084 extends \Twig\Template
+class __TwigTemplate_0e7b7c15a0bae14b9b2e537d19f2fc3fad779ef790101785af6a28c3eea1cd17___2139890549 extends \Twig\Template
 {
     public function __construct(Environment $env)
     {
