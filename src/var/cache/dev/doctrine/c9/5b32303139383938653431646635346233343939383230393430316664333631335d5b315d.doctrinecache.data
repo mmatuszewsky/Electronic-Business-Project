@@ -1,0 +1,18 @@
+1670806632
+s:3668:"HTTP/1.1 200 OK
+Server: nginx
+Date: Mon, 12 Dec 2022 00:50:31 GMT
+Content-Type: application/json; charset=utf-8
+Transfer-Encoding: chunked
+Vary: Accept-Encoding
+X-XSS-Protection: 1; mode=block;
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+X-Frame-Options: SAMEORIGIN
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+Feature-Policy: accelerometer 'self'; ambient-light-sensor 'self'; autoplay 'self'; camera 'self'; encrypted-media 'self'; fullscreen 'self'; geolocation 'self'; gyroscope 'self'; magnetometer 'self'; microphone 'self'; midi 'self'; payment 'self'; picture-in-picture *; speaker 'self'; sync-xhr *; usb 'self'; vr 'self';
+X-Permitted-Cross-Domain-Policies: none
+Expect-CT: enforce, max-age=604800
+X-Backend-Server: vm2730.jn-hebergement.com
+
+{"modules":[{"id":"24697","name":"ps_dataprivacy","displayName":"Customer data privacy block","categoryName":"Wzmianki prawne","description":"Zapewnij klient&oacute;w o bezpiecze\u0144stwie, wy\u015bwietl kr&oacute;tk\u0105 notk\u0119 informuj\u0105c\u0105 o tym, \u017ce dbasz o ich prywatno\u015b\u0107","author":"PrestaShop","url":"https:\/\/addons.prestashop.com\/pl\/wzmianki-prawne\/24697-customer-data-privacy-block.html?utm_source=back-office&utm_medium=push-addons&utm_campaign=back-office-PL&utm_content=download","serviceUrl":"","img":"https:\/\/medias1.prestastore.com\/img\/pico\/24697.jpg","fullDescription":"Zapewnij klient&oacute;w o bezpiecze\u0144stwie, wy\u015bwietl kr&oacute;tk\u0105 notk\u0119 informuj\u0105c\u0105 o tym, \u017ce dbasz o ich prywatno\u015b\u0107.","additionalDescription":"U\u017cyj tego modu\u0142u natywnego, aby:\r\n<ul>\r\n\t<li><strong>Zapewni\u0107 przejrzysto\u015b\u0107 swojego biznesu: <\/strong>udziel zapewnienia wy\u015bwietlaj\u0105c ma\u0142y blok w formularzu tworzenia konta klienta.<\/li>\r\n\t<li><strong>Wzmocni\u0107 zaufanie:<\/strong> powiedz swoim klientom, co robisz (a czego nie) z ich prywatnymi danymi, mo\u017cesz nam zaufa\u0107, to dla nas niezwykle cenne!<\/li>\r\n\t<li><strong>Zwi\u0119kszy\u0107 sprzeda\u017c: <\/strong>klient, kt&oacute;ry czuje si\u0119 bezpiecznie, b\u0119dzie bardziej sk\u0142onny wr&oacute;ci\u0107 na zakupy w Twoim sklepie.<\/li>\r\n\t<li><strong>Wyj\u015b\u0107 naprzeciw konkretnym klientom: <\/strong>mo\u017cesz tworzy\u0107 konkretne tre\u015bci zale\u017cne od j\u0119zyka.<\/li>\r\n<\/ul>\r\n","features":"Indywidualnie skonfiguruj wy\u015bwietlany tekst, \u017ceby Twoi klienci wiedzieli, jak zarz\u0105dzasz prywatnymi danymi. Mo\u017cesz te\u017c wpasowa\u0107 si\u0119 w lokalne przepisy lub specyfik\u0119, wystarczy, \u017ce wybierzesz j\u0119zyk dla konkretnej docelowej lokalizacji i zwr&oacute;cisz si\u0119 do klient&oacute;w w danej strefie.","customer_benefits":"","demo_video":"","version":"2.1.0","last_update":"2022-12-11 12:58:38","compatibility":{"from":"1.7.2.0","to":"8.0.0"},"price":{"EUR":0,"USD":0,"GBP":0},"badges":[{"label":"Made by PrestaShop","img":"https:\/\/medias2.prestastore.com\/themes\/prestastore\/img\/front\/sprites\/badges\/made-by-prestashop.png"}],"cover":{"small":"https:\/\/addons.prestashop.com\/881475-pprod\/customer-data-privacy-block.jpg","big":"https:\/\/addons.prestashop.com\/881475-pbig\/customer-data-privacy-block.jpg"},"pictures":{"small":["https:\/\/addons.prestashop.com\/881474-pprod\/customer-data-privacy-block.jpg","https:\/\/addons.prestashop.com\/881476-pprod\/customer-data-privacy-block.jpg"],"big":["https:\/\/addons.prestashop.com\/881474-pbig\/customer-data-privacy-block.jpg","https:\/\/addons.prestashop.com\/881476-pbig\/customer-data-privacy-block.jpg"]}}]}";
