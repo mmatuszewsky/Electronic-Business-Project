@@ -1,7 +1,7 @@
 <?php return array (
   'parameters' => 
   array (
-    'database_host' => 'mariadb',
+    'database_host' => 'BE_184372_mariadb',
     'database_port' => '',
     'database_name' => 'prestashop',
     'database_user' => 'root',
