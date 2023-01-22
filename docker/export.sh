@@ -1,0 +1,9 @@
+#!/bin/bash
+
+DATABASE_CONTAINER="BE_184372_mariadb"
+DATABASE_NAME="prestashop"
+DATABASE_ROOT_PASSWORD="root"
+DATABASE_ROOT_LOGIN="root"
+DUMP_FILE="./db/dump.sql"
+
+docker exec -it $(docker ps -q -f name=$DATABASE_CONTAINER) mysqldump -u$DATABASE_ROOT_LOGIN -p$DATABASE_ROOT_PASSWORD $DATABASE_NAME > $DUMP_FILE 
