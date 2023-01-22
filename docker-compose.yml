@@ -1,40 +1,48 @@
 version: '3.9'
-
-services: 
-  prestashop:
-    image: prestashop/prestashop:1.7
+services:
+  magiczne_kursy:
+    image: mikolek/magiczne-kursy
     ports:
-      - 80:80
-      - 443:443
-    links:
-      - mariadb:mariadb
-    depends_on:
-      - mariadb
-    volumes:
-      - ./src:/var/www/html
+      - 18437:443
+      - 18436:80
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 60s
     environment:
-      - PS_DEV_MODE=1
-      - DB_SERVER=mariadb
-      - DB_USER=root
-      - DB_PASSWD=root
-      - DB_NAME=prestashop
       - PS_INSTALL_AUTO=0
+      - DB_SERVER=mariadb
+      # - DB_USER=root
+      # - DB_PASSWD=root
+      # - DB_NAME=prestashop
+      - ALLOW_OVERRIDE=1
+      # - PS_DEV_MODE=1
+      - PS_DOMAIN=localhost:18437
+      - PS_FOLDER_ADMIN=admin-panel
 
   mariadb:
-    image: mariadb
-    volumes:
-     - ./docker/mariadb:/docker-entrypoint-initdb.d
+    image: mariadb:10.8.2
+    ports:
+     - 18428:3306
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=prestashop
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 60s
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    links:
-      - mariadb
-    ports: 
-      - 81:80 
-    environment:
-      - PMA_HOST=mariadb
-      - PMA_USER=root
-      - PMA_PASSWORD=root
+  # phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin
+  #   ports: 
+  #     - 18445:80 
+  #   environment:
+  #     - PMA_HOST=mariadb
+  #     - PMA_USER=root
+  #     - PMA_PASSWORD=root
