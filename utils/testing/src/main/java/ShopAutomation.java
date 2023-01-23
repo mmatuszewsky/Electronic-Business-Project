@@ -40,7 +40,7 @@ public class ShopAutomation {
 
     @Test
     public void buyProducts() throws InterruptedException {
-        driver.get("https://localhost/");
+        driver.get("https://localhost:18437/");
         driver.manage().window().maximize();
 
         // DODANIE 5 PRDUKTOW Z KATEGORII PIERWSZEJ (produkty powiazane - home accessories)
@@ -62,6 +62,7 @@ public class ShopAutomation {
         driver.findElement(By.xpath("/html/body/main/header/div[2]/div/div[1]/div[1]/h1/a")).click();
         for(int i = 1 ; i < 6; i++) {
             driver.findElement(By.xpath("/html/body/main/section/div/div/section/section/section/a")).click();
+            driver.findElement(By.xpath("/html/body/main/section/div/div[2]/section/div[2]/ul/li/h5/a")).click();
             driver.findElement(By.xpath("/html/body/main/section/div/div[2]/section/div[2]/ul/li[2]/h5/a")).click();
             driver.findElement(By.xpath("/html/body/main/section/div/div[2]/section/section/div[3]/div[1]/div[" + i + "]/article/div/div[1]/a")).click();
             int quantity = rand.nextInt(3) + 1;
@@ -98,7 +99,7 @@ public class ShopAutomation {
         // WPISANIE MAILA
         WebElement email = driver.findElement(By.id("field-email"));
         email.clear();
-        email.sendKeys("user10@mail.com");
+        email.sendKeys("user20@mail.com");
 
         // WPISANIE HASLA
         WebElement password = driver.findElement(By.id("field-password"));
